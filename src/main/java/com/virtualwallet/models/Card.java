@@ -1,6 +1,5 @@
 package com.virtualwallet.models;
 
-import com.virtualwallet.enums.CardType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -17,25 +16,16 @@ public class Card {
 
     @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
+    @ManyToOne
     @Column(name = "card_holder_id")
     private User cardHolder;
     @Column(name = "check_number")
     private int checkNumber;
 
-    @Column(name = "card_type")
+    @ManyToOne
+    @Column(name = "card_type_id")
     private CardType cardType;
 
-    public Card() {
-    }
-
-    public Card(int id, String number, LocalDateTime expirationDate, User cardHolder, int checkNumber, CardType cardType) {
-        this.id = id;
-        this.number = number;
-        this.expirationDate = expirationDate;
-        this.cardHolder = cardHolder;
-        this.checkNumber = checkNumber;
-        this.cardType = cardType;
-    }
 
     public int getId() {
         return id;
