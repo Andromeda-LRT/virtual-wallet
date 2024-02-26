@@ -97,12 +97,12 @@ CREATE TABLE transactions
 (
     transaction_id      int auto_increment
         primary key,
-    amount double not null,
-    time                datetime not null,
-    transaction_type_id int      not null,
-    user_id             int      not null,
-    recipient_wallet_id int      not null,
-    wallet_id           int      not null,
+    amount              double precision not null,
+    time                datetime         not null,
+    transaction_type_id int              not null,
+    user_id             int              not null,
+    recipient_wallet_id int              not null,
+    wallet_id           int              not null,
     constraint transactions_transaction_types_transaction_type_id_fk
         foreign key (transaction_type_id) references transaction_types (transaction_type_id),
     constraint transactions_users_user_id_fk
