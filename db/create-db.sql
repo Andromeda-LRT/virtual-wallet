@@ -28,7 +28,7 @@ CREATE TABLE wallets
     wallet_id   int auto_increment
         primary key,
     iban        varchar(34) not null,
-    balance     long default 0,
+    balance     double precision default 0,
     is_archived tinyint(1) default 0 not null,
     user_id     int         not null,
     constraint wallets_users_user_id_fk
@@ -97,7 +97,7 @@ CREATE TABLE transactions
 (
     transaction_id      int auto_increment
         primary key,
-    amount              long     not null,
+    amount double not null,
     time                datetime not null,
     transaction_type_id int      not null,
     user_id             int      not null,
@@ -115,7 +115,7 @@ CREATE TABLE transactions
 
 CREATE TABLE wallet_transaction_histories
 (
-    wallet_id int not null ,
+    wallet_id      int not null,
     transaction_id int not null,
     constraint wallet_transaction_histories_wallets_wallet_id_fk
         foreign key (wallet_id) references wallets (wallet_id),
