@@ -27,24 +27,24 @@ public class CardSericeImpl implements CardService {
 
     @Override
     public void deleteCard(int card_id, User user) {
-        checkIfCardExists(card_id);
-        authorizeCardAccess(card_id, user);
+        Card card = cardRepository.getById(card_id);
+        authorizeCardAccess(card.getId(), user);
         cardRepository.delete(card_id);
         cardRepository.removeCardFromUser(user.getId(), card_id);
     }
 
     @Override
     public Card updateCard(Card card, User user) {
-        checkIfCardExists(card.getId());
-        authorizeCardAccess(card.getId(), user);
+        Card cardToUpdate = cardRepository.getById(card.getId());
+        authorizeCardAccess(cardToUpdate.getId(), user);
         cardRepository.update(card);
         return card;
     }
 
     @Override
     public Card getCard(int card_id, User user) {
-        checkIfCardExists(card_id);
-        authorizeCardAccess(card_id, user);
+        Card card = cardRepository.getById(card_id);
+        authorizeCardAccess(card.getId(), user);
         return cardRepository.getUserCard(user, card_id);
     }
 
@@ -56,14 +56,8 @@ public class CardSericeImpl implements CardService {
         return cardRepository.getAll();
     }
 
-    private void checkIfCardExists(int card_id) {
-        if (!cardRepository.checkIfCardExists(card_id)) {
-            throw new EntityNotFoundException("Card with id " + card_id + " does not exist");
-        }
-    }
-
-    private void authorizeCardAccess(int cardId, User user) {
-        if (!cardRepository.isCardBelongToUser(user.getId(), cardId) && !user.getRole().getName().equals("admin")) {
+    private void authorizeCardAccess(int card_id, User user) {
+        if (!cardRepository.getById(card_id).getCardHolder().equals(user) && !user.getRole().getName().equals("admin")){
             throw new UnauthorizedOperationException("You are not authorized for this operation");
         }
     }
