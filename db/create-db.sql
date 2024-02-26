@@ -9,31 +9,41 @@ CREATE TABLE users
 (
     user_id         int auto_increment
         primary key,
-    username        varchar(50)          not null,
-    password        varchar(50)          not null,
-    first_name      varchar(50)          not null,
-    last_name       varchar(50)          not null,
-    email           varchar(50)          not null,
-    role_id         int                not null,
+    username        varchar(50) not null,
+    password        varchar(50) not null,
+    first_name      varchar(50) not null,
+    last_name       varchar(50) not null,
+    email           varchar(50) not null,
+    role_id         int         not null,
     is_blocked      tinyint(1) default 0 not null,
     is_archived     tinyint(1) default 0 not null,
-    phone_number    varchar(15)          not null,
-    profile_picture varchar(100)         null,
+    phone_number    varchar(10) not null,
+    profile_picture varchar(100) null,
     constraint users_roles_role_id_fk
         foreign key (role_id) references roles (role_id)
 );
 
 CREATE TABLE wallets
 (
-    wallet_id int auto_increment
+    wallet_id   int auto_increment
         primary key,
-    iban      varchar(34) not null,
-    balance   long default 0,
-    is_archived     tinyint(1) default 0 not null,
-    user_id   int         not null,
+    iban        varchar(34) not null,
+    balance     long default 0,
+    is_archived tinyint(1) default 0 not null,
+    user_id     int         not null,
     constraint wallets_users_user_id_fk
         foreign key (user_id) references users (user_id)
 
+);
+
+CREATE TABLE user_wallets
+(
+    user_id   int not null,
+    wallet_id int not null,
+    constraint users_wallets_users_user_id_fk
+        foreign key (user_id) references users (user_id),
+    constraint users_wallets_wallets_wallet_id_fk
+        foreign key (wallet_id) references wallets (wallet_id)
 );
 
 CREATE TABLE card_types
@@ -70,9 +80,9 @@ CREATE TABLE users_cards
 (
     card_id int not null,
     user_id int not null,
-    constraint cards_card_id_fk
+    constraint user_cards_cards_card_id_fk
         foreign key (card_id) references cards (card_id),
-    constraint users_user_id_fk
+    constraint user_cards_users_user_id_fk
         foreign key (user_id) references users (user_id)
 );
 
@@ -101,4 +111,14 @@ CREATE TABLE transactions
         foreign key (recipient_wallet_id) references wallets (wallet_id),
     constraint transactions_wallets_wallet_id_fk
         foreign key (wallet_id) references wallets (wallet_id)
+);
+
+CREATE TABLE wallet_transaction_histories
+(
+    wallet_id int not null ,
+    transaction_id int not null,
+    constraint wallet_transaction_histories_wallets_wallet_id_fk
+        foreign key (wallet_id) references wallets (wallet_id),
+    constraint wallet_transaction_histories_users_user_id_fk
+        foreign key (transaction_id) references transactions (transaction_id)
 );
