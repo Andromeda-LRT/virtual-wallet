@@ -1,12 +1,15 @@
 package com.virtualwallet.repositories;
 
+import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.repositories.contracts.BaseReadRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+
 import java.util.List;
 
 import static java.lang.String.format;
+
 
 public abstract class AbstractReadRepository<T> implements BaseReadRepository<T> {
     private final Class<T> klas;
@@ -24,7 +27,7 @@ public abstract class AbstractReadRepository<T> implements BaseReadRepository<T>
      * Example: <code>getByField("id, 1, User.class)</code>
      * will execute the following HQL: <code>from User where id = 1;</code>
      *
-     * @param name the name of the field
+     * @param name  the name of the field
      * @param value the value of the field
      * @return an entity that matches the given criteria
      */
@@ -50,7 +53,7 @@ public abstract class AbstractReadRepository<T> implements BaseReadRepository<T>
 
     @Override
     public List<T> getAll() {
-        try(Session session = sessionFactory.openSession()) {
+        try (Session session = sessionFactory.openSession()) {
             return session.createQuery(format("from %s ", klas.getName()), klas).list();
         }
     }
