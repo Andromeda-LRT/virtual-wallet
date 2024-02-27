@@ -10,5 +10,5 @@ public interface CardService {
     void deleteCard(int card_id, User user);
     Card updateCard(Card card, User user);
     Card getCard(int card_id, User user);
-    List<Card> getAllCards(User user);
+    List<Card> getAllUserCards(User user);
 }
