@@ -3,8 +3,12 @@ package com.virtualwallet.model_mappers;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.model_dto.RegisterDto;
 import com.virtualwallet.models.model_dto.UserDto;
+import com.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class UserMapper {
@@ -64,4 +68,11 @@ public class UserMapper {
         user.setEmail(registerDto.getEmail());
     }
 
+    public List<UserDto> toDto(List<User> users) {
+        List<UserDto> userDtos = new ArrayList<>();
+        for (User user : users) {
+            userDtos.add(toDto(user));
+        }
+        return userDtos;
+    }
 }
