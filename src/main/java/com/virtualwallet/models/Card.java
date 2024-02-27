@@ -26,6 +26,9 @@ public class Card {
     @Column(name = "card_type_id")
     private CardType cardType;
 
+    @Column(name = "is_archived")
+    private boolean isArchived;
+
 
     public Card() {
     }
@@ -89,5 +92,13 @@ public class Card {
 
     public void setCardType(CardType cardType) {
         this.cardType = cardType;
+    }
+
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public void setArchived(boolean archived) {
+        isArchived = archived;
     }
 }
