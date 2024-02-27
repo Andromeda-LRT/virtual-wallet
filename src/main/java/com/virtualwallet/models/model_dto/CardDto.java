@@ -1,5 +1,6 @@
 package com.virtualwallet.models.model_dto;
 
+import com.virtualwallet.models.CardType;
 import com.virtualwallet.models.User;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -28,6 +29,11 @@ public class CardDto {
     @Size(min = 3, max = 3, message = "Check number must contain only digits.")
     private int checkNumber;
 
+    @NotEmpty(message = "Card type can't be empty.")
+    private CardType cardType;
+
+    public CardDto() {
+    }
 
     public String getNumber() {
         return number;
@@ -67,5 +73,13 @@ public class CardDto {
 
     public void setCheckNumber(int checkNumber) {
         this.checkNumber = checkNumber;
+    }
+
+    public CardType getCardType() {
+        return cardType;
+    }
+
+    public void setCardType(CardType cardType) {
+        this.cardType = cardType;
     }
 }
