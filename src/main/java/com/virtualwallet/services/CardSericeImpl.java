@@ -3,6 +3,7 @@ package com.virtualwallet.services;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
+import com.virtualwallet.repositories.contracts.CardRepository;
 import com.virtualwallet.services.contracts.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class CardSericeImpl implements CardService {
     @Override
     public Card createCard(User createdBy, Card card) {
         cardRepository.create(card);
+//        cardRepository.getByStringField(card.getNumber());
         cardRepository.addCardToUser(createdBy.getId(), card.getId());
         return card;
     }
@@ -57,7 +59,7 @@ public class CardSericeImpl implements CardService {
     }
 
     private void authorizeCardAccess(int card_id, User user) {
-        if (!cardRepository.getById(card_id).getCardHolder().equals(user) && !user.getRole().getName().equals("admin")){
+        if (!cardRepository.getById(card_id).getCardHolder().equals(user) && !user.getRole().getName().equals("admin")) {
             throw new UnauthorizedOperationException("You are not authorized for this operation");
         }
     }
