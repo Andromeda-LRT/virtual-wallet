@@ -12,12 +12,12 @@ public class UserModelFilterOptions {
 
     public UserModelFilterOptions(String username,
                                   String email,
-                                  String firstName,
+                                  String phoneNumber,
                                   String sortBy,
                                   String sortOrder) {
         this.username = Optional.ofNullable(username);
         this.email = Optional.ofNullable(email);
-        this.phoneNumber = Optional.ofNullable(firstName);
+        this.phoneNumber = Optional.ofNullable(phoneNumber);
         this.sortBy = Optional.ofNullable(sortBy);
         this.sortOrder = Optional.ofNullable(sortOrder);
     }

@@ -81,9 +81,9 @@ CREATE TABLE users_cards
     card_id int not null,
     user_id int not null,
     constraint user_cards_cards_card_id_fk
-        foreign key (card_id) references cards (card_id),
+        foreign key (card_id) references cards (card_id) on delete cascade,
     constraint user_cards_users_user_id_fk
-        foreign key (user_id) references users (user_id)
+        foreign key (user_id) references users (user_id) on delete cascade
 );
 
 CREATE TABLE transaction_types

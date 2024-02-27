@@ -9,7 +9,7 @@ import java.util.Objects;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "role_id")
     int id;
     @Column(name = "role_name")
     String name;
