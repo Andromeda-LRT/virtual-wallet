@@ -26,6 +26,25 @@ public class Card {
     @Column(name = "card_type_id")
     private CardType cardType;
 
+    @Column(name = "is_archived")
+    private boolean isArchived;
+
+
+    public Card() {
+    }
+
+    public Card(int id, String number,
+                LocalDateTime expirationDate,
+                User cardHolder,
+                int checkNumber,
+                CardType cardType) {
+        this.id = id;
+        this.number = number;
+        this.expirationDate = expirationDate;
+        this.cardHolder = cardHolder;
+        this.checkNumber = checkNumber;
+        this.cardType = cardType;
+    }
 
     public int getId() {
         return id;
@@ -73,5 +92,13 @@ public class Card {
 
     public void setCardType(CardType cardType) {
         this.cardType = cardType;
+    }
+
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public void setArchived(boolean archived) {
+        isArchived = archived;
     }
 }
