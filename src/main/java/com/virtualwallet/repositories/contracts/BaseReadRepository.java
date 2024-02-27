@@ -9,4 +9,6 @@ public interface BaseReadRepository<T> {
     T getById(int id);
 
     <V> T getByField(String name, V value);
+
+    T getByStringField(String fieldName);
 }
