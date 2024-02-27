@@ -52,6 +52,11 @@ public abstract class AbstractReadRepository<T> implements BaseReadRepository<T>
     }
 
     @Override
+    public T getByStringField(String fieldName) {
+        return getByField("fieldName", fieldName);
+    }
+
+    @Override
     public List<T> getAll() {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery(format("from %s ", klas.getName()), klas).list();
