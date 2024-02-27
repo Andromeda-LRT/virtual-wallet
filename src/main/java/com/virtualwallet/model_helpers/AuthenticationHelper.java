@@ -82,10 +82,6 @@ public class AuthenticationHelper {
         }
     }
 
-    public void verifyUserAccess(int id, User loggedUser){
-        service.verifyUserAccess(loggedUser, id);
-    }
-
     public User tryGetUser(HttpSession session) {
         String currentUsername = (String) session.getAttribute("currentUser");
 
