@@ -17,9 +17,9 @@ public class UserMapper {
     }
 
     public User fromDto (int id, UserDto userDto) {
-       User user = userService.getById(id);
-       toDtoObj(user, userDto);
-       return user;
+        User user = userService.getById(id);
+        toDtoObj(user, userDto);
+        return user;
     }
 
 
@@ -34,6 +34,16 @@ public class UserMapper {
         User user = new User();
         toDtoObj(user, userDto);
         return user;
+    }
+
+    public UserDto toDto(User user){
+        UserDto userDto = new UserDto();
+        userDto.setUsername(user.getUsername());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        userDto.setPhoneNumber(user.getPhoneNumber());
+        userDto.setEmail(user.getEmail());
+        return userDto;
     }
 
     private void toDtoObj(User user, UserDto userDto) {
