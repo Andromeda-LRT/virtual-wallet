@@ -27,6 +27,22 @@ public class Card {
     private CardType cardType;
 
 
+    public Card() {
+    }
+
+    public Card(int id, String number,
+                LocalDateTime expirationDate,
+                User cardHolder,
+                int checkNumber,
+                CardType cardType) {
+        this.id = id;
+        this.number = number;
+        this.expirationDate = expirationDate;
+        this.cardHolder = cardHolder;
+        this.checkNumber = checkNumber;
+        this.cardType = cardType;
+    }
+
     public int getId() {
         return id;
     }
