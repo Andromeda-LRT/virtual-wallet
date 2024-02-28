@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class CardSericeImpl implements CardService {
+public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
 
     @Autowired
-    public CardSericeImpl(CardRepository cardRepository) {
+    public CardServiceImpl(CardRepository cardRepository) {
         this.cardRepository = cardRepository;
     }
 
