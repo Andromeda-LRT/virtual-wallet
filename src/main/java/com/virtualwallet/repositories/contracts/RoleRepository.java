@@ -15,5 +15,5 @@ public interface RoleRepository {
 
     Role getById(int id);
 
-    Role getByStringField(String fieldName);
+    Role getByStringField(String fieldName, String fieldValue);
 }
