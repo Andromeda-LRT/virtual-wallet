@@ -15,5 +15,5 @@ public class ModelConstantHelper {
     public static final String NAME_ERROR_MESSAGE = "Field should be between 3 and 20 symbols.";
     public static final String UNAUTHORIZED_OPERATION_ERROR_MESSAGE = "You are not authorized to perform this operation";
 
-
+    public static final String WALLET_NOT_FOUND_ERROR_MESSAGE = "Wallet not found";
 }
