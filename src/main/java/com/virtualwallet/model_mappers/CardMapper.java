@@ -2,6 +2,7 @@ package com.virtualwallet.model_mappers;
 
 import com.virtualwallet.models.Card;
 import com.virtualwallet.models.model_dto.CardDto;
+import com.virtualwallet.models.model_dto.CardForAddingMoneyToWalletDto;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -40,6 +41,16 @@ public class CardMapper {
         cardDto.setCardHolder(card.getCardHolder());
         cardDto.setCheckNumber(card.getCheckNumber());
         cardDto.setCardType(card.getCardType());
+        return cardDto;
+    }
+
+    public CardForAddingMoneyToWalletDto toDummyApiDto(Card card) {
+        CardForAddingMoneyToWalletDto cardDto = new CardForAddingMoneyToWalletDto();
+        cardDto.setNumber(card.getNumber());
+        cardDto.setExpirationDate(card.getExpirationDate());
+        cardDto.setCardHolder(card.getCardHolder().getUsername());
+        cardDto.setCheckNumber(card.getCheckNumber());
+        cardDto.setCardType(card.getCardType().getType());
         return cardDto;
     }
 
