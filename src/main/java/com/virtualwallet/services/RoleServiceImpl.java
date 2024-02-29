@@ -40,7 +40,7 @@ public class RoleServiceImpl implements RoleService {
         checkIfAdmin(user);
         boolean duplicateRoleNameExists = true;
         try {
-            roleRepository.getByStringField(role.getName());
+            roleRepository.getByStringField("name", role.getName());
         } catch (EntityNotFoundException e) {
             duplicateRoleNameExists = false;
         }
