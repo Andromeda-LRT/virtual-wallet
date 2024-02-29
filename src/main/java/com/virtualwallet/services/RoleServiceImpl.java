@@ -5,6 +5,7 @@ import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.models.Role;
 import com.virtualwallet.models.User;
+import com.virtualwallet.repositories.contracts.RoleRepository;
 import com.virtualwallet.services.contracts.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,7 +40,7 @@ public class RoleServiceImpl implements RoleService {
         checkIfAdmin(user);
         boolean duplicateRoleNameExists = true;
         try {
-            roleRepository.getByField(role.getName());
+            roleRepository.getByStringField(role.getName());
         } catch (EntityNotFoundException e) {
             duplicateRoleNameExists = false;
         }

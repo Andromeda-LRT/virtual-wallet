@@ -7,19 +7,23 @@ import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
 import com.virtualwallet.repositories.contracts.CardRepository;
 import com.virtualwallet.services.contracts.CardService;
+import com.virtualwallet.utils.AESUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CardSericeImpl implements CardService {
+public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
 
+    private final UserRepository userRepository;
+
     @Autowired
-    public CardSericeImpl(CardRepository cardRepository) {
+    public CardServiceImpl(CardRepository cardRepository, UserRepository userRepository) {
         this.cardRepository = cardRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -27,15 +31,23 @@ public class CardSericeImpl implements CardService {
         if (card.getExpirationDate().isBefore(LocalDateTime.now())) {
             throw new ExpiredCardException("Card is expired");
         }
+        //todo check user when creating card - LYUBIMA
         Card cardToBeCreated;
         try {
-            cardToBeCreated = cardRepository.getByStringField(card.getNumber());
+            // Encrypt the card number before checking/using it in the repository
+            String encryptedCardNumber = encryptCardNumber(card.getNumber());
+            cardToBeCreated = cardRepository.getByStringField(encryptedCardNumber);
             cardToBeCreated.setExpirationDate(card.getExpirationDate());
             cardToBeCreated.setArchived(false);
+            // Ensure the card number is stored encrypted in the repository
+            cardToBeCreated.setNumber(encryptedCardNumber);   //TODO: This can be commented out - LYUBIMA
             cardRepository.update(cardToBeCreated);
         } catch (EntityNotFoundException e) {
+            // Encrypt the card number before saving the new card
+            card.setNumber(encryptCardNumber(card.getNumber()));
             cardRepository.create(card);
             cardRepository.addCardToUser(createdBy.getId(), card.getId());
+            card.setNumber(decryptCardNumber(card.getNumber()));
             return card;
         }
 
@@ -57,6 +69,7 @@ public class CardSericeImpl implements CardService {
             throw new ExpiredCardException("Card is expired");
         }
         cardRepository.update(card);
+        card.setNumber(decryptCardNumber(card.getNumber()));
         return card;
     }
 
@@ -71,12 +84,35 @@ public class CardSericeImpl implements CardService {
         if (!user.getRole().getName().equals("admin")) {
             throw new UnauthorizedOperationException("You are not allowed to see all cards");
         }
-        return cardRepository.getAll();
+        List<Card> cardsWithDecryptedNumbers = new ArrayList<>();
+        for (Card card : cardRepository.getAllUserCards(user.getId())) {
+            card.setNumber(decryptCardNumber(card.getNumber()));
+            cardsWithDecryptedNumbers.add(card);
+        }
+        return cardsWithDecryptedNumbers;
     }
 
     private void authorizeCardAccess(int card_id, User user) {
         if (!cardRepository.getById(card_id).getCardHolder().equals(user) && !user.getRole().getName().equals("admin")) {
             throw new UnauthorizedOperationException("You are not authorized for this operation");
+        }
+    }
+
+    private String encryptCardNumber(String cardNumber) {
+        try {
+            return AESUtil.encrypt(cardNumber);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private String decryptCardNumber(String encryptedCardNumber) {
+        try {
+            return AESUtil.decrypt(encryptedCardNumber);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
