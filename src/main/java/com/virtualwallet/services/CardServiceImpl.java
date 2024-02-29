@@ -7,7 +7,9 @@ import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
 import com.virtualwallet.repositories.contracts.CardRepository;
 import com.virtualwallet.services.contracts.CardService;
+import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.utils.AESUtil;
+import com.virtualwallet.utils.UtilHelpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -16,22 +18,20 @@ import java.util.List;
 
 @Service
 public class CardServiceImpl implements CardService {
+    private UtilHelpers utilHelpers;
     private final CardRepository cardRepository;
-
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Autowired
-    public CardServiceImpl(CardRepository cardRepository, UserRepository userRepository) {
+    public CardServiceImpl(CardRepository cardRepository, UserService userService) {
         this.cardRepository = cardRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
     public Card createCard(User createdBy, Card card) {
-        if (card.getExpirationDate().isBefore(LocalDateTime.now())) {
-            throw new ExpiredCardException("Card is expired");
-        }
-        //todo check user when creating card - LYUBIMA
+        verifyCardExpirationDate(card);
+        verifyCardHolderAccess(createdBy, card);
         Card cardToBeCreated;
         try {
             // Encrypt the card number before checking/using it in the repository
@@ -65,9 +65,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public Card updateCard(Card card, User user) {
         authorizeCardAccess(card.getId(), user);
-        if (card.getExpirationDate().isBefore(LocalDateTime.now())) {
-            throw new ExpiredCardException("Card is expired");
-        }
+        verifyCardExpirationDate(card);
         cardRepository.update(card);
         card.setNumber(decryptCardNumber(card.getNumber()));
         return card;
@@ -81,9 +79,6 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public List<Card> getAllUserCards(User user) {
-        if (!user.getRole().getName().equals("admin")) {
-            throw new UnauthorizedOperationException("You are not allowed to see all cards");
-        }
         List<Card> cardsWithDecryptedNumbers = new ArrayList<>();
         for (Card card : cardRepository.getAllUserCards(user.getId())) {
             card.setNumber(decryptCardNumber(card.getNumber()));
@@ -113,6 +108,18 @@ public class CardServiceImpl implements CardService {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        }
+    }
+
+    private void verifyCardExpirationDate(Card card){
+        if (card.getExpirationDate().isBefore(LocalDateTime.now())) {
+            throw new ExpiredCardException("Card is expired");
+        }
+    }
+
+    private void verifyCardHolderAccess(User user, Card card){
+        if(!card.getCardHolder().equals(createdBy)){
+            throw new UnauthorizedOperationException("You are not authorized for this operation");
         }
     }
 }
