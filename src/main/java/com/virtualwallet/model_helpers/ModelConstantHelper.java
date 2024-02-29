@@ -27,4 +27,6 @@ public class ModelConstantHelper {
 
     public static final String DUMMY_API_BASE_URL = "http://localhost:8081";
 
+    public static final String DUMMY_API_COMPLETE_URL = "http://localhost:8081/api/bank/withdrawal";
+
 }
