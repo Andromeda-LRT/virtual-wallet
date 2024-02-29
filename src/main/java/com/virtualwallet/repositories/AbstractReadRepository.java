@@ -34,7 +34,7 @@ public abstract class AbstractReadRepository<T> implements BaseReadRepository<T>
 
     @Override
     public <V> T getByField(String name, V value) {
-        final String query = format("from %s where %s = :value", klas.getName(), name);
+        final String query = format("from %s where %s = :value", klas.getSimpleName(), name);
         final String notFoundErrorMessage = format("%s with %s %s not found", klas.getSimpleName(), name, value);
 
         try (Session session = sessionFactory.openSession()) {
@@ -52,8 +52,8 @@ public abstract class AbstractReadRepository<T> implements BaseReadRepository<T>
     }
 
     @Override
-    public T getByStringField(String fieldName) {
-        return getByField("fieldName", fieldName);
+    public T getByStringField(String fieldName, String fieldValue) {
+        return getByField(fieldName, fieldValue);
     }
 
     @Override
