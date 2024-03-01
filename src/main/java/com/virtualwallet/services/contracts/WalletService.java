@@ -7,6 +7,9 @@ import com.virtualwallet.models.Wallet;
 import java.util.List;
 
 public interface WalletService {
+    //todo delete method once transition to transactionwithCard is complete -- Ted
+    //String addMoneyToWallet(User user, int card_id);
+
     List<Wallet> getAllWallets(User user);
 
     Wallet getWalletById(User user, int wallet_id);
@@ -17,7 +20,7 @@ public interface WalletService {
 
     void delete(User user, int wallet_id);
 
-    List<WalletToWalletTransaction> getAllTransactions(User user, int wallet_id);
+    List<WalletToWalletTransaction> getAllWalletTransactions(User user, int wallet_id);
 
     WalletToWalletTransaction getTransactionById(User user, int wallet_id, int transaction_id);
 
