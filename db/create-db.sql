@@ -30,9 +30,10 @@ CREATE TABLE wallets
     iban        varchar(34) not null,
     balance     double precision default 0,
     is_archived tinyint(1) default 0 not null,
-    user_id     int         not null,
+    created_by  int         not null,
+    name        varchar(30) not null,
     constraint wallets_users_user_id_fk
-        foreign key (user_id) references users (user_id)
+        foreign key (created_by) references users (user_id)
 
 );
 
@@ -67,7 +68,8 @@ CREATE TABLE cards
     number          varchar(19) not null,
     expiration_date date        not null,
     card_type_id    int         not null,
-    cvv_number_id   int         not null,
+    card_holder     varchar(50) not null,
+    check_number_id int         not null,
     is_archived     tinyint(1) default 0 not null,
     constraint cards_card_types_card_type_id_fk
         foreign key (card_type_id) references card_types (card_type_id),
@@ -92,6 +94,13 @@ CREATE TABLE transaction_types
         primary key,
     type                varchar(15)
 );
+
+-- CREATE TABLE transaction_statuses
+-- (
+--     transaction_status_id int auto_increment
+--         primary key,
+--     type                  varchar(15)
+-- );
 
 CREATE TABLE wallet_transactions
 (
