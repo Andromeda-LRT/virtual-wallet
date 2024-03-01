@@ -41,4 +41,7 @@ public class ModelConstantHelper {
 
     public static final String DUMMY_API_COMPLETE_URL = "http://localhost:8081/api/bank/withdrawal";
 
+    public static final String APPROVED_TRANSFER = "Approve";
+    public static final String DECLINED_TRANSFER = "Decline";
+
 }
