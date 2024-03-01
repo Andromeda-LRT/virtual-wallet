@@ -114,7 +114,7 @@ public class WalletController {
     public List<TransactionDto> getTransactionHistory(@RequestHeader HttpHeaders headers, @PathVariable int wallet_id) {
         try {
             User user = authHelper.tryGetUser(headers);
-            List<WalletToWalletTransaction> walletToWalletTransactionList = walletService.getAllTransactions(user, wallet_id);
+            List<WalletToWalletTransaction> walletToWalletTransactionList = walletService.getAllWalletTransactions(user, wallet_id);
             return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
         } catch (UnauthorizedOperationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
