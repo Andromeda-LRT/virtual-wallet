@@ -1,6 +1,6 @@
 package com.virtualwallet.model_mappers;
 
-import com.virtualwallet.models.Transaction;
+import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.models.model_dto.TransactionResponseDto;
 import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.repositories.contracts.WalletRepository;
@@ -20,26 +20,26 @@ public class TransactionResponseMapper {
         this.walletRepository = walletRepository;
     }
 
-    public TransactionResponseDto convertToDto(Transaction transaction) {
+    public TransactionResponseDto convertToDto(WalletToWalletTransaction walletToWalletTransaction) {
         TransactionResponseDto dto = new TransactionResponseDto();
-        dto.setTransactionTypeId(transaction.getTransactionTypeId());
-        dto.setTransactionId(transaction.getTransactionId());
-        dto.setAmount(transaction.getAmount());
-        dto.setUserName(userRepository.getById(transaction.getUserId()).getUsername());
-        dto.setWalletIban(walletRepository.getById(transaction.getWalletId()).getIban());
-        dto.setTime(transaction.getTime());
+        dto.setTransactionTypeId(walletToWalletTransaction.getTransactionTypeId());
+        dto.setTransactionId(walletToWalletTransaction.getTransactionId());
+        dto.setAmount(walletToWalletTransaction.getAmount());
+        dto.setUserName(userRepository.getById(walletToWalletTransaction.getUserId()).getUsername());
+        dto.setWalletIban(walletRepository.getById(walletToWalletTransaction.getWalletId()).getIban());
+        dto.setTime(walletToWalletTransaction.getTime());
         return dto;
     }
 
-    public TransactionResponseDto convertToDto(Transaction transaction, int id) {
+    public TransactionResponseDto convertToDto(WalletToWalletTransaction walletToWalletTransaction, int id) {
         TransactionResponseDto dto = new TransactionResponseDto();
 
-        dto.setTransactionId(transaction.getTransactionId());
+        dto.setTransactionId(walletToWalletTransaction.getTransactionId());
         dto.setTransactionId(id);
-        dto.setAmount(transaction.getAmount());
-        dto.setUserName(userRepository.getById(transaction.getUserId()).getUsername());
-        dto.setWalletIban(walletRepository.get(transaction.getWalletId()).getIban());
-        dto.setTime(transaction.getTime());
+        dto.setAmount(walletToWalletTransaction.getAmount());
+        dto.setUserName(userRepository.getById(walletToWalletTransaction.getUserId()).getUsername());
+        dto.setWalletIban(walletRepository.get(walletToWalletTransaction.getWalletId()).getIban());
+        dto.setTime(walletToWalletTransaction.getTime());
         return dto;
 
     }

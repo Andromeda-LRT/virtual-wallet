@@ -22,12 +22,17 @@ public class Wallet {
     @Column(name = "is_archived")
     private boolean isArchived;
 
-    public Wallet(int walletId, String iban, double balance, boolean isArchived, String name) {
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User createdBy;
+
+    public Wallet(int walletId, String iban, double balance, boolean isArchived, String name, User createdBy) {
         this.walletId = walletId;
         this.iban = iban;
         this.balance = balance;
         this.isArchived = isArchived;
         this.name = name;
+        this.createdBy = createdBy;
     }
 
     public Wallet() {
@@ -71,5 +76,13 @@ public class Wallet {
 
     public void setArchived(boolean archived) {
         isArchived = archived;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User userId) {
+        this.createdBy = userId;
     }
 }

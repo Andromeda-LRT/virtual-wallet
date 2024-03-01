@@ -1,5 +1,7 @@
 package com.virtualwallet.model_helpers;
 
+import java.security.PublicKey;
+
 public class ModelConstantHelper {
 
     public static final String INVALID_EMAIL_ERROR_MESSAGE = "Please enter a valid email address";
@@ -24,4 +26,11 @@ public class ModelConstantHelper {
     public static final String WRONG_USERNAME_OR_PASSWORD = "Wrong username or password.";
     public static final String PERMISSIONS_ERROR =
             "You don't have the permissions to update this user information.";
+    public static final String WALLET_NOT_FOUND_ERROR_MESSAGE = "Wallet not found";
+
+    public static final String INSUFFICIENT_FUNDS_ERROR_MESSAGE = "Insufficient funds";
+
+    public static final String EXPIRED_CARD_ERROR_MESSAGE = "Card has expired";
+
+    public static final String IBAN_NOT_FOUND_ERROR_MESSAGE = "IBAN not found";
 }
