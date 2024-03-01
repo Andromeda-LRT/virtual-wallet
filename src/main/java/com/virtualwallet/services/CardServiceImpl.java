@@ -6,6 +6,7 @@ import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
 import com.virtualwallet.repositories.contracts.CardRepository;
+import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.utils.AESUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,8 @@ public class CardServiceImpl implements CardService {
     private final UserRepository userRepository;
 
     @Autowired
-    public CardServiceImpl(CardRepository cardRepository, UserRepository userRepository) {
+    public CardServiceImpl(CardRepository cardRepository,
+                           UserRepository userRepository) {
         this.cardRepository = cardRepository;
         this.userRepository = userRepository;
     }
@@ -36,7 +38,7 @@ public class CardServiceImpl implements CardService {
         try {
             // Encrypt the card number before checking/using it in the repository
             String encryptedCardNumber = encryptCardNumber(card.getNumber());
-            cardToBeCreated = cardRepository.getByStringField(encryptedCardNumber);
+            cardToBeCreated = cardRepository.getByStringField("number", encryptedCardNumber);
             cardToBeCreated.setExpirationDate(card.getExpirationDate());
             cardToBeCreated.setArchived(false);
             // Ensure the card number is stored encrypted in the repository
