@@ -5,6 +5,13 @@ CREATE TABLE roles
     role_name varchar(20) not null
 );
 
+CREATE TABLE statuses
+(
+    status_id   int auto_increment
+        primary key,
+    status_name varchar(20) not null
+);
+
 CREATE TABLE users
 (
     user_id         int auto_increment
@@ -103,6 +110,7 @@ CREATE TABLE wallet_transactions
     user_id               int              not null,
     recipient_wallet_id   int              not null,
     wallet_id             int              not null,
+    status_id             int              not null,
     constraint wallet_transactions_transaction_types_transaction_type_id_fk
         foreign key (transaction_type_id) references transaction_types (transaction_type_id),
     constraint wallet_transactions_users_user_id_fk
@@ -110,7 +118,9 @@ CREATE TABLE wallet_transactions
     constraint wallet_transactions_wallets_recipient_wallet_id_fk
         foreign key (recipient_wallet_id) references wallets (wallet_id),
     constraint wallet_transactions_wallets_wallet_id_fk
-        foreign key (wallet_id) references wallets (wallet_id)
+        foreign key (wallet_id) references wallets (wallet_id),
+    constraint wallet_transactions_statuses_status_id_fk
+        foreign key (status_id) references statuses (status_id)
 );
 
 CREATE TABLE card_transactions
@@ -122,6 +132,7 @@ CREATE TABLE card_transactions
     user_id             int              not null,
     wallet_id           int              not null,
     card_id             int              not null,
+    status_id           int              not null,
     constraint card_transactions_transaction_types_type_id_fk
         foreign key (transaction_type_id) references transaction_types (transaction_type_id),
     constraint card_transactions_users_user_id_fk
@@ -129,8 +140,9 @@ CREATE TABLE card_transactions
     constraint card_transactions_wallets_recipient_wallet_id_fk
         foreign key (wallet_id) references wallets (wallet_id),
     constraint card_transactions_cards_card_id_fk
-        foreign key (card_id) references cards (card_id)
-
+        foreign key (card_id) references cards (card_id),
+    constraint card_transactions_statuses_status_id_fk
+        foreign key (status_id) references statuses (status_id)
 );
 
 CREATE TABLE wallet_transaction_histories
