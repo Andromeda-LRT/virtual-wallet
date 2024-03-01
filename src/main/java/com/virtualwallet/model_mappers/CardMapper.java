@@ -48,7 +48,7 @@ public class CardMapper {
         CardForAddingMoneyToWalletDto cardDto = new CardForAddingMoneyToWalletDto();
         cardDto.setNumber(card.getNumber());
         cardDto.setExpirationDate(card.getExpirationDate());
-        cardDto.setCardHolder(card.getCardHolder().getUsername());
+        cardDto.setCardHolder(cardDto.getCardHolder());
         cardDto.setCheckNumber(card.getCheckNumber());
         cardDto.setCardType(card.getCardType().getType());
         return cardDto;
