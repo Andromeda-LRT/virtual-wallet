@@ -9,21 +9,21 @@ import java.time.LocalDateTime;
 public class Card {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "card_id")
     private int id;
     @Column(name = "number")
     private String number;
 
     @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
-    @ManyToOne
-    @Column(name = "card_holder_id")
-    private User cardHolder;
-    @Column(name = "check_number")
+
+    @Column(name = "card_holder")
+    private String cardHolder;
+    @Column(name = "check_number_id")
     private int checkNumber;
 
     @ManyToOne
-    @Column(name = "card_type_id")
+    @JoinColumn(name = "card_type_id")
     private CardType cardType;
 
     @Column(name = "is_archived")
@@ -35,7 +35,7 @@ public class Card {
 
     public Card(int id, String number,
                 LocalDateTime expirationDate,
-                User cardHolder,
+                String cardHolder,
                 int checkNumber,
                 CardType cardType) {
         this.id = id;
@@ -70,11 +70,11 @@ public class Card {
         this.expirationDate = expirationDate;
     }
 
-    public User getCardHolder() {
+    public String getCardHolder() {
         return cardHolder;
     }
 
-    public void setCardHolder(User cardHolder) {
+    public void setCardHolder(String cardHolder) {
         this.cardHolder = cardHolder;
     }
 
