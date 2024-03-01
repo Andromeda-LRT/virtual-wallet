@@ -6,8 +6,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "transactions")
-public class Transaction {
+@Table(name = "wallet_transactions")
+public class WalletToWalletTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,11 @@ public class Transaction {
     @Column(name = "wallet_id")
     private int walletId;
 
-    public Transaction(int transactionId, double amount, LocalDateTime time, int transactionTypeId, int userId, int recipientWalletId, int walletId) {
+    @ManyToOne
+    @JoinColumn(name = "status")
+    private String status;
+
+    public WalletToWalletTransaction(int transactionId, double amount, LocalDateTime time, int transactionTypeId, int userId, int recipientWalletId, int walletId, String status) {
         this.transactionId = transactionId;
         this.amount = amount;
         this.time = time;
@@ -40,9 +44,11 @@ public class Transaction {
         this.userId = userId;
         this.recipientWalletId = recipientWalletId;
         this.walletId = walletId;
+        this.status = status;
     }
 
-    public Transaction(){}
+    public WalletToWalletTransaction() {
+    }
 
     public int getTransactionId() {
         return transactionId;
@@ -100,11 +106,19 @@ public class Transaction {
         this.walletId = walletId;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Transaction that = (Transaction) o;
+        WalletToWalletTransaction that = (WalletToWalletTransaction) o;
         return transactionId == that.transactionId
                 && Double.compare(amount, that.amount) == 0
                 && transactionTypeId == that.transactionTypeId

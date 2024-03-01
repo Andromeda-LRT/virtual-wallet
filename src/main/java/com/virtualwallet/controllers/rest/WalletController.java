@@ -6,7 +6,7 @@ import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_mappers.TransactionMapper;
 import com.virtualwallet.model_mappers.TransactionResponseMapper;
 import com.virtualwallet.model_mappers.WalletMapper;
-import com.virtualwallet.models.Transaction;
+import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.model_dto.TransactionResponseDto;
@@ -114,8 +114,8 @@ public class WalletController {
     public List<TransactionDto> getTransactionHistory(@RequestHeader HttpHeaders headers, @PathVariable int wallet_id) {
         try {
             User user = authHelper.tryGetUser(headers);
-            List<Transaction> transactionList = walletService.getAllTransactions(user, wallet_id);
-            return transactionResponseMapper.convertToDto(transactionList, wallet_id);
+            List<WalletToWalletTransaction> walletToWalletTransactionList = walletService.getAllTransactions(user, wallet_id);
+            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
         } catch (UnauthorizedOperationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
@@ -127,8 +127,8 @@ public class WalletController {
                                              @PathVariable int transaction_id) {
         try {
             User user = authHelper.tryGetUser(headers);
-            Transaction transaction = walletService.getTransactionById(user, wallet_id, transaction_id);
-            return transactionResponseMapper.convertToDto(transaction);
+            WalletToWalletTransaction walletToWalletTransaction = walletService.getTransactionById(user, wallet_id, transaction_id);
+            return transactionResponseMapper.convertToDto(walletToWalletTransaction);
         } catch (UnauthorizedOperationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (EntityNotFoundException e) {
@@ -142,9 +142,11 @@ public class WalletController {
                                                    @RequestBody @Valid TransactionDto transactionDto) {
         try {
             User user = authHelper.tryGetUser(headers);
-            Transaction transaction = transactionMapper.fromDto(transactionDto);
-            walletService.createTransaction(user, transaction, wallet_id);
-            return transactionResponseMapper.convertToDto(transaction);
+            WalletToWalletTransaction walletToWalletTransaction = transactionMapper.fromDto(transactionDto);
+            //TODO add iban to transactionDto - RENI
+            // getWalletByIban
+            walletService.walletToWalletTransaction(user, wallet_id, walletToWalletTransaction);
+            return transactionResponseMapper.convertToDto(walletToWalletTransaction);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
