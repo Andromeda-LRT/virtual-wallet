@@ -12,9 +12,13 @@ import com.virtualwallet.utils.AESUtil;
 import com.virtualwallet.utils.UtilHelpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.virtualwallet.model_helpers.ModelConstantHelper.EXPIRED_CARD_ERROR_MESSAGE;
+import static com.virtualwallet.model_helpers.ModelConstantHelper.UNAUTHORIZED_OPERATION_ERROR_MESSAGE;
 
 @Service
 public class CardServiceImpl implements CardService {
@@ -31,7 +35,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public Card createCard(User createdBy, Card card) {
         verifyCardExpirationDate(card);
-        verifyCardHolderAccess(createdBy, card);
+        authorizeCardAccess(card.getId(), createdBy);
         Card cardToBeCreated;
         try {
             // Encrypt the card number before checking/using it in the repository
@@ -88,8 +92,12 @@ public class CardServiceImpl implements CardService {
     }
 
     private void authorizeCardAccess(int card_id, User user) {
-        if (!cardRepository.getById(card_id).getCardHolder().equals(user) && !user.getRole().getName().equals("admin")) {
-            throw new UnauthorizedOperationException("You are not authorized for this operation");
+        StringBuilder cardHolderFullName = new StringBuilder();
+        cardHolderFullName.append(user.getFirstName()).append(" ").append(user.getLastName());
+
+        if (!cardRepository.getById(card_id).getCardHolder().equals(cardHolderFullName.toString())
+                && !user.getRole().getName().equals("admin")) {
+            throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);
         }
     }
 
@@ -111,15 +119,9 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-    private void verifyCardExpirationDate(Card card){
+    private void verifyCardExpirationDate(Card card) {
         if (card.getExpirationDate().isBefore(LocalDateTime.now())) {
-            throw new ExpiredCardException("Card is expired");
-        }
-    }
-
-    private void verifyCardHolderAccess(User user, Card card){
-        if(!card.getCardHolder().equals(createdBy)){
-            throw new UnauthorizedOperationException("You are not authorized for this operation");
+            throw new ExpiredCardException(EXPIRED_CARD_ERROR_MESSAGE);
         }
     }
 }
