@@ -28,9 +28,20 @@ public class ModelConstantHelper {
             "You don't have the permissions to update this user information.";
     public static final String WALLET_NOT_FOUND_ERROR_MESSAGE = "Wallet not found";
 
-    public static final String INSUFFICIENT_FUNDS_ERROR_MESSAGE = "Insufficient funds";
-
     public static final String EXPIRED_CARD_ERROR_MESSAGE = "Card has expired";
 
     public static final String IBAN_NOT_FOUND_ERROR_MESSAGE = "IBAN not found";
+    public static final String INSUFFICIENT_FUNDS_ERROR_MESSAGE = "%s, with iban %s requires %.2f" +
+            " more funds to complete the transaction.";
+
+    public static final String THE_REQUESTED_RESOURCE_REQUIRES_AUTHENTICATION =
+            "The requested resource requires authentication.";
+
+    public static final String DUMMY_API_BASE_URL = "http://localhost:8081";
+
+    public static final String DUMMY_API_COMPLETE_URL = "http://localhost:8081/api/bank/withdrawal";
+
+    public static final String APPROVED_TRANSFER = "Approve";
+    public static final String DECLINED_TRANSFER = "Decline";
+
 }

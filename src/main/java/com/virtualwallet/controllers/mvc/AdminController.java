@@ -8,6 +8,7 @@ import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_mappers.UserMapper;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.model_dto.UserDto;
+import com.virtualwallet.models.model_dto.UserModelFilterDto;
 import com.virtualwallet.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class AdminController {
 
     @GetMapping("/users")
     public String showAllUsers(Model model,
-                               @ModelAttribute("userFilterOptions") UserModelFilterOptions userModelFilterDto,
+                               @ModelAttribute("userFilterOptions") UserModelFilterDto userModelFilterDto,
                                HttpSession session) {
         User loggedUser;
         try {

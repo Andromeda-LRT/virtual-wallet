@@ -1,37 +1,63 @@
 package com.virtualwallet.services;
 
-import com.virtualwallet.exceptions.EntityNotFoundException;
+import com.virtualwallet.exceptions.InsufficientFundsException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.models.WalletToWalletTransaction;
+import com.virtualwallet.model_mappers.CardMapper;
+import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
+import com.virtualwallet.models.model_dto.CardForAddingMoneyToWalletDto;
 import com.virtualwallet.repositories.contracts.WalletRepository;
+import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.services.contracts.WalletService;
-import jakarta.transaction.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 
 @Service
 public class WalletServiceImpl implements WalletService {
+
     private final Double MAX_TRANSACTION_AMOUNT = 10000.0;
     private final WalletRepository walletRepository;
-
+    private final CardService cardService;
+    private final WebClient webClient;
     private final UserService userService;
-
+    private final CardMapper cardMapper;
     private final WalletToWalletTransactionService walletTransactionService;
 
     @Autowired
-    public WalletServiceImpl(WalletRepository walletRepository, UserService userService, WalletToWalletTransactionService walletTransactionService) {
+    public WalletServiceImpl(WalletRepository walletRepository,
+                             CardService cardService,
+                             WebClient webClient,
+                             UserService userService,
+                             CardMapper cardMapper,
+                             WalletToWalletTransactionService walletTransactionService) {
         this.walletRepository = walletRepository;
+        this.cardService = cardService;
+        this.webClient = webClient;
         this.userService = userService;
         this.walletTransactionService = walletTransactionService;
+        this.cardMapper = cardMapper;
     }
+
+//    @Override
+//    public String addMoneyToWallet(User user, int card_id) {
+//
+//    }
 
     @Override
     public List<Wallet> getAllWallets(User user) {
@@ -69,7 +95,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public List<WalletToWalletTransaction> getAllTransactions(User user, int wallet_id) {
+    public List<WalletToWalletTransaction> getAllWalletTransactions(User user, int wallet_id) {
         verifyWallet(wallet_id, user);
         return walletRepository.getAllWalletTransactions(wallet_id);
     }
@@ -80,7 +106,11 @@ public class WalletServiceImpl implements WalletService {
         return walletTransactionService.getWalletTransactionById(wallet_id, transaction_id);
     }
 
-  //  (User user, WalletToWalletTransaction transaction, int wallet_from_id, String iban_to) {
+
+    //todo no need to implement for now
+    // below method is initial version of walletToWalletTransaction to revert to it in case of issues.
+
+    //  (User user, WalletToWalletTransaction transaction, int wallet_from_id, String iban_to) {
 // walletToWalletTransaction(user, wallet_id, walletToWalletTransaction);
 //    @Override
 //    public void walletToWalletTransaction(User user, WalletToWalletTransaction transaction, int wallet_from_id, String iban_to) {
@@ -114,7 +144,7 @@ public class WalletServiceImpl implements WalletService {
         validateTransactionAmount(transaction); // if transaction amount is greater than 10000, status is pending
         transaction.setTime(LocalDateTime.now());
 
-        if (!transaction.getStatus().equals("pending")) {
+        if (!transaction.getStatus().getName().equals("pending")) {
             chargeWallet(wallet_from_id, transaction.getAmount()); // charge wallet
 
             //set outgoing transaction type
@@ -162,7 +192,18 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public void transactionWithCard(User user, int card_id, int wallet_id) {
-        // TODO To be implemented - TED
+        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = webClient.method(HttpMethod.POST);
+        WebClient.RequestBodySpec bodySpec = uriSpec.uri(URI.create(DUMMY_API_COMPLETE_URL));
+        CardForAddingMoneyToWalletDto cardDto = cardMapper.toDummyApiDto(cardService.getCard(card_id, user));
+        WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(cardDto);
+        WebClient.ResponseSpec responseSpec = populateResponseSpec(headersSpec);
+        Mono<String> response = headersSpec.retrieve().bodyToMono(String.class);
+        if (response.block().equals(APPROVED_TRANSFER)) {
+            //todo add required amount to wallet
+        }
+        if (response.block().equals(DECLINED_TRANSFER)) {
+            //todo send message to client that transaction was unsuccessful
+        }
     }
 
 //    private void checkUserPartOfWallet(int user_id, int wallet_id) {
@@ -179,9 +220,19 @@ public class WalletServiceImpl implements WalletService {
     }
 
     private void checkWalletExistence(int wallet_id) {
-        if (walletRepository.getById(wallet_id) == null) {
-            throw new EntityNotFoundException(WALLET_NOT_FOUND_ERROR_MESSAGE);
-        }
+//        if (walletRepository.getWalletById(wallet_id) == null) {
+//            throw new EntityNotFoundException("Wallet does not exist");
+//        }
+    }
+
+    private WebClient.ResponseSpec populateResponseSpec(WebClient.RequestHeadersSpec<?> headersSpec) {
+        return headersSpec.header(
+                        HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)
+                .acceptCharset(StandardCharsets.UTF_8)
+                .ifNoneMatch("*")
+                .ifModifiedSince(ZonedDateTime.now())
+                .retrieve();
     }
 
     private void verifyWallet(int wallet_id, User user) {
@@ -189,6 +240,7 @@ public class WalletServiceImpl implements WalletService {
         checkWalletOwnership(user, wallet_id);
     }
 
+    //todo consider moving to WalletToWalletTransactionService
     private void validateTransactionAmount(WalletToWalletTransaction walletToWalletTransaction) {
         if (walletToWalletTransaction.getAmount() >= MAX_TRANSACTION_AMOUNT) {
             walletToWalletTransaction.setStatus("pending");
@@ -201,8 +253,9 @@ public class WalletServiceImpl implements WalletService {
     }
 
     private void checkWalletBalance(int walletFromId, double amount) {
-        if (walletRepository.getById(walletFromId).getBalance() <= amount) {
-            throw new InsufficientFundsException(INSUFFICIENT_FUNDS_ERROR_MESSAGE);
+        Wallet wallet = walletRepository.getById(walletFromId);
+        if (wallet.getBalance() <= amount) {
+            throw new InsufficientFundsException("wallet", wallet.getIban(), wallet.getBalance(), amount);
         }
     }
 
@@ -219,7 +272,8 @@ public class WalletServiceImpl implements WalletService {
         walletToWalletTransactionIncoming.setTime(LocalDateTime.now());
         walletToWalletTransactionIncoming.setTransactionTypeId(1);
         walletToWalletTransactionIncoming.setUserId(transactionFrom.getUserId());
-        walletToWalletTransactionIncoming.setRecipientWalletId(walletRepository.getById(transactionFrom.getRecipientWalletId()).getWalletId());
+        walletToWalletTransactionIncoming.setRecipientWalletId(walletRepository
+                .getById(transactionFrom.getRecipientWalletId()).getWalletId());
     }
 
     private void transferMoneyToRecipientWallet(String ibanTo, double amount) {

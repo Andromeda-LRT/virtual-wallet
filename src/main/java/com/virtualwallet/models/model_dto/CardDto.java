@@ -24,7 +24,7 @@ public class CardDto {
     @Size(min = 2, max = 30, message = "Card holder name must be between 2 and 30 symbols long.")
     @Pattern(regexp = "^[a-zA-Z]+(?: [a-zA-Z]+)*$",
             message = "Card holder name must contain only letters and single spaces between words. Consecutive spaces are not permitted.")
-    private User cardHolder;
+    private String cardHolder;
     @NotEmpty(message = "Check number can't be empty.")
     @Size(min = 3, max = 3, message = "Check number must contain only digits.")
     private int checkNumber;
@@ -59,11 +59,11 @@ public class CardDto {
         this.expirationYear = expirationYear;
     }
 
-    public User getCardHolder() {
+    public String getCardHolder() {
         return cardHolder;
     }
 
-    public void setCardHolder(User cardHolder) {
+    public void setCardHolder(String cardHolder) {
         this.cardHolder = cardHolder;
     }
 

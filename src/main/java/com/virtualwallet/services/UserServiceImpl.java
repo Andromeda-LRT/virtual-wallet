@@ -40,17 +40,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getByUsername(String username) {
-        return repository.getByStringField(username);
+        return repository.getByStringField("username", username);
     }
 
     @Override
     public User getByEmail(String email) {
-        return repository.getByStringField(email);
+        return repository.getByStringField("email", email);
     }
 
     @Override
     public User getByPhone(String phone) {
-        return repository.getByStringField(phone);
+        return repository.getByStringField("phoneNumber", phone);
     }
 
     @Override
@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
         boolean duplicatePhoneExists = true;
 
         try {
-            repository.getByStringField(user.getUsername());
+            repository.getByStringField("username", user.getUsername());
         } catch (EntityNotFoundException e) {
             duplicateUserNameExists = false;
         }
@@ -138,7 +138,7 @@ public class UserServiceImpl implements UserService {
         }
 
         try {
-            repository.getByStringField(user.getEmail());
+            repository.getByStringField("email", user.getEmail());
         } catch (EntityNotFoundException e) {
             duplicateEmailExists = false;
         }
@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
         }
 
         try {
-            repository.getByStringField(user.getPhoneNumber());
+            repository.getByStringField("phoneNumber", user.getPhoneNumber());
         } catch (EntityNotFoundException e) {
             duplicatePhoneExists = false;
         }

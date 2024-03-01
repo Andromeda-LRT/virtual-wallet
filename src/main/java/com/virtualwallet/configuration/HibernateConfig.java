@@ -27,7 +27,7 @@ import java.util.Properties;
         public LocalSessionFactoryBean sessionFactory() {
             LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
             sessionFactory.setDataSource(dataSource());
-            sessionFactory.setPackagesToScan("com.forumsystem.models");
+            sessionFactory.setPackagesToScan("com.virtualwallet.models");
             sessionFactory.setHibernateProperties(hibernateProperties());
 
             return sessionFactory;

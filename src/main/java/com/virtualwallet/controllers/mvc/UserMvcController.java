@@ -5,7 +5,6 @@ import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.ExpiredCardException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
-import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_mappers.CardMapper;
 import com.virtualwallet.model_mappers.UserMapper;
 import com.virtualwallet.models.Card;
@@ -26,7 +25,7 @@ import java.util.List;
 
 @Controller
 @RequestMapping("/users")
-public class UserController {
+public class UserMvcController {
     private final UserService userService;
     private final CardService cardService;
     private final AuthenticationHelper authenticationHelper;
@@ -36,10 +35,10 @@ public class UserController {
     private final CardMapper cardMapper;
 
     @Autowired
-    public UserController(UserService userService,
-                          CardService cardService,
-                          AuthenticationHelper authenticationHelper,
-                          UserMapper userMapper, CardMapper cardMapper) {
+    public UserMvcController(UserService userService,
+                             CardService cardService,
+                             AuthenticationHelper authenticationHelper,
+                             UserMapper userMapper, CardMapper cardMapper) {
         this.userService = userService;
         this.cardService = cardService;
         this.authenticationHelper = authenticationHelper;
@@ -104,7 +103,7 @@ public class UserController {
         }
 
         try {
-            User user = userMapper.fromDto(id, userDto);
+            User user = userMapper.fromDto(id, userDto, loggedUser);
             userService.update(user, loggedUser);
             return "redirect:/users/" + id;
         } catch (EntityNotFoundException e) {

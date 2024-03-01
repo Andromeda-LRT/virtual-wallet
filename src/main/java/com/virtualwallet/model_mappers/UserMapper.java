@@ -20,8 +20,8 @@ public class UserMapper {
         this.userService = userService;
     }
 
-    public User fromDto (int id, UserDto userDto) {
-        User user = userService.getById(id);
+    public User fromDto (int id, UserDto userDto, User loggedUser) {
+        User user = userService.get(id,loggedUser);
         toDtoObj(user, userDto);
         return user;
     }

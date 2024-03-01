@@ -11,7 +11,7 @@ public class WalletToWalletTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "transaction_id")
+    @Column(name = "wallet_transaction_id")
     private int transactionId;
 
     @Column(name = "amount")
@@ -33,10 +33,12 @@ public class WalletToWalletTransaction {
     private int walletId;
 
     @ManyToOne
-    @JoinColumn(name = "status")
-    private String status;
+    @JoinColumn(name = "status_id")
+    private Status status;
 
-    public WalletToWalletTransaction(int transactionId, double amount, LocalDateTime time, int transactionTypeId, int userId, int recipientWalletId, int walletId, String status) {
+    public WalletToWalletTransaction(int transactionId, double amount, LocalDateTime time,
+                                     int transactionTypeId, int userId, int recipientWalletId,
+                                     int walletId, Status status) {
         this.transactionId = transactionId;
         this.amount = amount;
         this.time = time;
@@ -106,11 +108,11 @@ public class WalletToWalletTransaction {
         this.walletId = walletId;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

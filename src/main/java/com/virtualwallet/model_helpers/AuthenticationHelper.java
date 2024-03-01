@@ -17,6 +17,9 @@ import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 
 import java.io.UnsupportedEncodingException;
 
+import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
+import static org.apache.tomcat.websocket.Constants.AUTHORIZATION_HEADER_NAME;
+
 @Component
 public class AuthenticationHelper {
 
@@ -31,7 +34,7 @@ public class AuthenticationHelper {
     public User tryGetUser(HttpHeaders headers) {
         if (!headers.containsKey(AUTHORIZATION_HEADER_NAME)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-                    THE_REQUEST_RESOURCE_REQUIRES_AUTHENTICATION);
+                    THE_REQUESTED_RESOURCE_REQUIRES_AUTHENTICATION);
         }
         try {
             String authorizationHeader = headers.getFirst(AUTHORIZATION_HEADER_NAME);

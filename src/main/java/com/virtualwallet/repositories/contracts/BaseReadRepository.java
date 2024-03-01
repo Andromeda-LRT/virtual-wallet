@@ -10,5 +10,5 @@ public interface BaseReadRepository<T> {
 
     <V> T getByField(String name, V value);
 
-    T getByStringField(String fieldName);
+    T getByStringField(String fieldName, String fieldValue);
 }

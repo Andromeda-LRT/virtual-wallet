@@ -40,7 +40,7 @@ public class CardServiceImpl implements CardService {
         try {
             // Encrypt the card number before checking/using it in the repository
             String encryptedCardNumber = encryptCardNumber(card.getNumber());
-            cardToBeCreated = cardRepository.getByStringField(encryptedCardNumber);
+            cardToBeCreated = cardRepository.getByStringField("number", encryptedCardNumber);
             cardToBeCreated.setExpirationDate(card.getExpirationDate());
             cardToBeCreated.setArchived(false);
             // Ensure the card number is stored encrypted in the repository

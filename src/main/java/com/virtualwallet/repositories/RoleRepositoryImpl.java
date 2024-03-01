@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class RoleRepositoryImpl extends AbstractCrudRepository<Role> implements RoleRepository {
     @Autowired
-    public RoleRepositoryImpl(Class<Role> klas, SessionFactory sessionFactory) {
-        super(klas, sessionFactory);
+    public RoleRepositoryImpl(SessionFactory sessionFactory) {
+        super(Role.class, sessionFactory);
     }
 }
