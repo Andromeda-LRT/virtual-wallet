@@ -22,12 +22,17 @@ public class Wallet {
     @Column(name = "is_archived")
     private boolean isArchived;
 
-    public Wallet(int walletId, String iban, double balance, boolean isArchived, String name) {
+
+    @Column(name = "user_id")
+    private int userId;
+
+    public Wallet(int walletId, String iban, double balance, boolean isArchived, String name, int userId) {
         this.walletId = walletId;
         this.iban = iban;
         this.balance = balance;
         this.isArchived = isArchived;
         this.name = name;
+        this.userId = userId;
     }
 
     public Wallet() {
@@ -71,5 +76,13 @@ public class Wallet {
 
     public void setArchived(boolean archived) {
         isArchived = archived;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }
