@@ -29,7 +29,7 @@ public class Transaction {
     @Column(name = "recipient_wallet_id")
     private int recipientWalletId;
 
-    @Column(name = "wallet_d")
+    @Column(name = "wallet_id")
     private int walletId;
 
     public Transaction(int transactionId, double amount, LocalDateTime time, int transactionTypeId, int userId, int recipientWalletId, int walletId) {
