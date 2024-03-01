@@ -103,7 +103,7 @@ public class UserMvcController {
         }
 
         try {
-            User user = userMapper.fromDto(id, userDto);
+            User user = userMapper.fromDto(id, userDto, loggedUser);
             userService.update(user, loggedUser);
             return "redirect:/users/" + id;
         } catch (EntityNotFoundException e) {

@@ -9,7 +9,7 @@ import java.util.List;
 public interface UserRepository {
 
     List<User> getAll();
-    User getByStringField(String fieldName);
+    User getByStringField(String fieldName, String fieldValue);
     User getById(int id);
     void create(User user);
     void update(User user);
