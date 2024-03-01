@@ -81,7 +81,7 @@ CREATE TABLE cards
     constraint cards_card_types_card_type_id_fk
         foreign key (card_type_id) references card_types (card_type_id),
     constraint cards_cvv_numbers_cvv_number_id_fk
-        foreign key (cvv_number_id) references cvv_numbers (cvv_number_id)
+        foreign key (check_number_id) references cvv_numbers (cvv_number_id)
 );
 
 
