@@ -1,6 +1,6 @@
 package com.virtualwallet.model_mappers;
 
-import com.virtualwallet.models.Transaction;
+import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.models.model_dto.TransactionDto;
 import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.services.contracts.WalletService;
@@ -21,21 +21,21 @@ public class TransactionMapper {
         this.userRepository = userRepository;
     }
 
-    public Transaction fromDto(TransactionDto transactionDto) {
-        Transaction transaction = new Transaction();
-        transaction.setAmount(transactionDto.getAmount());
-        transaction.setUserId(transactionDto.getUserId());
-        transaction.setRecipientWalletId(transactionDto.getRecipientWalletId());
-        transaction.setTime(LocalDateTime.now());
-        return transaction;
+    public WalletToWalletTransaction fromDto(TransactionDto transactionDto) {
+        WalletToWalletTransaction walletToWalletTransaction = new WalletToWalletTransaction();
+        walletToWalletTransaction.setAmount(transactionDto.getAmount());
+        walletToWalletTransaction.setUserId(transactionDto.getUserId());
+        walletToWalletTransaction.setRecipientWalletId(transactionDto.getRecipientWalletId());
+        walletToWalletTransaction.setTime(LocalDateTime.now());
+        return walletToWalletTransaction;
     }
 
-    public Transaction fromDto(TransactionDto transactionDto, int id) {
-        Transaction transaction = new Transaction();
-        transaction.setTransactionId(id);
-        transaction.setAmount(transactionDto.getAmount());
-        transaction.setUserId(transactionDto.getUserId());
-        transaction.setRecipientWalletId(transactionDto.getRecipientWalletId());
-        return transaction;
+    public WalletToWalletTransaction fromDto(TransactionDto transactionDto, int id) {
+        WalletToWalletTransaction walletToWalletTransaction = new WalletToWalletTransaction();
+        walletToWalletTransaction.setTransactionId(id);
+        walletToWalletTransaction.setAmount(transactionDto.getAmount());
+        walletToWalletTransaction.setUserId(transactionDto.getUserId());
+        walletToWalletTransaction.setRecipientWalletId(transactionDto.getRecipientWalletId());
+        return walletToWalletTransaction;
     }
 }
