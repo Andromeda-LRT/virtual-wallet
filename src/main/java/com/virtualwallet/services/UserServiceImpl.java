@@ -5,9 +5,12 @@ import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.models.User;
+import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 
 import java.util.List;
 
@@ -23,92 +26,57 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAll(User user, UserModelFilterOptions userFilter) {
         if (verifyAdminAccess(user)) {
-            return repository.getAll(userFilter);
+            return repository.getAll();
         }
         throw new UnauthorizedOperationException(PERMISSIONS_ERROR);
+        //TODO add filtering options when done
     }
 
     @Override
     public User get(int id, User user) {
         verifyUserAccess(user, id);
-        return repository.get(id);
+        return repository.getById(id);
     }
 
     @Override
     public User getByUsername(String username) {
-        return repository.getByUsername(username);
+        return repository.getByStringField(username);
     }
 
     @Override
     public User getByEmail(String email) {
-        return repository.getByEmail(email);
+        return repository.getByStringField(email);
     }
 
     @Override
     public User getByPhone(String phone) {
-        return repository.getByPhone(phone);
+        return repository.getByStringField(phone);
     }
 
     @Override
     public void create(User user) {
-        boolean duplicateUserNameExists = true;
-        boolean duplicateEmailExists = true;
-        boolean duplicatePhoneExists = true;
-
-        try {
-            repository.getByUsername(user.getUsername());
-        } catch (EntityNotFoundException e) {
-            duplicateUserNameExists = false;
-        }
-        if (duplicateUserNameExists) {
-            throw new DuplicateEntityException("User", "username", user.getUsername());
-        }
-
-        try {
-            repository.getByEmail(user.getEmail());
-        } catch (EntityNotFoundException e) {
-            duplicateEmailExists = false;
-        }
-        if (duplicateEmailExists) {
-            throw new DuplicateEntityException("User", "email", user.getEmail());
-        }
-
-        try {
-            repository.getByPhone(user.getPhoneNumber());
-        } catch (EntityNotFoundException e) {
-            duplicatePhoneExists = false;
-        }
-        if (duplicatePhoneExists) {
-            throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
-        }
+        duplicateCheck(user);
         repository.create(user);
     }
 
     @Override
     public User update(User userToUpdate, User loggedUser) {
         verifyUserAccess(loggedUser, userToUpdate.getId());
-        if (repository.emailExists(userToUpdate)) {
-            throw new DuplicateEntityException("User", "email", loggedUser.getEmail());
-        }
-        if (repository.phoneExists(userToUpdate)) {
-            throw new DuplicateEntityException("User", "phone", loggedUser.getPhoneNumber());
-        }
-        if (repository.usernameExists(userToUpdate)) {
-            throw new DuplicateEntityException("User", "username", loggedUser.getUsername());
-        }
+        duplicateCheck(userToUpdate);
+        return userToUpdate;
 
-        return repository.update(userToUpdate);
     }
 
     @Override
     public void delete(int id, User loggedUser) {
+        //ToDo if the withdrawing logic is implemented, make it so that a user cannot delete his account if there are funds in it
         verifyUserAccess(loggedUser, id);
         repository.delete(id);
     }
 
     @Override
     public void blockUser(int id, User user) {
-        if (!verifyAdminAccess(user)){
+        if (!verifyAdminAccess(user)) {
             throw new UnauthorizedOperationException(PERMISSIONS_ERROR);
         }
         repository.blockUser(id);
@@ -116,7 +84,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void unblockUser(int id, User user) {
-        if (!verifyAdminAccess(user)){
+        if (!verifyAdminAccess(user)) {
             throw new UnauthorizedOperationException(PERMISSIONS_ERROR);
         }
         repository.unblockUser(id);
@@ -124,7 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void giveUserAdminRights(User user, User loggedUser) {
-        if (!verifyAdminAccess(loggedUser)){
+        if (!verifyAdminAccess(loggedUser)) {
             throw new UnauthorizedOperationException(PERMISSIONS_ERROR);
         }
         if (user.isBlocked()) {
@@ -136,7 +104,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void removeUserAdminRights(User user, User loggedUser) {
-        if (!verifyAdminAccess(loggedUser)){
+        if (!verifyAdminAccess(loggedUser)) {
             throw new UnauthorizedOperationException(PERMISSIONS_ERROR);
         }
         repository.removeUserAdminRights(user);
@@ -145,7 +113,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean verifyAdminAccess(User user) {
-        return repository.checkIfAdmin(user);
+        return user.getRole().getName().equals("admin");
     }
 
     @Override
@@ -153,5 +121,39 @@ public class UserServiceImpl implements UserService {
         if (!verifyAdminAccess(loggedUser) && id != loggedUser.getId()) {
             throw new UnauthorizedOperationException(PERMISSIONS_ERROR);
         }
+    }
+
+    private void duplicateCheck(User user) {
+        boolean duplicateUserNameExists = true;
+        boolean duplicateEmailExists = true;
+        boolean duplicatePhoneExists = true;
+
+        try {
+            repository.getByStringField(user.getUsername());
+        } catch (EntityNotFoundException e) {
+            duplicateUserNameExists = false;
+        }
+        if (duplicateUserNameExists) {
+            throw new DuplicateEntityException("User", "username", user.getUsername());
+        }
+
+        try {
+            repository.getByStringField(user.getEmail());
+        } catch (EntityNotFoundException e) {
+            duplicateEmailExists = false;
+        }
+        if (duplicateEmailExists) {
+            throw new DuplicateEntityException("User", "email", user.getEmail());
+        }
+
+        try {
+            repository.getByStringField(user.getPhoneNumber());
+        } catch (EntityNotFoundException e) {
+            duplicatePhoneExists = false;
+        }
+        if (duplicatePhoneExists) {
+            throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
+        }
+
     }
 }

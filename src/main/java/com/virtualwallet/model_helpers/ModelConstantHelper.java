@@ -15,5 +15,14 @@ public class ModelConstantHelper {
     public static final String NAME_ERROR_MESSAGE = "Field should be between 3 and 20 symbols.";
     public static final String UNAUTHORIZED_OPERATION_ERROR_MESSAGE = "You are not authorized to perform this operation";
 
+    public static final String AUTHORIZATION_HEADER_NAME =
+            "Authorization";
+    public static final String THE_REQUEST_RESOURCE_REQUIRES_AUTHENTICATION =
+            "The requested resource requires authentication.";
+    public static final String INVALID_AUTHENTICATION =
+            "Invalid authentication";
+    public static final String WRONG_USERNAME_OR_PASSWORD = "Wrong username or password.";
+    public static final String PERMISSIONS_ERROR =
+            "You don't have the permissions to update this user information.";
     public static final String WALLET_NOT_FOUND_ERROR_MESSAGE = "Wallet not found";
 }

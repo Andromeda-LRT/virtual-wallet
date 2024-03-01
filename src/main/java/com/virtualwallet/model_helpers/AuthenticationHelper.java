@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import com.virtualwallet.services.contracts.UserService;
 import org.springframework.web.server.ResponseStatusException;
+import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
+
 
 import java.io.UnsupportedEncodingException;
 
@@ -43,12 +45,12 @@ public class AuthenticationHelper {
 
             User user = service.getByUsername(username);
             if (!user.getPassword().equals(password)) {
-                throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, INVALID_AUTHENTICATION);
+                throw new AuthenticationFailureException(WRONG_USERNAME_OR_PASSWORD);
             }
 
             return user;
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, INVALID_AUTHENTICATION);
+            throw new AuthenticationFailureException(WRONG_USERNAME_OR_PASSWORD);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
