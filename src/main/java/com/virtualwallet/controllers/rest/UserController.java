@@ -147,7 +147,7 @@ public class UserController {
                            @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            User user = userMapper.fromDto(id, userDto);
+            User user = userMapper.fromDto(id, userDto, loggedUser);
             userService.update(user, loggedUser);
             return user;
         } catch (EntityNotFoundException e) {
