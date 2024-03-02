@@ -53,14 +53,12 @@ public class StatusServiceImpl implements StatusService {
     }
 
     @Override
-    public Status getStatus(int status_id, User user) {
-        checkIfAdmin(user);
+    public Status getStatus(int status_id) {
         return statusRepository.getById(status_id);
     }
 
     @Override
-    public List<Status> getAllStatuses(User user) {
-        checkIfAdmin(user);
+    public List<Status> getAllStatuses() {
         return statusRepository.getAll();
     }
 
