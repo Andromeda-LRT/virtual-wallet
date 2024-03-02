@@ -53,23 +53,15 @@ public class UserMvcController {
 
     @GetMapping("/{id}")
     public String showCurrentUserProfile(@PathVariable int id, Model model, HttpSession session) {
-        User loggedUser;
         try {
-            loggedUser = authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-
-        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
             User user = userService.get(id, loggedUser);
             UserDto userDto = userMapper.toDto(user);
             model.addAttribute("user", userDto);
             model.addAttribute("cards", cardService.getAllUserCards(loggedUser));
             return "ProfileView";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -119,20 +111,12 @@ public class UserMvcController {
 
     @GetMapping("/{id}/delete")
     public String deleteUserProfile(@PathVariable int id, Model model, HttpSession session) {
-        User loggedUser;
         try {
-            loggedUser = authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-
-        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
             userService.delete(id, loggedUser);
             return "redirect:/auth/logout";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -146,21 +130,13 @@ public class UserMvcController {
 
     @GetMapping("/{id}/cards")
     public String showUserCards(@PathVariable int id, Model model, HttpSession session) {
-        User loggedUser;
         try {
-            loggedUser = authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-
-        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
             List<Card> cards = cardService.getAllUserCards(loggedUser);
             model.addAttribute("cards", cards);
             return "UserCardsView";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -174,9 +150,8 @@ public class UserMvcController {
 
     @GetMapping("/{id}/cards/addition")
     public String showAddCardPage(@PathVariable int id, Model model, HttpSession session) {
-        User loggedUser;
         try {
-            loggedUser = authenticationHelper.tryGetUser(session);
+            User loggedUser = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
@@ -232,21 +207,13 @@ public class UserMvcController {
 
     @GetMapping("/{id}/cards/{cardId}")
     public String showCardDetails(@PathVariable int id, @PathVariable int cardId, Model model, HttpSession session) {
-        User loggedUser;
         try {
-            loggedUser = authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-
-        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
             Card card = cardService.getCard(cardId, loggedUser);
             model.addAttribute("card", card);
             return "CardDetailsView";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -302,20 +269,12 @@ public class UserMvcController {
 
     @GetMapping("/{id}/cards/{cardId}/deletion")
     public String deleteCard(@PathVariable int id, @PathVariable int cardId, Model model, HttpSession session) {
-        User loggedUser;
         try {
-            loggedUser = authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-
-        try {
+            User loggedUser = authenticationHelper.tryGetUser(session);
             cardService.deleteCard(cardId, loggedUser);
             return "redirect:/users/" + id + "/cards";
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
