@@ -17,12 +17,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.virtualwallet.model_helpers.ModelConstantHelper.EXPIRED_CARD_ERROR_MESSAGE;
-import static com.virtualwallet.model_helpers.ModelConstantHelper.UNAUTHORIZED_OPERATION_ERROR_MESSAGE;
+import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 
 @Service
 public class CardServiceImpl implements CardService {
-    private UtilHelpers utilHelpers;
     private final CardRepository cardRepository;
     private final UserService userService;
 
@@ -84,6 +82,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public List<Card> getAllUserCards(User user) {
         List<Card> cardsWithDecryptedNumbers = new ArrayList<>();
+        //TODO - LYUBIMA: This can be done in the repository
         for (Card card : cardRepository.getAllUserCards(user.getId())) {
             card.setNumber(decryptCardNumber(card.getNumber()));
             cardsWithDecryptedNumbers.add(card);
@@ -91,7 +90,12 @@ public class CardServiceImpl implements CardService {
         return cardsWithDecryptedNumbers;
     }
 
-    private void authorizeCardAccess(int card_id, User user) {
+    @Override
+    public void verifyCardExistence(int cardId) {
+        cardRepository.getByStringField("id", String.valueOf(cardId));
+    }
+    @Override
+    public void authorizeCardAccess(int card_id, User user) {
         StringBuilder cardHolderFullName = new StringBuilder();
         cardHolderFullName.append(user.getFirstName()).append(" ").append(user.getLastName());
 

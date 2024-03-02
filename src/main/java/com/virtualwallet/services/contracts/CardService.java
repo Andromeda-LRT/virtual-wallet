@@ -11,4 +11,8 @@ public interface CardService {
     Card updateCard(Card card, User user);
     Card getCard(int card_id, User user);
     List<Card> getAllUserCards(User user);
+
+    void verifyCardExistence(int cardId);
+
+    void authorizeCardAccess(int card_id, User user);
 }
