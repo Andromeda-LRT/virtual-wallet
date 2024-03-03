@@ -48,5 +48,8 @@ public class ModelConstantHelper {
     public static final int CONFIRMED_TRANSACTION_ID = 1;
     public static final int PENDING_TRANSACTION_ID = 2;
     public static final int DECLINED_TRANSACTION_ID = 3;
+    public static final String USER_USERNAME = "username";
+    public static final String USER_EMAIL = "email";
+    public static final String USER_PHONE_NUMBER = "phoneNumber";
 
 }
