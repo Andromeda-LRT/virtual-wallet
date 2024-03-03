@@ -6,7 +6,9 @@ import com.virtualwallet.models.User;
 import java.util.List;
 
 public interface UserService {
-    List<User> getAll(User user, UserModelFilterOptions userFilter);
+    List<User> getAll();
+
+    List<User> getAllWithFilter(User user, UserModelFilterOptions userFilter);
 
     User get(int id, User user);
 
