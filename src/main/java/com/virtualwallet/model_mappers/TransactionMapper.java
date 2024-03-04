@@ -4,7 +4,6 @@ import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.models.model_dto.CardTransactionDto;
 import com.virtualwallet.models.model_dto.TransactionDto;
-import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.services.contracts.StatusService;
 import com.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +17,12 @@ import static com.virtualwallet.model_helpers.ModelConstantHelper.PENDING_TRANSA
 public class TransactionMapper {
 
     private final WalletService walletService;
-    private final UserRepository userRepository;
     private final StatusService statusService;
 
     @Autowired
     public TransactionMapper(WalletService walletService,
-                             UserRepository userRepository,
                              StatusService statusService) {
         this.walletService = walletService;
-        this.userRepository = userRepository;
         this.statusService = statusService;
     }
 
@@ -36,6 +32,7 @@ public class TransactionMapper {
         walletToWalletTransaction.setUserId(transactionDto.getUserId());
         walletToWalletTransaction.setRecipientWalletId(transactionDto.getRecipientWalletId());
         walletToWalletTransaction.setStatus(statusService.getStatus(PENDING_TRANSACTION_ID));
+        walletToWalletTransaction.setRecipientWalletId(walletService.checkIbanExistence(transactionDto.getIban()).getWalletId());
         walletToWalletTransaction.setTime(LocalDateTime.now());
         return walletToWalletTransaction;
     }

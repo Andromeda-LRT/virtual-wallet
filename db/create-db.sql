@@ -21,7 +21,7 @@ CREATE TABLE users
     first_name      varchar(50) not null,
     last_name       varchar(50) not null,
     email           varchar(50) not null,
-    role_id         int         not null,
+    role_id         int         default 1 not null,
     is_blocked      tinyint(1) default 0 not null,
     is_archived     tinyint(1) default 0 not null,
     phone_number    varchar(10) not null,
@@ -73,15 +73,15 @@ CREATE TABLE cards
     card_id         int auto_increment
         primary key,
     number          varchar(19) not null,
-    expiration_date date        not null,
+    expiration_date datetime        not null,
     card_type_id    int         not null,
     card_holder     varchar(50) not null,
-    check_number_id int         not null,
+    cvv_number_id int         not null,
     is_archived     tinyint(1) default 0 not null,
     constraint cards_card_types_card_type_id_fk
         foreign key (card_type_id) references card_types (card_type_id),
     constraint cards_cvv_numbers_cvv_number_id_fk
-        foreign key (check_number_id) references cvv_numbers (cvv_number_id)
+        foreign key (cvv_number_id) references cvv_numbers (cvv_number_id)
 );
 
 

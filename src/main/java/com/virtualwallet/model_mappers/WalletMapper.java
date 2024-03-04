@@ -1,10 +1,14 @@
 package com.virtualwallet.model_mappers;
 
+import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.model_dto.WalletDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.virtualwallet.services.contracts.WalletService;
+
+import static com.virtualwallet.utils.IBANGenerator.generateRandomIBAN;
+
 @Component
 public class WalletMapper {
     private final WalletService walletService;
@@ -17,8 +21,8 @@ public class WalletMapper {
     public Wallet fromDto(WalletDto walletDto){
         Wallet wallet = new Wallet();
         wallet.setName(walletDto.getName());
+        wallet.setIban(setUniqueIban());
         return wallet;
-        //TODO add an Iban creation
     }
 
     public Wallet fromDto(WalletDto walletDto, int id){
@@ -26,6 +30,17 @@ public class WalletMapper {
         wallet.setWalletId(id);
         wallet.setName(walletDto.getName());
         return wallet;
+    }
+
+    private String setUniqueIban(){
+        String iban = generateRandomIBAN();
+        try {
+            walletService.checkIbanExistence(iban);
+            return setUniqueIban();
+        }
+        catch (EntityNotFoundException e){
+            return iban;
+        }
     }
 
 
