@@ -40,9 +40,9 @@ public class CardServiceImpl implements CardService {
             String encryptedCardNumber = encryptCardNumber(card.getNumber());
             cardToBeCreated = cardRepository.getByStringField("number", encryptedCardNumber);
             cardToBeCreated.setExpirationDate(card.getExpirationDate());
-            cardToBeCreated.setArchived(false);
+
             // Ensure the card number is stored encrypted in the repository
-            cardToBeCreated.setNumber(encryptedCardNumber);   //TODO: This can be commented out - LYUBIMA
+            cardToBeCreated.setNumber(encryptedCardNumber);
             cardRepository.update(cardToBeCreated);
         } catch (EntityNotFoundException e) {
             // Encrypt the card number before saving the new card
@@ -82,7 +82,6 @@ public class CardServiceImpl implements CardService {
     @Override
     public List<Card> getAllUserCards(User user) {
         List<Card> cardsWithDecryptedNumbers = new ArrayList<>();
-        //TODO - LYUBIMA: This can be done in the repository
         for (Card card : cardRepository.getAllUserCards(user.getId())) {
             card.setNumber(decryptCardNumber(card.getNumber()));
             cardsWithDecryptedNumbers.add(card);
@@ -94,6 +93,7 @@ public class CardServiceImpl implements CardService {
     public void verifyCardExistence(int cardId) {
         cardRepository.getByStringField("id", String.valueOf(cardId));
     }
+
     @Override
     public void authorizeCardAccess(int card_id, User user) {
         StringBuilder cardHolderFullName = new StringBuilder();
