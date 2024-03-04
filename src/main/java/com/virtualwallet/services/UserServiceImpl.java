@@ -129,31 +129,32 @@ public class UserServiceImpl implements UserService {
         boolean duplicateUserNameExists = true;
         boolean duplicateEmailExists = true;
         boolean duplicatePhoneExists = true;
+        User userToCheck = null;
 
         try {
-            repository.getByStringField("username", user.getUsername());
+           userToCheck = repository.getByStringField("username", user.getUsername());
         } catch (EntityNotFoundException e) {
             duplicateUserNameExists = false;
         }
-        if (duplicateUserNameExists) {
+        if (duplicateUserNameExists && userToCheck.getId()!=user.getId()) {
             throw new DuplicateEntityException("User", "username", user.getUsername());
         }
 
         try {
-            repository.getByStringField("email", user.getEmail());
+            userToCheck = repository.getByStringField("email", user.getEmail());
         } catch (EntityNotFoundException e) {
             duplicateEmailExists = false;
         }
-        if (duplicateEmailExists) {
+        if (duplicateEmailExists && userToCheck.getId()!=user.getId()) {
             throw new DuplicateEntityException("User", "email", user.getEmail());
         }
 
         try {
-            repository.getByStringField("phoneNumber", user.getPhoneNumber());
+            userToCheck = repository.getByStringField("phoneNumber", user.getPhoneNumber());
         } catch (EntityNotFoundException e) {
             duplicatePhoneExists = false;
         }
-        if (duplicatePhoneExists) {
+        if (duplicatePhoneExists && userToCheck.getId()!=user.getId()) {
             throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
         }
 

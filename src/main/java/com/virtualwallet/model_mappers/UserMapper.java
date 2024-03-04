@@ -3,6 +3,7 @@ package com.virtualwallet.model_mappers;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.model_dto.RegisterDto;
 import com.virtualwallet.models.model_dto.UserDto;
+import com.virtualwallet.repositories.contracts.RoleRepository;
 import com.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,10 +15,12 @@ import java.util.List;
 public class UserMapper {
 
     private final UserService userService;
+    private final RoleRepository roleRepository;
 
     @Autowired
-    public UserMapper(UserService userService) {
+    public UserMapper(UserService userService, RoleRepository roleRepository) {
         this.userService = userService;
+        this.roleRepository = roleRepository;
     }
 
     public User fromDto (int id, UserDto userDto, User loggedUser) {

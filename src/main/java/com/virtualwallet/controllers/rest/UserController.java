@@ -6,14 +6,17 @@ import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_mappers.CardMapper;
+import com.virtualwallet.model_mappers.UpdateUserMapper;
 import com.virtualwallet.model_mappers.UserMapper;
 import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.model_dto.CardDto;
+import com.virtualwallet.models.model_dto.UpdateUserDto;
 import com.virtualwallet.models.model_dto.UserDto;
 import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.UserService;
 import jakarta.validation.Valid;
+import org.mariadb.jdbc.client.result.UpdatableResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -28,17 +31,19 @@ public class UserController {
     private final UserService userService;
     private final CardService cardService;
     private final UserMapper userMapper;
+    private final UpdateUserMapper updateUserMapper;
     private final CardMapper cardMapper;
     private final AuthenticationHelper authHelper;
     @Autowired
     public UserController(UserService userService,
                           CardService cardService,
-                          UserMapper userMapper,
+                          UserMapper userMapper, UpdateUserMapper updateUserMapper,
                           CardMapper cardMapper,
                           AuthenticationHelper authHelper) {
         this.userService = userService;
         this.cardService = cardService;
         this.userMapper = userMapper;
+        this.updateUserMapper = updateUserMapper;
         this.cardMapper = cardMapper;
         this.authHelper = authHelper;
     }
@@ -143,11 +148,11 @@ public class UserController {
 
     @PutMapping("/{id}")
     public User updateUser(@RequestHeader HttpHeaders headers,
-                           @Valid @RequestBody UserDto userDto,
+                           @Valid @RequestBody UpdateUserDto userDto,
                            @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            User user = userMapper.fromDto(id, userDto, loggedUser);
+            User user = updateUserMapper.fromDto(id, userDto, loggedUser);
             userService.update(user, loggedUser);
             return user;
         } catch (EntityNotFoundException e) {

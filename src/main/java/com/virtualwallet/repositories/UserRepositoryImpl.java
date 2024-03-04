@@ -18,8 +18,8 @@ import java.util.Map;
 public class UserRepositoryImpl extends AbstractCrudRepository<User> implements UserRepository {
 
     @Autowired
-    public UserRepositoryImpl(Class<User> klas, SessionFactory sessionFactory) {
-        super(klas, sessionFactory);
+    public UserRepositoryImpl(SessionFactory sessionFactory) {
+        super(User.class, sessionFactory);
     }
 
     @Override
