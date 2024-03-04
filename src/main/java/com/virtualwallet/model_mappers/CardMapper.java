@@ -30,6 +30,7 @@ public class CardMapper {
         card.setCardHolder(cardDto.getCardHolder());
         card.setCheckNumber(cardDto.getCheckNumber());
         card.setCardType(cardDto.getCardType());
+        card.setArchived(false);
         return card;
     }
 

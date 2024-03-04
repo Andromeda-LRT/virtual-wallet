@@ -30,7 +30,8 @@ public class ModelConstantHelper {
 
     public static final String EXPIRED_CARD_ERROR_MESSAGE = "Card has expired";
 
-    public static final String IBAN_NOT_FOUND_ERROR_MESSAGE = "IBAN not found";
+    public static final String NOT_FOUND_CARD_ERROR_MESSAGE = "Card not found";
+
     public static final String INSUFFICIENT_FUNDS_ERROR_MESSAGE = "%s, with iban %s requires %.2f" +
             " more funds to complete the transaction.";
 

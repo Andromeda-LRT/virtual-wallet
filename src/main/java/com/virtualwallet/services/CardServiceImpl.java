@@ -17,12 +17,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.virtualwallet.model_helpers.ModelConstantHelper.EXPIRED_CARD_ERROR_MESSAGE;
-import static com.virtualwallet.model_helpers.ModelConstantHelper.UNAUTHORIZED_OPERATION_ERROR_MESSAGE;
+import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 
 @Service
 public class CardServiceImpl implements CardService {
-    private UtilHelpers utilHelpers;
     private final CardRepository cardRepository;
     private final UserService userService;
 
@@ -42,9 +40,9 @@ public class CardServiceImpl implements CardService {
             String encryptedCardNumber = encryptCardNumber(card.getNumber());
             cardToBeCreated = cardRepository.getByStringField("number", encryptedCardNumber);
             cardToBeCreated.setExpirationDate(card.getExpirationDate());
-            cardToBeCreated.setArchived(false);
+
             // Ensure the card number is stored encrypted in the repository
-            cardToBeCreated.setNumber(encryptedCardNumber);   //TODO: This can be commented out - LYUBIMA
+            cardToBeCreated.setNumber(encryptedCardNumber);
             cardRepository.update(cardToBeCreated);
         } catch (EntityNotFoundException e) {
             // Encrypt the card number before saving the new card
@@ -91,7 +89,13 @@ public class CardServiceImpl implements CardService {
         return cardsWithDecryptedNumbers;
     }
 
-    private void authorizeCardAccess(int card_id, User user) {
+    @Override
+    public void verifyCardExistence(int cardId) {
+        cardRepository.getByStringField("id", String.valueOf(cardId));
+    }
+
+    @Override
+    public void authorizeCardAccess(int card_id, User user) {
         StringBuilder cardHolderFullName = new StringBuilder();
         cardHolderFullName.append(user.getFirstName()).append(" ").append(user.getLastName());
 
