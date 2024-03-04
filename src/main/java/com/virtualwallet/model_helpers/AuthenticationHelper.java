@@ -9,15 +9,12 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import com.virtualwallet.services.contracts.UserService;
 import org.springframework.web.server.ResponseStatusException;
 import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
-
-
 import java.io.UnsupportedEncodingException;
-
-import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 import static org.apache.tomcat.websocket.Constants.AUTHORIZATION_HEADER_NAME;
 
 @Component
@@ -47,7 +44,9 @@ public class AuthenticationHelper {
             String password = getPassword(authorizationHeader);
 
             User user = service.getByUsername(username);
-            if (!user.getPassword().equals(password)) {
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            boolean isPasswordMatch = encoder.matches(password, user.getPassword());
+            if (!isPasswordMatch){
                 throw new AuthenticationFailureException(WRONG_USERNAME_OR_PASSWORD);
             }
 
@@ -78,7 +77,9 @@ public class AuthenticationHelper {
     public User verifyAuthentication(String username, String password){
         try {
             User user = service.getByUsername(username);
-            if (!user.getPassword().equals(password)){
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+            boolean isPasswordMatch = encoder.matches(password, user.getPassword());
+            if (!isPasswordMatch){
                 throw new AuthenticationFailureException(WRONG_USERNAME_OR_PASSWORD);
             }
             return user;
