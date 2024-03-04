@@ -12,7 +12,7 @@ public class TransactionDto {
     private int userId;
 
     @NotEmpty(message = "The recipient Iban of the transaction can't be empty.")
-    private int iban;
+    private String iban;
 
     @NotEmpty(message = "The wallet of the transaction can't be empty.")
     private int walletId;
@@ -29,11 +29,11 @@ public class TransactionDto {
         this.amount = amount;
     }
 
-    public int getIban() {
+    public String getIban() {
         return iban;
     }
 
-    public void setIban(int iban) {
+    public void setIban(String iban) {
         this.iban = iban;
     }
 

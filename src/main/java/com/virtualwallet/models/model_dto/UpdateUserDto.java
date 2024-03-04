@@ -18,6 +18,7 @@ public class UpdateUserDto {
     @NotNull(message = EMPTY_ERROR_MESSAGE)
     @Size(min = 3, max = 20, message = NAME_ERROR_MESSAGE)
     String lastName;
+
     @Schema(name = "email", example = "email@email.com", required = true)
     @Email(
             message = INVALID_EMAIL_ERROR_MESSAGE,
@@ -25,16 +26,13 @@ public class UpdateUserDto {
     )
     @NotNull(message = EMPTY_ERROR_MESSAGE)
     String email;
-    @Schema(name = "username", example = "testUsername", required = true)
-    @Pattern(regexp = "^[a-zA-Z0-9]{2,20}$",
-            message = USERNAME_ERROR_MESSAGE)
-    @NotNull(message = EMPTY_ERROR_MESSAGE)
-    String username;
+
     @Schema(name = "password", example = "Pass1234!", required = true)
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,20}$",
             message = PASSWORD_ERROR_MESSAGE)
     @NotNull(message = EMPTY_ERROR_MESSAGE)
     String password;
+
     @Pattern(regexp = "^[0-9]+$",
             message = "Phone number must include only digits")
     @NotNull(message = EMPTY_ERROR_MESSAGE)
@@ -44,11 +42,10 @@ public class UpdateUserDto {
     public UpdateUserDto() {
     }
 
-    public UpdateUserDto(String firstName, String lastName, String email, String username, String password, String phoneNumber) {
+    public UpdateUserDto(String firstName, String lastName, String email, String password, String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.username = username;
         this.password = password;
         this.phoneNumber = phoneNumber;
     }
