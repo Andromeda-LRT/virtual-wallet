@@ -16,13 +16,13 @@ import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 
 @Service
 public class WalletToWalletTransactionServiceImpl implements WalletTransactionService {
-    private final walletToWalletTransactionRepository walletTransactionRepository;
+    private final WalletToWalletTransactionRepository walletTransactionRepository;
     private final StatusService statusService;
 
     @Autowired
-    public WalletToWalletTransactionServiceImpl(walletToWalletTransactionRepository walletTransactionRepository,
+    public WalletToWalletTransactionServiceImpl(WalletToWalletTransactionRepository walletTransactionRepository,
                                                 StatusService statusService) {
-        this.walletToWalletTransactionRepository = walletTransactionRepository;
+        this.walletTransactionRepository = walletTransactionRepository;
         this.statusService = statusService;
     }
 
