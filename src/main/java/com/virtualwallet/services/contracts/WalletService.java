@@ -1,9 +1,6 @@
 package com.virtualwallet.services.contracts;
 
-import com.virtualwallet.models.CardToWalletTransaction;
-import com.virtualwallet.models.WalletToWalletTransaction;
-import com.virtualwallet.models.User;
-import com.virtualwallet.models.Wallet;
+import com.virtualwallet.models.*;
 
 import java.util.List;
 
@@ -23,16 +20,20 @@ public interface WalletService {
 
     List<WalletToWalletTransaction> getAllWalletTransactions(User user, int wallet_id);
 
+    List<CardToWalletTransaction> getAllCardTransactions(User user, int card_id);
+
     WalletToWalletTransaction getTransactionById(User user, int wallet_id, int transaction_id);
 
     void walletToWalletTransaction(User user, int wallet_from_id, WalletToWalletTransaction transaction);
 
 //   Transaction updateTransaction(User user,Transaction transaction, int wallet_id);
 
+    Wallet checkIbanExistence(String ibanTo);
+
     void approveTransaction(User user, int transaction_id, int wallet_id);
 
     void cancelTransaction(User user, int transaction_id, int wallet_id);
 
     CardToWalletTransaction transactionWithCard(User user, int card_id, int wallet_id,
-                             CardToWalletTransaction cardTransaction);
+                                                CardToWalletTransaction cardTransaction);
 }
