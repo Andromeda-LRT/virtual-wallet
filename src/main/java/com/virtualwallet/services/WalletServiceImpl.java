@@ -14,10 +14,12 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.List;
+
 import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 
 @Service
@@ -134,16 +136,21 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public void walletToWalletTransaction(User user, int senderWalletId, WalletToWalletTransaction transaction) {
         Wallet senderWallet = verifyWallet(senderWalletId, user);
+        Wallet recipientWallet = checkRecipientWalletExistence(transaction.getRecipientWalletIban);
         // if wallet balance is less than transaction amount, throw exception
         checkWalletBalance(senderWallet, transaction.getAmount());
-        if (walletTransactionService.createWalletTransaction(user, transaction)) {
+        if (walletTransactionService.createWalletTransaction(user, transaction, senderWallet, recipientWallet)) {
             chargeWallet(senderWallet, transaction.getAmount());
             // transfer money to recipient wallet
-            transferMoneyToRecipientWallet(transaction.getRecipientWalletIban, transaction.getAmount());
+            transferMoneyToRecipientWallet(recipientWallet, transaction.getAmount());
+            //todo implement update method for walletTransactionHistory - Lyuba
+//            walletRepository.updateWalletTransactionHistory(senderWallet);
+//            walletRepository.updateWalletTransactionHistory(recipientWallet);
         }
-        chargeWallet(senderWallet, transaction.getAmount());
+        //todo implement update method for walletTransactionHistory - Lyuba
+//            walletRepository.updateWalletTransactionHistory(senderWallet);
     }
-        //todo discuss if this method is necessary or can be delete safely
+    //todo discuss if this method is necessary or can be delete safely
 //    @Override
 //    public Transaction updateTransaction(User user, Transaction transaction, int wallet_id) {
 //        verifyWallet(wallet_id, user);
@@ -155,11 +162,22 @@ public class WalletServiceImpl implements WalletService {
     public void approveTransaction(User user, int transaction_id, int wallet_id) {
         // TODO To be implemented - TED consider using a transactionObj since
         //  a transaction will be already have been created at this point or alternatively just its id
-       WalletToWalletTransaction transactionToBeApproved =
-               walletTransactionService.getWalletTransactionById(transaction_id);
-
-//        Transaction transaction = walletTransactionService.getTransactionById(transaction_id);
-        walletTransactionService.approveTransaction(transaction);
+        WalletToWalletTransaction transactionToBeApproved =
+                walletTransactionService.getWalletTransactionById(transaction_id);
+        Wallet senderWallet;
+        Wallet recipientWallet;
+        try {
+            senderWallet = checkWalletExistence(wallet_id);
+            recipientWallet = getWalletById(user, transactionToBeApproved.getRecipientWalletId());
+            checkWalletBalance(senderWallet, transaction.getAmount());
+            walletTransactionService.approveTransaction(transactionToBeApproved, recipientWallet);
+            chargeWallet(senderWallet, transactionToBeApproved.getAmount());
+            transferMoneyToRecipientWallet(recipientWallet, transaction.getAmount());
+            //todo implement update method for walletTransactionHistory - Lyuba
+//            walletRepository.updateWalletTransactionHistory(recipientWallet);
+        } catch (InsufficientFundsException e) {
+            walletTransactionService.cancelTransaction(transactionToBeApproved);
+        }
     }
 
     @Override
@@ -168,9 +186,11 @@ public class WalletServiceImpl implements WalletService {
         //  a transaction will be already have been created at this point or alternatively just its id
 
         WalletToWalletTransaction transactionToBeCancelled =
-                walletTransactionService.getTransactionById(transaction_id);
+                walletTransactionService.getWalletTransactionById(transaction_id);
 
-        walletTransactionService.cancelTransaction(transaction);
+        walletTransactionService.cancelTransaction(transactionToBeCancelled);
+        //todo implement update method for walletTransactionHistory - Lyuba
+//            walletRepository.updateWalletTransactionHistory(senderWallet);
     }
 
     //todo have request and response handling extracted inside a separate method
@@ -189,11 +209,13 @@ public class WalletServiceImpl implements WalletService {
         if (response.block().equals(APPROVED_TRANSFER)) {
             wallet.setBalance(cardTransaction.getAmount() + wallet.getBalance());
             walletRepository.update(wallet);
-            cardTransactionService.approveTransaction(cardTransaction, user, card);
+            cardTransactionService.approveTransaction(cardTransaction, user, card, wallet);
         }
         if (response.block().equals(DECLINED_TRANSFER)) {
-            cardTransactionService.declineTransaction(cardTransaction, user, card);
+            cardTransactionService.declineTransaction(cardTransaction, user, card, wallet);
         }
+        //todo implement update method for walletTransactionHistory - Lyuba
+//            walletRepository.updateWalletTransactionHistory(wallet);
         return cardTransaction;
     }
 
@@ -227,7 +249,6 @@ public class WalletServiceImpl implements WalletService {
                 .retrieve();
     }
 
-    //todo discuss checkWalletExistence -- Ted, Lyuba
     private Wallet verifyWallet(int wallet_id, User user) {
         Wallet wallet;
         wallet = checkWalletExistence(wallet_id);
@@ -251,8 +272,7 @@ public class WalletServiceImpl implements WalletService {
         walletRepository.update(wallet);
     }
 
-    private void transferMoneyToRecipientWallet(String ibanTo, double amount) {
-        Wallet recipientWallet = walletRepository.getByStringField("iban", ibanTo);
+    private void transferMoneyToRecipientWallet(Wallet recipientWallet, double amount) {
         double newWalletBalance = recipientWallet.getBalance() + amount;
         recipientWallet.setBalance(newWalletBalance);
         walletRepository.update(recipientWallet);

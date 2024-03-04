@@ -36,6 +36,7 @@ public class WalletToWalletTransaction {
     @JoinColumn(name = "status_id")
     private Status status;
 
+
     public WalletToWalletTransaction(int transactionId, double amount, LocalDateTime time,
                                      int transactionTypeId, int userId, int recipientWalletId,
                                      int walletId, Status status) {

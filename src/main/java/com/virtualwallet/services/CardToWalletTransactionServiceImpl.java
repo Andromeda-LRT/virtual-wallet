@@ -1,9 +1,7 @@
 package com.virtualwallet.services;
 
 import com.virtualwallet.model_helpers.TransactionModelFilterOptions;
-import com.virtualwallet.models.Card;
-import com.virtualwallet.models.CardToWalletTransaction;
-import com.virtualwallet.models.User;
+import com.virtualwallet.models.*;
 import com.virtualwallet.services.contracts.CardTransactionService;
 import com.virtualwallet.services.contracts.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,20 +51,28 @@ public class CardToWalletTransactionServiceImpl implements CardTransactionServic
     }
 
     @Override
-    public void approveTransaction(CardToWalletTransaction cardTransaction, User user, Card card) {
-        cardTransaction.setCardId(card.getId());
-        cardTransaction.setUserId(user.getId());
-        cardTransaction.setTransactionTypeId(INCOMING_TRANSACTION_TYPE_ID);
-        cardTransaction.setStatus(statusService.getStatus(CONFIRMED_TRANSACTION_ID));
+    public void approveTransaction(CardToWalletTransaction cardTransaction,
+                                   User user, Card card, Wallet wallet) {
+        populateCardTransactionDetails(cardTransaction, user, card, statusService
+                .getStatus(CONFIRMED_TRANSACTION_ID));
         cardTransactionRepository.create(cardTransaction);
+        wallet.getCardTransactions().add(cardTransaction);
     }
 
     @Override
-    public void declineTransaction(CardToWalletTransaction cardTransaction, User user, Card card) {
+    public void declineTransaction(CardToWalletTransaction cardTransaction,
+                                   User user, Card card, Wallet wallet) {
+        populateCardTransactionDetails(cardTransaction, user, card, statusService
+                .getStatus(DECLINED_TRANSACTION_ID));
+        cardTransactionRepository.create(cardTransaction);
+        wallet.getCardTransactions().add(cardTransaction);
+    }
+
+    private void populateCardTransactionDetails(CardToWalletTransaction cardTransaction,
+                                                User user, Card card, Status status) {
         cardTransaction.setCardId(card.getId());
         cardTransaction.setUserId(user.getId());
-        cardTransaction.setTransactionTypeId(1);
-        cardTransaction.setStatus(statusService.getStatus(DECLINED_TRANSACTION_ID));
-        cardTransactionRepository.create(cardTransaction);
+        cardTransaction.setTransactionTypeId(INCOMING_TRANSACTION_TYPE_ID);
+        cardTransaction.setStatus(status);
     }
 }

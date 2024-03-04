@@ -11,8 +11,9 @@ public interface WalletTransactionService {
             (User user, TransactionModelFilterOptions transactionFilter);
     List<WalletToWalletTransaction> getUserWalletTransactions(Wallet wallet);
     WalletToWalletTransaction getWalletTransactionById(int walletTransactionId);
-    boolean createWalletTransaction(User user, WalletToWalletTransaction transaction);
-    void approveTransaction(WalletToWalletTransaction transaction);
+    boolean createWalletTransaction(User user, WalletToWalletTransaction transaction,
+                                    Wallet senderWallet, Wallet recipientWallet);
+    void approveTransaction(WalletToWalletTransaction transaction, Wallet recipientWallet);
     void cancelTransaction(WalletToWalletTransaction transaction);
 
 }

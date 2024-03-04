@@ -60,33 +60,35 @@ public class WalletToWalletTransactionServiceImpl implements WalletTransactionSe
      * false If the transfer amount is over 10 000 only a single transaction will be created for the sender with status pending
      */
     @Override
-    public boolean createWalletTransaction(User user, WalletToWalletTransaction transaction) {
+    public boolean createWalletTransaction(User user,
+                                           WalletToWalletTransaction transaction,
+                                           Wallet senderWallet,
+                                           Wallet recipientWallet) {
+        senderWallet.getWalletTransactions().add(transaction);
         //set outgoing transaction type
         transaction.setTransactionTypeId(OUTGOING_TRANSACTION_TYPE_ID);
         if (!doesTransactionRequireAdminAction(transaction)) {
-
-
             walletTransactionRepository.create(transaction);
-
             //create incoming transaction
-            WalletToWalletTransaction walletToWalletTransactionIncoming = new WalletToWalletTransaction();
-            doIncomingTransaction(walletToWalletTransactionIncoming, transaction);
-            walletTransactionRepository.create(walletToWalletTransactionIncoming);
+            WalletToWalletTransaction incomingWalletTransaction = new WalletToWalletTransaction();
+            doIncomingTransaction(incomingWalletTransaction, transaction, recipientWallet);
+            walletTransactionRepository.create(incomingWalletTransaction);
+            recipientWallet.getWalletTransactions().add(incomingWalletTransaction);
             return true;
         }
         walletTransactionRepository.create(transaction);
         return false;
     }
 
-    //todo think about whether the second transaction would still need to be created just with pending status
     @Override
-    public void approveTransaction(WalletToWalletTransaction transaction) {
+    public void approveTransaction(WalletToWalletTransaction transaction, Wallet recipientWallet) {
         transaction.setStatus(statusService.getStatus(CONFIRMED_TRANSACTION_ID));
         walletTransactionRepository.update(transaction);
         //create incoming transaction
-        WalletToWalletTransaction walletToWalletTransactionIncoming = new WalletToWalletTransaction();
-        doIncomingTransaction(walletToWalletTransactionIncoming, transaction);
-        walletTransactionRepository.create(walletToWalletTransactionIncoming);
+        WalletToWalletTransaction incomingWalletTransaction = new WalletToWalletTransaction();
+        doIncomingTransaction(incomingWalletTransaction, transaction, recipientWallet);
+        walletTransactionRepository.create(incomingWalletTransaction);
+        recipientWallet.getWalletTransactions().add(incomingWalletTransaction);
     }
 
     @Override
@@ -104,14 +106,14 @@ public class WalletToWalletTransactionServiceImpl implements WalletTransactionSe
     }
 
     private void doIncomingTransaction(WalletToWalletTransaction walletToWalletTransactionIncoming,
-                                       WalletToWalletTransaction transactionFrom) {
+                                       WalletToWalletTransaction transactionFrom,
+                                       Wallet recipientWallet) {
         walletToWalletTransactionIncoming.setAmount(transactionFrom.getAmount());
         walletToWalletTransactionIncoming.setTime(LocalDateTime.now());
         walletToWalletTransactionIncoming.setTransactionTypeId(INCOMING_TRANSACTION_TYPE_ID);
         walletToWalletTransactionIncoming.setUserId(transactionFrom.getUserId());
         walletToWalletTransactionIncoming.setStatus(statusService.getStatus(CONFIRMED_TRANSACTION_ID));
         walletToWalletTransactionIncoming
-                .setRecipientWalletId(walletRepository.getById
-                        (transactionFrom.getRecipientWalletId()).getWalletId());
+                .setRecipientWalletId(recipientWallet.getWalletId());
     }
 }
