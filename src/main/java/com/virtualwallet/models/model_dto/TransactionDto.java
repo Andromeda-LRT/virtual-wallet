@@ -11,8 +11,8 @@ public class TransactionDto {
     @NotEmpty(message = "User id can't be empty.")
     private int userId;
 
-    @NotEmpty(message = "The recipient wallet of the transaction can't be empty.")
-    private int recipientWalletId;
+    @NotEmpty(message = "The recipient Iban of the transaction can't be empty.")
+    private int iban;
 
     @NotEmpty(message = "The wallet of the transaction can't be empty.")
     private int walletId;
@@ -29,12 +29,12 @@ public class TransactionDto {
         this.amount = amount;
     }
 
-    public int getRecipientWalletId() {
-        return recipientWalletId;
+    public int getIban() {
+        return iban;
     }
 
-    public void setRecipientWalletId(int recipientWalletId) {
-        this.recipientWalletId = recipientWalletId;
+    public void setIban(int iban) {
+        this.iban = iban;
     }
 
     public int getUserId() {
