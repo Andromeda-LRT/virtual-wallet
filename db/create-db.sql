@@ -102,13 +102,6 @@ CREATE TABLE transaction_types
     type                varchar(15)
 );
 
--- CREATE TABLE transaction_statuses
--- (
---     transaction_status_id int auto_increment
---         primary key,
---     type                  varchar(15)
--- );
-
 CREATE TABLE wallet_transactions
 (
     wallet_transaction_id int auto_increment
@@ -160,6 +153,16 @@ CREATE TABLE wallet_transaction_histories
     transaction_id int not null,
     constraint wallet_transaction_histories_wallets_wallet_id_fk
         foreign key (wallet_id) references wallets (wallet_id),
-    constraint wallet_transaction_histories_users_user_id_fk
+    constraint wallet_histories_wallets_transactions_wallet_transaction_id_fk
         foreign key (transaction_id) references wallet_transactions (wallet_transaction_id)
+);
+
+CREATE TABLE card_transaction_histories
+(
+    wallet_id      int not null,
+    transaction_id int not null,
+    constraint card_transaction_histories_wallets_wallet_id_fk
+        foreign key (wallet_id) references wallets (wallet_id),
+    constraint card_histories_card_transactions_card_transaction_id_fk
+        foreign key (transaction_id) references card_transactions (card_transaction_id)
 );

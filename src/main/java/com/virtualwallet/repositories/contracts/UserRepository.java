@@ -1,7 +1,6 @@
 package com.virtualwallet.repositories.contracts;
 
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
-import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
 
 import java.util.List;
@@ -9,6 +8,7 @@ import java.util.List;
 public interface UserRepository {
 
     List<User> getAll();
+    List<User> getAllWithFilter(User user, UserModelFilterOptions userFilter);
     User getByStringField(String fieldName, String fieldValue);
     User getById(int id);
     void create(User user);

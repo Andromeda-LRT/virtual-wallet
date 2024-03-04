@@ -24,12 +24,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getAll(User user, UserModelFilterOptions userFilter) {
-        if (verifyAdminAccess(user)) {
-            return repository.getAll();
-        }
-        throw new UnauthorizedOperationException(PERMISSIONS_ERROR);
-        //TODO add filtering options when done
+    public List<User> getAll() {
+        return repository.getAll();
+
+    }
+
+    @Override
+    public List<User> getAllWithFilter(User user, UserModelFilterOptions userFilter) {
+        return repository.getAllWithFilter(user, userFilter);
     }
 
     @Override
@@ -40,17 +42,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getByUsername(String username) {
-        return repository.getByStringField("username", username);
+        return repository.getByStringField(USER_USERNAME, username);
     }
 
     @Override
     public User getByEmail(String email) {
-        return repository.getByStringField("email", email);
+        return repository.getByStringField(USER_EMAIL, email);
     }
 
     @Override
     public User getByPhone(String phone) {
-        return repository.getByStringField("phoneNumber", phone);
+        return repository.getByStringField(USER_PHONE_NUMBER, phone);
     }
 
     @Override

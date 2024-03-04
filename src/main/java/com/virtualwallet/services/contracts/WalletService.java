@@ -1,5 +1,6 @@
 package com.virtualwallet.services.contracts;
 
+import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
@@ -32,5 +33,6 @@ public interface WalletService {
 
     void cancelTransaction(User user, int transaction_id, int wallet_id);
 
-    void transactionWithCard(User user, int card_id, int wallet_id);
+    CardToWalletTransaction transactionWithCard(User user, int card_id, int wallet_id,
+                             CardToWalletTransaction cardTransaction);
 }

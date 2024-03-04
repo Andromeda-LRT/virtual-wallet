@@ -1,14 +1,17 @@
 package com.virtualwallet.controllers.rest;
 
 import com.virtualwallet.exceptions.EntityNotFoundException;
+import com.virtualwallet.exceptions.InsufficientFundsException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_mappers.TransactionMapper;
 import com.virtualwallet.model_mappers.TransactionResponseMapper;
 import com.virtualwallet.model_mappers.WalletMapper;
+import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
+import com.virtualwallet.models.model_dto.CardTransactionDto;
 import com.virtualwallet.models.model_dto.TransactionResponseDto;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.services.contracts.WalletService;
@@ -26,19 +29,18 @@ import java.util.List;
 @RequestMapping("api/wallets")
 public class WalletController {
     private final WalletService walletService;
-
     private final WalletMapper walletMapper;
     private final UserService userService;
     private final AuthenticationHelper authHelper;
     private final TransactionResponseMapper transactionResponseMapper;
-
     private final TransactionMapper transactionMapper;
 
     public WalletController(UserService userService,
                             AuthenticationHelper authHelper,
                             WalletService walletService,
                             WalletMapper walletMapper,
-                            TransactionResponseMapper transactionResponseMapper, TransactionMapper transactionMapper) {
+                            TransactionResponseMapper transactionResponseMapper,
+                            TransactionMapper transactionMapper) {
         this.userService = userService;
         this.authHelper = authHelper;
         this.walletService = walletService;
@@ -123,8 +125,8 @@ public class WalletController {
 
     @GetMapping("/{wallet_id}/transactions/{transaction_id}")
     public TransactionResponseDto getTransactionById(@RequestHeader HttpHeaders headers,
-                                             @PathVariable int wallet_id,
-                                             @PathVariable int transaction_id) {
+                                                     @PathVariable int wallet_id,
+                                                     @PathVariable int transaction_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             WalletToWalletTransaction walletToWalletTransaction = walletService.getTransactionById(user, wallet_id, transaction_id);
@@ -149,8 +151,9 @@ public class WalletController {
             return transactionResponseMapper.convertToDto(walletToWalletTransaction);
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        } catch (InsufficientFundsException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
-        //TODO add an error regarding insufficient amount
     }
 
 //    @PutMapping("/{wallet_id}/transactions/{transaction_id}/update")
@@ -167,9 +170,9 @@ public class WalletController {
 //            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
 //        } catch (EntityNotFoundException e) {
 //            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-//        }
-//
-//        //TODO add an error regarding insufficient amount
+//        } catch(InsufficientFundsException e) {
+    //throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+//}
 //        //Only a transaction that has not been approved can be updated
 //    }
 
@@ -206,10 +209,12 @@ public class WalletController {
     @PostMapping("/{wallet_id}/transactions/{card_id}")
     public void createTransactionWithCard(@RequestHeader HttpHeaders headers,
                                           @PathVariable int wallet_id,
-                                          @PathVariable int card_id) {
+                                          @PathVariable int card_id,
+                                          @RequestBody CardTransactionDto cardTransactionDto) {
         try {
             User user = authHelper.tryGetUser(headers);
-            walletService.transactionWithCard(user, card_id, wallet_id);
+            CardToWalletTransaction cardTransaction = transactionMapper.fromDto(cardTransactionDto);
+            walletService.transactionWithCard(user, card_id, wallet_id, cardTransaction);
         } catch (UnauthorizedOperationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         } catch (EntityNotFoundException e) {

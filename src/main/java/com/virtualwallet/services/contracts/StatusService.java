@@ -9,6 +9,6 @@ public interface StatusService {
     Status createStatus(User user, Status status);
     void deleteStatus(int status_id, User user);
     void updateStatus(Status status, User user);
-    Status getStatus(int status_id, User user);
-    List<Status> getAllStatuses(User user);
+    Status getStatus(int status_id);
+    List<Status> getAllStatuses();
 }

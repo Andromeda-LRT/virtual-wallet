@@ -6,12 +6,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "wallet_transactions")
-public class WalletToWalletTransaction {
+@Table(name = "card_transactions")
+public class CardToWalletTransaction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "wallet_transaction_id")
+    @Column(name = "card_transaction_id")
     private int transactionId;
 
     @Column(name = "amount")
@@ -26,31 +26,30 @@ public class WalletToWalletTransaction {
     @Column(name = "user_id")
     private int userId;
 
-    @Column(name = "recipient_wallet_id")
-    private int recipientWalletId;
-
     @Column(name = "wallet_id")
     private int walletId;
+
+    @Column(name = "card_id")
+    private int cardId;
 
     @ManyToOne
     @JoinColumn(name = "status_id")
     private Status status;
 
-
-    public WalletToWalletTransaction(int transactionId, double amount, LocalDateTime time,
-                                     int transactionTypeId, int userId, int recipientWalletId,
-                                     int walletId, Status status) {
+    public CardToWalletTransaction(int transactionId, double amount, LocalDateTime time,
+                                   int transactionTypeId, int userId, int cardId,
+                                   int walletId, Status status) {
         this.transactionId = transactionId;
         this.amount = amount;
         this.time = time;
         this.transactionTypeId = transactionTypeId;
         this.userId = userId;
-        this.recipientWalletId = recipientWalletId;
+        this.cardId = cardId;
         this.walletId = walletId;
         this.status = status;
     }
 
-    public WalletToWalletTransaction() {
+    public CardToWalletTransaction() {
     }
 
     public int getTransactionId() {
@@ -93,12 +92,12 @@ public class WalletToWalletTransaction {
         this.userId = userId;
     }
 
-    public int getRecipientWalletId() {
-        return recipientWalletId;
+    public int getCardId() {
+        return cardId;
     }
 
-    public void setRecipientWalletId(int recipientWalletId) {
-        this.recipientWalletId = recipientWalletId;
+    public void setCardId(int cardId) {
+        this.cardId = cardId;
     }
 
     public int getWalletId() {
@@ -121,18 +120,18 @@ public class WalletToWalletTransaction {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        WalletToWalletTransaction that = (WalletToWalletTransaction) o;
+        CardToWalletTransaction that = (CardToWalletTransaction) o;
         return transactionId == that.transactionId
                 && Double.compare(amount, that.amount) == 0
                 && transactionTypeId == that.transactionTypeId
                 && userId == that.userId
-                && recipientWalletId == that.recipientWalletId
+                && cardId == that.cardId
                 && walletId == that.walletId
                 && Objects.equals(time, that.time);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(transactionId, amount, time, transactionTypeId, userId, recipientWalletId, walletId);
+        return Objects.hash(transactionId, amount, time, transactionTypeId, userId, cardId, walletId);
     }
 }

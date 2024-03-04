@@ -45,16 +45,16 @@ public class UserController {
 
     @GetMapping
     public List<User> getAllUsers(@RequestHeader HttpHeaders headers,
+                                  @RequestParam(required = false) String phoneNumber,
                                   @RequestParam(required = false) String username,
                                   @RequestParam(required = false) String email,
-                                  @RequestParam(required = false) String phoneNumber,
                                   @RequestParam(required = false) String sortBy,
                                   @RequestParam(required = false) String sortOrder) {
         UserModelFilterOptions userFilter = new UserModelFilterOptions(
                 username, email, phoneNumber, sortBy, sortOrder);
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            return userService.getAll(loggedUser, userFilter);
+            return userService.getAllWithFilter(loggedUser, userFilter);
         } catch (UnauthorizedOperationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
