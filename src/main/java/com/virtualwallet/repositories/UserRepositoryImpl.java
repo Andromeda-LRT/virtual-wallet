@@ -55,7 +55,7 @@ public class UserRepositoryImpl extends AbstractCrudRepository<User> implements 
             if (user.getRole().getName().equals("admin")) {
                 queryString.append("from User");
             } else {
-                queryString.append("select username from User");
+                queryString.append("select username, wallets from User");
             }
 
             if (!filters.isEmpty()) {

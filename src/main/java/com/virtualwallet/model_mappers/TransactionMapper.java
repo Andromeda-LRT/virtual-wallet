@@ -1,6 +1,7 @@
 package com.virtualwallet.model_mappers;
 
 import com.virtualwallet.models.CardToWalletTransaction;
+import com.virtualwallet.models.User;
 import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.models.model_dto.CardTransactionDto;
 import com.virtualwallet.models.model_dto.TransactionDto;
@@ -26,21 +27,21 @@ public class TransactionMapper {
         this.statusService = statusService;
     }
 
-    public WalletToWalletTransaction fromDto(TransactionDto transactionDto) {
+    public WalletToWalletTransaction fromDto(TransactionDto transactionDto, User user) {
         WalletToWalletTransaction walletToWalletTransaction = new WalletToWalletTransaction();
         walletToWalletTransaction.setAmount(transactionDto.getAmount());
-        walletToWalletTransaction.setUserId(transactionDto.getUserId());
+        walletToWalletTransaction.setSender(user);
         walletToWalletTransaction.setStatus(statusService.getStatus(PENDING_TRANSACTION_ID));
         walletToWalletTransaction.setRecipientWalletId(walletService.checkIbanExistence(transactionDto.getIban()).getWalletId());
         walletToWalletTransaction.setTime(LocalDateTime.now());
         return walletToWalletTransaction;
     }
 
-    public WalletToWalletTransaction fromDto(TransactionDto transactionDto, int id) {
+    public WalletToWalletTransaction fromDto(TransactionDto transactionDto, int id, User user) {
         WalletToWalletTransaction walletToWalletTransaction = new WalletToWalletTransaction();
         walletToWalletTransaction.setTransactionId(id);
         walletToWalletTransaction.setAmount(transactionDto.getAmount());
-        walletToWalletTransaction.setUserId(transactionDto.getUserId());
+        walletToWalletTransaction.setSender(user);
         walletToWalletTransaction.setRecipientWalletId(walletService.checkIbanExistence(transactionDto.getIban()).getWalletId());
         return walletToWalletTransaction;
     }

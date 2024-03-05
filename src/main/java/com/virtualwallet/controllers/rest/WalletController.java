@@ -4,6 +4,7 @@ import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.InsufficientFundsException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
+import com.virtualwallet.model_helpers.TransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_mappers.TransactionMapper;
 import com.virtualwallet.model_mappers.TransactionResponseMapper;
@@ -24,6 +25,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.virtualwallet.models.model_dto.WalletDto;
 import com.virtualwallet.models.model_dto.TransactionDto;
 
+import java.sql.Time;
 import java.util.List;
 
 @RestController
@@ -114,11 +116,24 @@ public class WalletController {
     }
 
     @GetMapping("/{wallet_id}/transactions")
-    public List<TransactionResponseDto> getWalletTransactionHistory(@RequestHeader HttpHeaders headers, @PathVariable int wallet_id) {
+    public List<WalletToWalletTransaction> getWalletTransactionHistory(@RequestHeader HttpHeaders headers,
+                                                                       @PathVariable int wallet_id,
+                                                                       @RequestParam(required = false) Time startDate,
+                                                                       @RequestParam(required = false) Time endDate,
+                                                                       @RequestParam(required = false) String sender,
+                                                                       @RequestParam(required = false) String recipient,
+                                                                       @RequestParam(required = false) String direction,
+                                                                       @RequestParam(required = false) String sortBy,
+                                                                       @RequestParam(required = false) String sortOrder) {
         try {
+            TransactionModelFilterOptions transactionModelFilterOptions = new TransactionModelFilterOptions(
+                    startDate, endDate, sender, recipient, direction, sortBy, sortOrder);
+
             User user = authHelper.tryGetUser(headers);
-            List<WalletToWalletTransaction> walletToWalletTransactionList = walletService.getAllWalletTransactions(user, wallet_id);
-            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
+            List<WalletToWalletTransaction> walletToWalletTransactionList =
+                    walletService.getAllWalletTransactionsWithFilter(transactionModelFilterOptions, user, wallet_id);
+//            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
+            return walletToWalletTransactionList;
         } catch (UnauthorizedOperationException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
@@ -156,7 +171,7 @@ public class WalletController {
                                                    @RequestBody @Valid TransactionDto transactionDto) {
         try {
             User user = authHelper.tryGetUser(headers);
-            WalletToWalletTransaction walletToWalletTransaction = transactionMapper.fromDto(transactionDto);
+            WalletToWalletTransaction walletToWalletTransaction = transactionMapper.fromDto(transactionDto, user);
             walletService.walletToWalletTransaction(user, wallet_id, walletToWalletTransaction);
             return transactionResponseMapper.convertToDto(walletToWalletTransaction);
         } catch (EntityNotFoundException e) {

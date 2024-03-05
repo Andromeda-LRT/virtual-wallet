@@ -33,7 +33,7 @@ public class WalletRepositoryImpl extends AbstractCrudRepository<Wallet> impleme
     public boolean checkWalletOwnership(int userId, int walletId) {
         String sql = "SELECT 1 FROM user_wallets WHERE user_id = :userId AND wallet_id = :walletId";
         try (Session session = sessionFactory.openSession()) {
-            long count = (long) session.createNativeQuery(sql)
+            Integer count = (Integer)  session.createNativeQuery(sql)
                     .setParameter("userId", userId)
                     .setParameter("walletId", walletId)
                     .getSingleResult();

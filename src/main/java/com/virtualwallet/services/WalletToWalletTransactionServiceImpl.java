@@ -34,9 +34,9 @@ public class WalletToWalletTransactionServiceImpl implements WalletTransactionSe
 
     @Override
     public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter
-            (User user, TransactionModelFilterOptions transactionFilter) {
+            (User user, TransactionModelFilterOptions transactionFilter, Wallet wallet) {
 
-        return walletTransactionRepository.getAllWalletTransactionsWithFilter(user, transactionFilter);
+        return walletTransactionRepository.getAllWalletTransactionsWithFilter(user, transactionFilter, wallet);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class WalletToWalletTransactionServiceImpl implements WalletTransactionSe
         walletToWalletTransactionIncoming.setAmount(transactionFrom.getAmount());
         walletToWalletTransactionIncoming.setTime(LocalDateTime.now());
         walletToWalletTransactionIncoming.setTransactionTypeId(INCOMING_TRANSACTION_TYPE_ID);
-        walletToWalletTransactionIncoming.setUserId(transactionFrom.getUserId());
+        walletToWalletTransactionIncoming.setSender(transactionFrom.getSender());
         walletToWalletTransactionIncoming.setStatus(statusService.getStatus(CONFIRMED_TRANSACTION_ID));
         walletToWalletTransactionIncoming
                 .setRecipientWalletId(recipientWallet.getWalletId());

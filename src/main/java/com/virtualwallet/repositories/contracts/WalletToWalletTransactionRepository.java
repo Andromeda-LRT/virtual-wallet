@@ -12,7 +12,7 @@ public interface WalletToWalletTransactionRepository {
     List<WalletToWalletTransaction> getAll();
 
     List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter
-            (User user, TransactionModelFilterOptions transactionFilter);
+            (User user, TransactionModelFilterOptions transactionFilter, Wallet wallet);
 
     List<WalletToWalletTransaction> getUserWalletTransactions(Wallet wallet);
 
