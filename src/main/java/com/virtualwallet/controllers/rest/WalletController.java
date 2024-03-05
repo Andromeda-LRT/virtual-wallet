@@ -27,7 +27,7 @@ import com.virtualwallet.models.model_dto.TransactionDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/wallets")
+@RequestMapping("/api/wallets")
 public class WalletController {
     private final WalletService walletService;
     private final WalletMapper walletMapper;
