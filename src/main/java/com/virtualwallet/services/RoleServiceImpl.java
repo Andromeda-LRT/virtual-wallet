@@ -51,8 +51,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role getRole(int role_id, User user) {
-        checkIfAdmin(user);
+    public Role getRole(int role_id) {
         return roleRepository.getById(role_id);
     }
 
