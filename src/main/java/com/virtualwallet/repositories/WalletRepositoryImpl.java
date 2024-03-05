@@ -16,8 +16,8 @@ import java.util.List;
 @Repository
 public class WalletRepositoryImpl extends AbstractCrudRepository<Wallet> implements WalletRepository {
     @Autowired
-    public WalletRepositoryImpl(Class<Wallet> klas, SessionFactory sessionFactory) {
-        super(klas, sessionFactory);
+    public WalletRepositoryImpl(SessionFactory sessionFactory) {
+        super(Wallet.class, sessionFactory);
     }
 
     @Override

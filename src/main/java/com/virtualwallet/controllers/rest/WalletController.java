@@ -114,7 +114,7 @@ public class WalletController {
     }
 
     @GetMapping("/{wallet_id}/transactions")
-    public List<TransactionResponseDto> getTransactionHistory(@RequestHeader HttpHeaders headers, @PathVariable int wallet_id) {
+    public List<TransactionResponseDto> getWalletTransactionHistory(@RequestHeader HttpHeaders headers, @PathVariable int wallet_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             List<WalletToWalletTransaction> walletToWalletTransactionList = walletService.getAllWalletTransactions(user, wallet_id);
@@ -123,6 +123,17 @@ public class WalletController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
         }
     }
+
+//    @GetMapping("/transactions")
+//    public List<TransactionResponseDto> getTransactionHistory(@RequestHeader HttpHeaders headers) {
+//        try {
+//            User user = authHelper.tryGetUser(headers);
+//            List<WalletToWalletTransaction> walletToWalletTransactionList = walletService.getAllWalletTransactions(user);
+//            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
+//        } catch (UnauthorizedOperationException e) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+//        }
+//    }
 
     @GetMapping("/{wallet_id}/transactions/{transaction_id}")
     public TransactionResponseDto getTransactionById(@RequestHeader HttpHeaders headers,
@@ -224,23 +235,23 @@ public class WalletController {
         //TODO will probably have to add move error handling here
     }
 
-        @GetMapping("/recipient")
-    public String getRecipient(@RequestHeader HttpHeaders headers,
-                               @RequestParam(required = false) String username,
-                               @RequestParam(required = false) String email,
-                               @RequestParam(required = false) String phoneNumber) {
-
-        UserModelFilterOptions userFilter = new UserModelFilterOptions(
-                username, email, phoneNumber);
-        try {
-            User loggedUser = authHelper.tryGetUser(headers);
-            User recipient = walletService.getRecipient(userFilter);
-            return recipient.getUsername();
-        } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-        } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
-    }
+//        @GetMapping("/recipient")
+//    public String getRecipient(@RequestHeader HttpHeaders headers,
+//                               @RequestParam(required = false) String username,
+//                               @RequestParam(required = false) String email,
+//                               @RequestParam(required = false) String phoneNumber) {
+//
+//        UserModelFilterOptions userFilter = new UserModelFilterOptions(
+//                username, email, phoneNumber);
+//        try {
+//            User loggedUser = authHelper.tryGetUser(headers);
+//            User recipient = walletService.getRecipient(userFilter);
+//            return recipient.getUsername();
+//        } catch (UnauthorizedOperationException e) {
+//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+//        } catch (EntityNotFoundException e) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+//        }
+//    }
 
 }

@@ -97,8 +97,8 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public List<WalletToWalletTransaction> getAllWalletTransactions(User user, int wallet_id) {
-        verifyWallet(wallet_id, user);
-        return walletTransactionService.getAllWalletTransactions();
+        Wallet wallet = verifyWallet(wallet_id, user);
+        return walletTransactionService.getUserWalletTransactions(wallet);
     }
 
     @Override
