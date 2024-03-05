@@ -76,25 +76,6 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
     }
-        //TODO move to walletRestController
-//    @GetMapping("/recipient")
-//    public String getRecipient(@RequestHeader HttpHeaders headers,
-//                               @RequestParam(required = false) String username,
-//                               @RequestParam(required = false) String email,
-//                               @RequestParam(required = false) String phoneNumber) {
-//
-//        UserModelFilterOptions userFilter = new UserModelFilterOptions(
-//                username, email, phoneNumber);
-//        try {
-//            User loggedUser = authHelper.tryGetUser(headers);
-//            User recipient = userService.getRecipient(userFilter);
-//            return recipient.getUsername();
-//        } catch (UnauthorizedOperationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        } catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-//        }
-//    }
 
     @GetMapping("{id}/cards")
     public List<Card> getAllUserCards(@RequestHeader HttpHeaders headers, @PathVariable int id) {
