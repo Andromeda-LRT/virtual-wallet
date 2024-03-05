@@ -33,7 +33,6 @@ public class StatusServiceImpl implements StatusService {
     @Override
     public void deleteStatus(int status_id, User user) {
         checkIfAdmin(user);
-        Status status = statusRepository.getById(status_id);
         statusRepository.delete(status_id);
     }
 
@@ -47,9 +46,9 @@ public class StatusServiceImpl implements StatusService {
             duplicateStatusNameExists = false;
         }
         if (duplicateStatusNameExists) {
-            throw new DuplicateEntityException("Role", "name", status.getName());
+            throw new DuplicateEntityException("Status", "name", status.getName());
         }
-        statusRepository.create(status);
+        statusRepository.update(status);
     }
 
     @Override
