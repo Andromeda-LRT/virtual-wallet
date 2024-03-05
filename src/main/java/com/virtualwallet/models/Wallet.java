@@ -25,9 +25,8 @@ public class Wallet {
     @Column(name = "is_archived")
     private boolean isArchived;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by")
-    private User createdBy;
+    @Column(name = "created_by")
+    private int createdBy;
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -45,7 +44,7 @@ public class Wallet {
     )
     private Set<CardToWalletTransaction> cardTransactions;
 
-    public Wallet(int walletId, String iban, double balance, boolean isArchived, String name, User createdBy) {
+    public Wallet(int walletId, String iban, double balance, boolean isArchived, String name, int createdBy) {
         this.walletId = walletId;
         this.iban = iban;
         this.balance = balance;
@@ -97,11 +96,11 @@ public class Wallet {
         isArchived = archived;
     }
 
-    public User getCreatedBy() {
+    public int getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(User userId) {
+    public void setCreatedBy(int userId) {
         this.createdBy = userId;
     }
 

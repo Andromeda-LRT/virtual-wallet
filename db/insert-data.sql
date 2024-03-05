@@ -21,10 +21,11 @@ VALUES ('NL52ABNA7650143244', 0, false, 3, 'Wallet'),
        ('BG91TTBB94003263799846', 0, false, 4, 'Wallet');
 
 INSERT INTO user_wallets (user_id, wallet_id)
-VALUES (3, 1),
-       (1, 2),
-       (2, 3),
-       (4, 4);
+# VALUES (3, 1),
+#        (1, 2),
+#        (2, 3),
+#        (4, 4);
+    VALUES   (6, 5);
 
 INSERT INTO card_types(type)
 VALUES ('Credit'),
@@ -44,10 +45,16 @@ VALUES ('5425233430109903', '2024-02-18', 1, 'John Doe', 1, false),
 # Change the date
 
 INSERT INTO users_cards(card_id, user_id)
-VALUES (1,1),
-       (2,2),
-       (3,5);
+VALUES (1, 1),
+       (2, 2),
+       (3, 5);
 
 INSERT INTO transaction_types(type)
 VALUES ('Incoming'),
        ('Outgoing');
+
+
+INSERT INTO wallet_transactions(amount, time, transaction_type_id, user_id, recipient_wallet_id, wallet_id, status_id)
+VALUES ('3000', '2024-01-25 20:50:00', 1, 6, 2, 5, 2),
+       ('4000', '2024-01-24 20:50:00', 1, 6, 1, 5, 2),
+       ('5000', '2024-01-23 20:50:00', 1, 6, 3, 5, 2);

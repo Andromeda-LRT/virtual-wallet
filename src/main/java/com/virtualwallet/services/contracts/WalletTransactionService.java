@@ -8,7 +8,7 @@ import java.util.List;
 public interface WalletTransactionService {
     List<WalletToWalletTransaction> getAllWalletTransactions();
     List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter
-            (User user, TransactionModelFilterOptions transactionFilter);
+            (User user, TransactionModelFilterOptions transactionFilter, Wallet wallet);
     List<WalletToWalletTransaction> getUserWalletTransactions(Wallet wallet);
     WalletToWalletTransaction getWalletTransactionById(int walletTransactionId);
     boolean createWalletTransaction(User user, WalletToWalletTransaction transaction,

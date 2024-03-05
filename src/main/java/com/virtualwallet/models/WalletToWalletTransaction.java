@@ -23,8 +23,9 @@ public class WalletToWalletTransaction {
     @Column(name = "transaction_type_id")
     private int transactionTypeId;
 
-    @Column(name = "user_id")
-    private int userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User sender;
 
     @Column(name = "recipient_wallet_id")
     private int recipientWalletId;
@@ -38,13 +39,13 @@ public class WalletToWalletTransaction {
 
 
     public WalletToWalletTransaction(int transactionId, double amount, LocalDateTime time,
-                                     int transactionTypeId, int userId, int recipientWalletId,
+                                     int transactionTypeId, User sender, int recipientWalletId,
                                      int walletId, Status status) {
         this.transactionId = transactionId;
         this.amount = amount;
         this.time = time;
+        this.sender = sender;
         this.transactionTypeId = transactionTypeId;
-        this.userId = userId;
         this.recipientWalletId = recipientWalletId;
         this.walletId = walletId;
         this.status = status;
@@ -85,14 +86,13 @@ public class WalletToWalletTransaction {
         this.transactionTypeId = transactionTypeId;
     }
 
-    public int getUserId() {
-        return userId;
+    public User getSender() {
+        return sender;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setSender(User sender) {
+        this.sender = sender;
     }
-
     public int getRecipientWalletId() {
         return recipientWalletId;
     }
@@ -125,7 +125,7 @@ public class WalletToWalletTransaction {
         return transactionId == that.transactionId
                 && Double.compare(amount, that.amount) == 0
                 && transactionTypeId == that.transactionTypeId
-                && userId == that.userId
+                && sender == that.sender
                 && recipientWalletId == that.recipientWalletId
                 && walletId == that.walletId
                 && Objects.equals(time, that.time);
@@ -133,6 +133,6 @@ public class WalletToWalletTransaction {
 
     @Override
     public int hashCode() {
-        return Objects.hash(transactionId, amount, time, transactionTypeId, userId, recipientWalletId, walletId);
+        return Objects.hash(transactionId, amount, time, transactionTypeId, sender, recipientWalletId, walletId);
     }
 }

@@ -3,6 +3,7 @@ package com.virtualwallet.models;
 import jakarta.persistence.*;
 
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -31,7 +32,23 @@ public class User {
     @Column(name = "profile_picture")
     private String profilePicture;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name ="user_wallets",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "wallet_id")
+    )
+    private Set<Wallet> wallets;
+
     public User() {
+    }
+
+    public Set<Wallet> getWallets() {
+        return wallets;
+    }
+
+    public void setWallets(Set<Wallet> wallets) {
+        this.wallets = wallets;
     }
 
     public int getId() {

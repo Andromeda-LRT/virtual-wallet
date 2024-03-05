@@ -30,7 +30,8 @@ public class TransactionResponseMapper {
         dto.setTransactionTypeId(walletToWalletTransaction.getTransactionTypeId());
         dto.setTransactionId(walletToWalletTransaction.getTransactionId());
         dto.setAmount(walletToWalletTransaction.getAmount());
-        dto.setUserName(userRepository.getById(walletToWalletTransaction.getUserId()).getUsername());
+        dto.setUserName(walletToWalletTransaction.getSender().getUsername());
+        //TODO add username for recipient
         dto.setWalletIban(walletRepository.getById(walletToWalletTransaction.getWalletId()).getIban());
         dto.setTime(walletToWalletTransaction.getTime());
         return dto;
@@ -42,7 +43,7 @@ public class TransactionResponseMapper {
         dto.setTransactionId(walletToWalletTransaction.getTransactionId());
         dto.setTransactionId(id);
         dto.setAmount(walletToWalletTransaction.getAmount());
-        dto.setUserName(userRepository.getById(walletToWalletTransaction.getUserId()).getUsername());
+        dto.setUserName(walletToWalletTransaction.getSender().getUsername());
         dto.setWalletIban(walletRepository.getById(walletToWalletTransaction.getWalletId()).getIban());
         dto.setTime(walletToWalletTransaction.getTime());
         return dto;
