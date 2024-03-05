@@ -26,7 +26,7 @@ public class CardMapper {
         card.setExpirationDate(convertToLocalDateTime(cardDto.getExpirationMonth(), cardDto.getExpirationYear()));
         card.setCardHolder(cardDto.getCardHolder());
         card.setCheckNumber(cardDto.getCheckNumber());
-        card.setCardType(cardTypeService.getById(cardDto.getCardType()));
+        card.setCardType(cardTypeService.getCardType(cardDto.getCardType()));
         card.setArchived(false);
         return card;
     }
@@ -38,7 +38,7 @@ public class CardMapper {
         card.setExpirationDate(convertToLocalDateTime(cardDto.getExpirationMonth(), cardDto.getExpirationYear()));
         card.setCardHolder(cardDto.getCardHolder());
         card.setCheckNumber(cardDto.getCheckNumber());
-        card.setCardType(cardTypeService.getById(cardDto.getCardType()));
+        card.setCardType(cardTypeService.getCardType(cardDto.getCardType()));
         card.setArchived(false);
         return card;
     }
