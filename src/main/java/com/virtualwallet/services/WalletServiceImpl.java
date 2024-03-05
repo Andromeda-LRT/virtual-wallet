@@ -66,6 +66,8 @@ public class WalletServiceImpl implements WalletService {
     public Wallet getWalletById(User user, int wallet_id) {
         Wallet wallet = walletRepository.getById(wallet_id);
         checkWalletOwnership(user, wallet);
+        // TODO Check why this method does not work - LYUBIMA
+
         // todo check if user is part of this wallet - RENI
         //  checkUserPartOfWallet(user_id, wallet_id);
         return wallet;
@@ -200,6 +202,11 @@ public class WalletServiceImpl implements WalletService {
         }
        // walletRepository.update(wallet);
         return cardTransaction;
+    }
+
+    @Override
+    public Wallet getByStringField(String id, String s) {
+        return walletRepository.getByStringField(id, s);
     }
 
 //    private void checkUserPartOfWallet(int user_id, int wallet_id) {
