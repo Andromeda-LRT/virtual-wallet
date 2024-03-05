@@ -6,7 +6,7 @@ import com.virtualwallet.models.User;
 import java.util.List;
 
 public interface CardService {
-    Card createCard(User createdBy, Card card);
+    Card createCard(User createdBy, Card card, String cardHolder);
 
     void deleteCard(int card_id, User user);
 

@@ -24,16 +24,20 @@ public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final UserService userService;
 
+//  TODO Add CvvNumberService - LYUBIMA
+//    private final CvvNumberService cvvNumberService;
+
     @Autowired
     public CardServiceImpl(CardRepository cardRepository, UserService userService) {
         this.cardRepository = cardRepository;
         this.userService = userService;
+//        this.cvvNumberService = cvvNumberService;
     }
 
     @Override
-    public Card createCard(User createdBy, Card card) {
+    public Card createCard(User createdBy, Card card, String cardHolder) {
         verifyCardExpirationDate(card);
-        authorizeCardAccess(card.getId(), createdBy);
+        checkCardHolder(createdBy, cardHolder);
         Card cardToBeCreated;
         try {
             // Encrypt the card number before checking/using it in the repository
@@ -46,6 +50,9 @@ public class CardServiceImpl implements CardService {
             cardRepository.update(cardToBeCreated);
         } catch (EntityNotFoundException e) {
             // Encrypt the card number before saving the new card
+
+            //TODO Check if cvv number is already created - if not create it - LYUBIMA
+//            cvvNumberService.createCvvNumber(card);
             card.setNumber(encryptCardNumber(card.getNumber()));
             cardRepository.create(card);
             cardRepository.addCardToUser(createdBy.getId(), card.getId());
@@ -101,6 +108,16 @@ public class CardServiceImpl implements CardService {
 
         if (!cardRepository.getById(card_id).getCardHolder().equals(cardHolderFullName.toString())
                 && !user.getRole().getName().equals("admin")) {
+            throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);
+        }
+    }
+
+    private void checkCardHolder(User loggedUser, String cardHolderFullName) {
+        StringBuilder loggedUserFullName = new StringBuilder();
+        loggedUserFullName.append(loggedUser.getFirstName()).append(" ").append(loggedUser.getLastName());
+
+        if (!loggedUserFullName.toString().equalsIgnoreCase(cardHolderFullName)
+                && !loggedUser.getRole().getName().equals("admin")) {
             throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);
         }
     }

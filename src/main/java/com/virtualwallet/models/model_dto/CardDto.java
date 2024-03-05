@@ -4,6 +4,7 @@ import com.virtualwallet.models.CardType;
 import com.virtualwallet.models.User;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
 import java.time.Month;
@@ -11,7 +12,7 @@ import java.time.Year;
 
 public class CardDto {
     @NotEmpty(message = "Card number can't be empty.")
-    @Size(min = 16, max = 16, message = "Card number must be 16 digits long.")
+    @Size(min = 16, max = 18, message = "Card number must be 16 digits long.")
     @Pattern(regexp = "^\\d(?: ?\\d)*$",
             message = "Input must contain only digits, single spaces between digits are allowed. Consecutive spaces are not permitted.")
     private String number;
@@ -30,7 +31,8 @@ public class CardDto {
     private int checkNumber;
 
     @NotEmpty(message = "Card type can't be empty.")
-    private CardType cardType;
+    @Positive(message = "Card type id must be a positive number.")
+    private int cardType;
 
     public CardDto() {
     }
@@ -75,11 +77,11 @@ public class CardDto {
         this.checkNumber = checkNumber;
     }
 
-    public CardType getCardType() {
+    public int getCardType() {
         return cardType;
     }
 
-    public void setCardType(CardType cardType) {
+    public void setCardType(int cardType) {
         this.cardType = cardType;
     }
 }

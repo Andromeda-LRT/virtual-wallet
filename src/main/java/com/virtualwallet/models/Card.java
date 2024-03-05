@@ -19,7 +19,7 @@ public class Card {
 
     @Column(name = "card_holder")
     private String cardHolder;
-    @Column(name = "check_number_id")
+    @Column(name = "cvv_number_id")
     private int checkNumber;
 
     @ManyToOne

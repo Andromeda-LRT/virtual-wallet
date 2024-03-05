@@ -1,8 +1,11 @@
 package com.virtualwallet.model_mappers;
 
 import com.virtualwallet.models.Card;
+import com.virtualwallet.models.CardType;
 import com.virtualwallet.models.model_dto.CardDto;
 import com.virtualwallet.models.model_dto.CardForAddingMoneyToWalletDto;
+import com.virtualwallet.services.contracts.CardTypeService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -11,13 +14,19 @@ import java.time.Year;
 
 @Component
 public class CardMapper {
+    private final CardTypeService cardTypeService;
+@Autowired
+    public CardMapper(CardTypeService cardTypeService) {
+        this.cardTypeService = cardTypeService;
+    }
+
     public Card fromDto(CardDto cardDto) {
         Card card = new Card();
         card.setNumber(cardDto.getNumber());
         card.setExpirationDate(convertToLocalDateTime(cardDto.getExpirationMonth(), cardDto.getExpirationYear()));
         card.setCardHolder(cardDto.getCardHolder());
         card.setCheckNumber(cardDto.getCheckNumber());
-        card.setCardType(cardDto.getCardType());
+        card.setCardType(cardTypeService.getById(cardDto.getCardType()));
         card.setArchived(false);
         return card;
     }
@@ -29,7 +38,7 @@ public class CardMapper {
         card.setExpirationDate(convertToLocalDateTime(cardDto.getExpirationMonth(), cardDto.getExpirationYear()));
         card.setCardHolder(cardDto.getCardHolder());
         card.setCheckNumber(cardDto.getCheckNumber());
-        card.setCardType(cardDto.getCardType());
+        card.setCardType(cardTypeService.getById(cardDto.getCardType()));
         card.setArchived(false);
         return card;
     }
@@ -41,7 +50,7 @@ public class CardMapper {
         cardDto.setExpirationYear(Year.of(card.getExpirationDate().getYear()));
         cardDto.setCardHolder(card.getCardHolder());
         cardDto.setCheckNumber(card.getCheckNumber());
-        cardDto.setCardType(card.getCardType());
+        cardDto.setCardType(card.getCardType().getId());
         return cardDto;
     }
 
