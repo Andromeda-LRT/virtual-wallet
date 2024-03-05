@@ -13,8 +13,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import com.virtualwallet.services.contracts.UserService;
 import org.springframework.web.server.ResponseStatusException;
+
 import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
+
 import java.io.UnsupportedEncodingException;
+
 import static org.apache.tomcat.websocket.Constants.AUTHORIZATION_HEADER_NAME;
 
 @Component
@@ -35,8 +38,8 @@ public class AuthenticationHelper {
         }
         try {
             String authorizationHeader = headers.getFirst(AUTHORIZATION_HEADER_NAME);
-            if(authorizationHeader.contains("Basic ") &&
-                    Base64.isBase64(authorizationHeader.substring("Basic ".length()))){
+            if (authorizationHeader.contains("Basic ") &&
+                    Base64.isBase64(authorizationHeader.substring("Basic ".length()))) {
                 authorizationHeader = new String(Base64.decodeBase64(authorizationHeader
                         .substring("Basic ".length())), "UTF-8").replace(":", " ");
             }
@@ -46,7 +49,7 @@ public class AuthenticationHelper {
             User user = service.getByUsername(username);
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             boolean isPasswordMatch = encoder.matches(password, user.getPassword());
-            if (!isPasswordMatch){
+            if (!isPasswordMatch) {
                 throw new AuthenticationFailureException(WRONG_USERNAME_OR_PASSWORD);
             }
 
@@ -74,16 +77,16 @@ public class AuthenticationHelper {
         return authorizationHeader.substring(firstSpaceIndex + 1);
     }
 
-    public User verifyAuthentication(String username, String password){
+    public User verifyAuthentication(String username, String password) {
         try {
             User user = service.getByUsername(username);
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
             boolean isPasswordMatch = encoder.matches(password, user.getPassword());
-            if (!isPasswordMatch){
+            if (!isPasswordMatch) {
                 throw new AuthenticationFailureException(WRONG_USERNAME_OR_PASSWORD);
             }
             return user;
-        }catch (EntityNotFoundException e){
+        } catch (EntityNotFoundException e) {
             throw new AuthenticationFailureException(WRONG_USERNAME_OR_PASSWORD);
         }
     }

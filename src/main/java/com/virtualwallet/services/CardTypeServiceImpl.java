@@ -3,10 +3,10 @@ package com.virtualwallet.services;
 import com.virtualwallet.exceptions.DuplicateEntityException;
 import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
-import com.virtualwallet.models.Status;
+import com.virtualwallet.models.CardType;
 import com.virtualwallet.models.User;
-import com.virtualwallet.repositories.contracts.StatusRepository;
-import com.virtualwallet.services.contracts.StatusService;
+import com.virtualwallet.repositories.contracts.CardTypeRepository;
+import com.virtualwallet.services.contracts.CardTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,50 +15,50 @@ import java.util.List;
 import static com.virtualwallet.model_helpers.ModelConstantHelper.UNAUTHORIZED_OPERATION_ERROR_MESSAGE;
 
 @Service
-public class StatusServiceImpl implements StatusService {
-    private final StatusRepository statusRepository;
+public class CardTypeServiceImpl implements CardTypeService {
+    private final CardTypeRepository cardTypeRepository;
 
     @Autowired
-    public StatusServiceImpl(StatusRepository statusRepository) {
-        this.statusRepository = statusRepository;
+    public CardTypeServiceImpl(CardTypeRepository cardTypeRepository) {
+        this.cardTypeRepository = cardTypeRepository;
     }
 
     @Override
-    public Status createStatus(User user, Status status) {
+    public CardType createCardType(User user, CardType cardType) {
         checkIfAdmin(user);
-        statusRepository.create(status);
-        return status;
+        cardTypeRepository.create(cardType);
+        return cardType;
     }
 
     @Override
-    public void deleteStatus(int status_id, User user) {
+    public void deleteCardType(int cardTypeId, User user) {
         checkIfAdmin(user);
-        statusRepository.delete(status_id);
+        cardTypeRepository.delete(cardTypeId);
     }
 
     @Override
-    public void updateStatus(Status status, User user) {
+    public void updateCardType(CardType cardType, User user) {
         checkIfAdmin(user);
         boolean duplicateStatusNameExists = true;
         try {
-            statusRepository.getByStringField("name", status.getName());
+            cardTypeRepository.getByStringField("name", cardType.getType());
         } catch (EntityNotFoundException e) {
             duplicateStatusNameExists = false;
         }
         if (duplicateStatusNameExists) {
-            throw new DuplicateEntityException("Status", "name", status.getName());
+            throw new DuplicateEntityException("CardType", "name", cardType.getType());
         }
-        statusRepository.update(status);
+        cardTypeRepository.create(cardType);
     }
 
     @Override
-    public Status getStatus(int status_id) {
-        return statusRepository.getById(status_id);
+    public CardType getCardType(int cardTypeId) {
+        return cardTypeRepository.getById(cardTypeId);
     }
 
     @Override
-    public List<Status> getAllStatuses() {
-        return statusRepository.getAll();
+    public List<CardType> getAllCardTypes() {
+        return cardTypeRepository.getAll();
     }
 
     private static void checkIfAdmin(User user) {

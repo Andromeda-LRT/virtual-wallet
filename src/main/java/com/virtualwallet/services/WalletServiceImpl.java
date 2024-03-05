@@ -111,7 +111,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public List<CardToWalletTransaction> getAllCardTransactions(User user, int wallet_id) {
         verifyWallet(wallet_id, user);
-        return new ArrayList(walletRepository.getById(wallet_id).getCardTransactions());
+        return new ArrayList<>(walletRepository.getById(wallet_id).getCardTransactions());
     }
 
     @Override
