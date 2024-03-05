@@ -17,11 +17,11 @@ CREATE TABLE users
     user_id         int auto_increment
         primary key,
     username        varchar(50) not null,
-    password        varchar(50) not null,
+    password        varchar(65) not null,
     first_name      varchar(50) not null,
     last_name       varchar(50) not null,
     email           varchar(50) not null,
-    role_id         int         default 1 not null,
+    role_id         int         default 1,
     is_blocked      tinyint(1) default 0 not null,
     is_archived     tinyint(1) default 0 not null,
     phone_number    varchar(10) not null,
