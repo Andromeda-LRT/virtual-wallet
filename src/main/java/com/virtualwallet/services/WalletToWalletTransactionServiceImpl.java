@@ -4,6 +4,7 @@ import com.virtualwallet.model_helpers.TransactionModelFilterOptions;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.WalletToWalletTransaction;
+import com.virtualwallet.repositories.contracts.WalletToWalletTransactionRepository;
 import com.virtualwallet.services.contracts.StatusService;
 import com.virtualwallet.services.contracts.WalletTransactionService;
 import org.springframework.beans.factory.annotation.Autowired;

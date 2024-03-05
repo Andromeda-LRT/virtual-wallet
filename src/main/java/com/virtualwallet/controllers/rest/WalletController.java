@@ -4,6 +4,7 @@ import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.InsufficientFundsException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
+import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_mappers.TransactionMapper;
 import com.virtualwallet.model_mappers.TransactionResponseMapper;
 import com.virtualwallet.model_mappers.WalletMapper;
@@ -113,7 +114,7 @@ public class WalletController {
     }
 
     @GetMapping("/{wallet_id}/transactions")
-    public List<TransactionDto> getTransactionHistory(@RequestHeader HttpHeaders headers, @PathVariable int wallet_id) {
+    public List<TransactionResponseDto> getTransactionHistory(@RequestHeader HttpHeaders headers, @PathVariable int wallet_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             List<WalletToWalletTransaction> walletToWalletTransactionList = walletService.getAllWalletTransactions(user, wallet_id);
@@ -145,8 +146,6 @@ public class WalletController {
         try {
             User user = authHelper.tryGetUser(headers);
             WalletToWalletTransaction walletToWalletTransaction = transactionMapper.fromDto(transactionDto);
-            //TODO add iban to transactionDto - RENI
-            // getWalletByIban
             walletService.walletToWalletTransaction(user, wallet_id, walletToWalletTransaction);
             return transactionResponseMapper.convertToDto(walletToWalletTransaction);
         } catch (EntityNotFoundException e) {
@@ -176,7 +175,9 @@ public class WalletController {
 //        //Only a transaction that has not been approved can be updated
 //    }
 
-    @PutMapping("/{wallet_id}/transactions/{transaction_id/approve}")
+    //TODO remove at the end
+
+    @PutMapping("/{wallet_id}/transactions/{transaction_id}/approve")
     public void approveTransaction(@RequestHeader HttpHeaders headers,
                                    @PathVariable int wallet_id,
                                    @PathVariable int transaction_id) {
@@ -221,6 +222,25 @@ public class WalletController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
         //TODO will probably have to add move error handling here
+    }
+
+        @GetMapping("/recipient")
+    public String getRecipient(@RequestHeader HttpHeaders headers,
+                               @RequestParam(required = false) String username,
+                               @RequestParam(required = false) String email,
+                               @RequestParam(required = false) String phoneNumber) {
+
+        UserModelFilterOptions userFilter = new UserModelFilterOptions(
+                username, email, phoneNumber);
+        try {
+            User loggedUser = authHelper.tryGetUser(headers);
+            User recipient = walletService.getRecipient(userFilter);
+            return recipient.getUsername();
+        } catch (UnauthorizedOperationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        } catch (EntityNotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
 }

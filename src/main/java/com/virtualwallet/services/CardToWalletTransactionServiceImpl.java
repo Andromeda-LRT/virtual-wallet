@@ -2,6 +2,7 @@ package com.virtualwallet.services;
 
 import com.virtualwallet.model_helpers.TransactionModelFilterOptions;
 import com.virtualwallet.models.*;
+import com.virtualwallet.repositories.contracts.CardToWalletTransactionRepository;
 import com.virtualwallet.services.contracts.CardTransactionService;
 import com.virtualwallet.services.contracts.StatusService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,10 @@ import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 @Service
 public class CardToWalletTransactionServiceImpl implements CardTransactionService {
 
-    private final cardToWalletTransactionRepository cardTransactionRepository;
+    private final CardToWalletTransactionRepository cardTransactionRepository;
     private final StatusService statusService;
     @Autowired
-    public CardToWalletTransactionServiceImpl(cardToWalletTransactionRepository cardTransactionRepository,
+    public CardToWalletTransactionServiceImpl(CardToWalletTransactionRepository cardTransactionRepository,
                                               StatusService statusService) {
         this.cardTransactionRepository = cardTransactionRepository;
         this.statusService = statusService;
