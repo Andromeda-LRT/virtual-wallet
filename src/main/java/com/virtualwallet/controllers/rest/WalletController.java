@@ -20,6 +20,7 @@ import com.virtualwallet.services.contracts.WalletService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import com.virtualwallet.models.model_dto.WalletDto;
@@ -52,71 +53,77 @@ public class WalletController {
         this.transactionMapper = transactionMapper;
     }
 
+    // TODO Add catch block for AuthenticationFailure exception to all methods - TEAM
     @GetMapping
-    public List<Wallet> getAllWallets(@RequestHeader HttpHeaders headers) {
+    public ResponseEntity<?> getAllWallets(@RequestHeader HttpHeaders headers) {
         try {
             User user = authHelper.tryGetUser(headers);
             List<Wallet> walletList = walletService.getAllWallets(user);
-            return walletList;
+            return ResponseEntity.status(HttpStatus.OK).body(walletList);
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
     @GetMapping("/{id}")
-    public Wallet getWalletById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+    public ResponseEntity<?> getWalletById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User user = authHelper.tryGetUser(headers);
             Wallet wallet = walletService.getWalletById(user, id);
-            return wallet;
+            return ResponseEntity.status(HttpStatus.OK).body(wallet);
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (UnauthorizedOperationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
     @PostMapping()
-    public Wallet createWallet(@RequestHeader HttpHeaders headers, @RequestBody @Valid WalletDto walletDto) {
+    public ResponseEntity<?> createWallet(@RequestHeader HttpHeaders headers,
+                                          @RequestBody @Valid WalletDto walletDto) {
         try {
             User user = authHelper.tryGetUser(headers);
             Wallet wallet = walletMapper.fromDto(walletDto);
             walletService.createWallet(user, wallet);
-            return wallet;
+            return ResponseEntity.status(HttpStatus.CREATED).body(wallet);
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public Wallet updateWallet(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<?> updateWallet(@RequestHeader HttpHeaders headers,
                                @RequestBody @Valid WalletDto walletDto,
                                @PathVariable int id) {
         try {
             User user = authHelper.tryGetUser(headers);
+            // TODO Check why -> walletMapper.fromDto(walletDto, id);
+            //  is not working when updating wallet - TEAM
             Wallet wallet = walletMapper.fromDto(walletDto, id);
             walletService.updateWallet(user, wallet);
-            return wallet;
+            return ResponseEntity.status(HttpStatus.OK).body(wallet);
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-
     }
 
     @DeleteMapping("/{id}")
-    public void deleteWallet(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+    public ResponseEntity<Void> deleteWallet(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.delete(user, id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
     @GetMapping("/{wallet_id}/transactions")
-    public List<WalletToWalletTransaction> getWalletTransactionHistory(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<?> getWalletTransactionHistory(@RequestHeader HttpHeaders headers,
                                                                        @PathVariable int wallet_id,
                                                                        @RequestParam(required = false) Time startDate,
                                                                        @RequestParam(required = false) Time endDate,
@@ -133,9 +140,9 @@ public class WalletController {
             List<WalletToWalletTransaction> walletToWalletTransactionList =
                     walletService.getAllWalletTransactionsWithFilter(transactionModelFilterOptions, user, wallet_id);
 //            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
-            return walletToWalletTransactionList;
+            return ResponseEntity.status(HttpStatus.OK).body(walletToWalletTransactionList);
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
@@ -151,33 +158,35 @@ public class WalletController {
 //    }
 
     @GetMapping("/{wallet_id}/transactions/{transaction_id}")
-    public TransactionResponseDto getTransactionById(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<?> getTransactionById(@RequestHeader HttpHeaders headers,
                                                      @PathVariable int wallet_id,
                                                      @PathVariable int transaction_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             WalletToWalletTransaction walletToWalletTransaction = walletService.getTransactionById(user, wallet_id, transaction_id);
-            return transactionResponseMapper.convertToDto(walletToWalletTransaction);
+            TransactionResponseDto transaction = transactionResponseMapper.convertToDto(walletToWalletTransaction);
+            return ResponseEntity.status(HttpStatus.OK).body(transaction);
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+               return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @PostMapping("/{wallet_id}/transactions")
-    public TransactionResponseDto creteTransaction(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<?> creteTransaction(@RequestHeader HttpHeaders headers,
                                                    @PathVariable int wallet_id,
                                                    @RequestBody @Valid TransactionDto transactionDto) {
         try {
             User user = authHelper.tryGetUser(headers);
             WalletToWalletTransaction walletToWalletTransaction = transactionMapper.fromDto(transactionDto, user);
             walletService.walletToWalletTransaction(user, wallet_id, walletToWalletTransaction);
-            return transactionResponseMapper.convertToDto(walletToWalletTransaction);
+            return  ResponseEntity.status(HttpStatus.CREATED)
+                    .body(transactionResponseMapper.convertToDto(walletToWalletTransaction));
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (InsufficientFundsException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
@@ -204,37 +213,39 @@ public class WalletController {
     //TODO remove at the end
 
     @PutMapping("/{wallet_id}/transactions/{transaction_id}/approve")
-    public void approveTransaction(@RequestHeader HttpHeaders headers,
+        public ResponseEntity<Void>  approveTransaction(@RequestHeader HttpHeaders headers,
                                    @PathVariable int wallet_id,
                                    @PathVariable int transaction_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.approveTransaction(user, transaction_id, wallet_id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
 
     @PutMapping("/{wallet_id}/transactions/{transaction_id}/cancel")
-    public void cancelTransaction(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<Void> cancelTransaction(@RequestHeader HttpHeaders headers,
                                   @PathVariable int wallet_id,
                                   @PathVariable int transaction_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.cancelTransaction(user, transaction_id, wallet_id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         //Only a transaction that has NOT been approved can be canceled
     }
 
     @PostMapping("/{wallet_id}/transactions/{card_id}")
-    public void createTransactionWithCard(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<Void> createTransactionWithCard(@RequestHeader HttpHeaders headers,
                                           @PathVariable int wallet_id,
                                           @PathVariable int card_id,
                                           @RequestBody CardTransactionDto cardTransactionDto) {
@@ -242,10 +253,11 @@ public class WalletController {
             User user = authHelper.tryGetUser(headers);
             CardToWalletTransaction cardTransaction = transactionMapper.fromDto(cardTransactionDto);
             walletService.transactionWithCard(user, card_id, wallet_id, cardTransaction);
+            return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         //TODO will probably have to add move error handling here
     }
