@@ -20,8 +20,10 @@ import org.mariadb.jdbc.client.result.UpdatableResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
 import java.util.List;
 
 @RestController
@@ -34,6 +36,7 @@ public class UserController {
     private final UpdateUserMapper updateUserMapper;
     private final CardMapper cardMapper;
     private final AuthenticationHelper authHelper;
+
     @Autowired
     public UserController(UserService userService,
                           CardService cardService,
@@ -48,8 +51,10 @@ public class UserController {
         this.authHelper = authHelper;
     }
 
+
+    // TODO Add catch block for AuthenticationFailure exception to all methods - TEAM
     @GetMapping
-    public List<User> getAllUsers(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<?> getAllUsers(@RequestHeader HttpHeaders headers,
                                   @RequestParam(required = false) String phoneNumber,
                                   @RequestParam(required = false) String username,
                                   @RequestParam(required = false) String email,
@@ -59,185 +64,198 @@ public class UserController {
                 username, email, phoneNumber, sortBy, sortOrder);
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            return userService.getAllWithFilter(loggedUser, userFilter);
+            return ResponseEntity.status(HttpStatus.OK).body(userService.getAllWithFilter(loggedUser, userFilter));
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+    public ResponseEntity<?> getUserById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            return userService.get(id, loggedUser);
+            User user = userService.get(id, loggedUser);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
-    @GetMapping("{id}/cards")
-    public List<Card> getAllUserCards(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+    @GetMapping("/{id}/cards")
+    public ResponseEntity<?> getAllUserCards(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            return cardService.getAllUserCards(userService.get(id, loggedUser));
+            List<Card> cards = cardService.getAllUserCards(userService.get(id, loggedUser));
+            return ResponseEntity.status(HttpStatus.OK).body(cards);
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
     }
 
     @GetMapping("/{user_id}/cards/{card_id}")
-    public Card getUserCard(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<?> getUserCard(@RequestHeader HttpHeaders headers,
                             @PathVariable int user_id,
                             @PathVariable int card_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            return cardService.getCard(card_id, userService.get(user_id, loggedUser));
+            Card card = cardService.getCard(card_id, userService.get(user_id, loggedUser));
+            return ResponseEntity.status(HttpStatus.OK).body(card);
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     @PostMapping
-    public User createUser(@Valid @RequestBody UserDto userDto) {
+    public ResponseEntity<?> createUser(@Valid @RequestBody UserDto userDto) {
         try {
             User user = userMapper.fromDto(userDto);
             userService.create(user);
-            return user;
+            return ResponseEntity.status(HttpStatus.CREATED).body(user);
         } catch (DuplicateEntityException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 
     @PostMapping("/cards")
-    public Card createUserCard(@RequestHeader HttpHeaders headers,
-                               @RequestBody CardDto cardDto) {
+    public ResponseEntity<?> createUserCard(@RequestHeader HttpHeaders headers,
+                                            @RequestBody CardDto cardDto) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             Card cardToBeCreated = cardMapper.fromDto(cardDto);
-            return cardService.createCard(loggedUser, cardToBeCreated);
+            cardService.createCard(loggedUser, cardToBeCreated, cardDto.getCardHolder());
+            return ResponseEntity.status(HttpStatus.CREATED).body(cardToBeCreated);
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (DuplicateEntityException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@RequestHeader HttpHeaders headers,
-                           @Valid @RequestBody UpdateUserDto userDto,
-                           @PathVariable int id) {
+    public ResponseEntity<?> updateUser(@RequestHeader HttpHeaders headers,
+                                        @Valid @RequestBody UpdateUserDto userDto,
+                                        @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             User user = updateUserMapper.fromDto(id, userDto, loggedUser);
             userService.update(user, loggedUser);
-            return user;
+            return ResponseEntity.status(HttpStatus.OK).body(user);
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (DuplicateEntityException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
     @PutMapping("/{id}/block")
-    public void blockUser(@RequestHeader HttpHeaders headers,
-                          @PathVariable int id) {
+    public ResponseEntity<Void> blockUser(@RequestHeader HttpHeaders headers,
+                                          @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.blockUser(id, loggedUser);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
     @PutMapping("/{id}/unblock")
-    public void unblockUser(@RequestHeader HttpHeaders headers,
-                            @PathVariable int id) {
+    public ResponseEntity<Void> unblockUser(@RequestHeader HttpHeaders headers,
+                                            @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.unblockUser(id, loggedUser);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
     @PutMapping("/{user_id}/cards/{card_id}")
-    public Card updateUserCard(@RequestHeader HttpHeaders headers,
-                               @PathVariable int user_id,
-                               @Valid @RequestBody CardDto cardDto,
-                               @PathVariable int card_id) {
+    public ResponseEntity<?> updateUserCard(@RequestHeader HttpHeaders headers,
+                                            @PathVariable int user_id,
+                                            @Valid @RequestBody CardDto cardDto,
+                                            @PathVariable int card_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             Card card = cardMapper.fromDto(cardDto, card_id);
-            return cardService.updateCard(card, userService.get(user_id, loggedUser));
+            cardService.updateCard(card, userService.get(user_id, loggedUser));
+            return ResponseEntity.status(HttpStatus.OK).body(card);
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (DuplicateEntityException e) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
-    public void deleteUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+    public ResponseEntity<Void> deleteUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.delete(id, loggedUser);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
     @DeleteMapping("/{user_id}/cards/{card_id}")
-    public void deleteUserCard(@RequestHeader HttpHeaders headers,
-                               @PathVariable int user_id,
-                               @PathVariable int card_id) {
+    public ResponseEntity<Void> deleteUserCard(@RequestHeader HttpHeaders headers,
+                                               @PathVariable int user_id,
+                                               @PathVariable int card_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             cardService.deleteCard(card_id, userService.get(user_id, loggedUser));
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
     @PutMapping("{user_id}/admin-approval")
-    public void giveUserAdminRights(@RequestHeader HttpHeaders headers,
-                                    @PathVariable int user_id) {
+    public ResponseEntity<Void> giveUserAdminRights(@RequestHeader HttpHeaders headers,
+                                                    @PathVariable int user_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.giveUserAdminRights(userService.get(user_id, loggedUser), loggedUser);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 
     @PutMapping("{user_id}/admin-cancellation")
-    public void removeUserAdminRights(@RequestHeader HttpHeaders headers,
-                                    @PathVariable int user_id) {
+    public ResponseEntity<Void> removeUserAdminRights(@RequestHeader HttpHeaders headers,
+                                      @PathVariable int user_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.removeUserAdminRights(userService.get(user_id, loggedUser), loggedUser);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
         } catch (UnauthorizedOperationException e) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
     }
 }
