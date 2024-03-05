@@ -56,7 +56,7 @@ public class AdminController {
         );
 
         try {
-            List<User> users = userService.getAll(loggedUser, userFilter);
+            List<User> users = userService.getAllWithFilter(loggedUser, userFilter);
             List<UserDto> userDtos = userMapper.toDto(users);
             model.addAttribute("users", userDtos);
             model.addAttribute("userFilterOptions", userFilter);
