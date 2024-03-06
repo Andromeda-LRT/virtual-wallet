@@ -3,7 +3,6 @@ package com.virtualwallet.services;
 import com.virtualwallet.exceptions.InsufficientFundsException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.exceptions.UnusedWalletBalanceException;
-import com.virtualwallet.model_helpers.TransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.model_mappers.CardMapper;
 import com.virtualwallet.models.*;
@@ -78,6 +77,8 @@ public class WalletServiceImpl implements WalletService {
     public Wallet createWallet(User user, Wallet wallet) {
         wallet.setCreatedBy(user.getId());
         walletRepository.create(wallet);
+        user.getWallets().add(wallet);
+        userService.update(user, user);
         return wallet;
     }
 
@@ -99,9 +100,9 @@ public class WalletServiceImpl implements WalletService {
         if (walletToBeDeleted.getBalance() > 0) {
             throw new UnusedWalletBalanceException(String.valueOf(walletToBeDeleted.getBalance()));
         }
+        user.getWallets().remove(walletToBeDeleted);
         walletToBeDeleted.setArchived(true);
         walletRepository.update(walletToBeDeleted);
-        user.getWallets().remove(walletToBeDeleted);
         userService.update(user, user);
     }
 
