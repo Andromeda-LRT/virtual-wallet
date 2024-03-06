@@ -1,5 +1,6 @@
 package com.virtualwallet.services;
 
+import com.virtualwallet.exceptions.DuplicateEntityException;
 import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.ExpiredCardException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
@@ -24,8 +25,6 @@ import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final UserService userService;
-
-//  TODO Add CvvNumberService - LYUBIMA - DONE
     private final CheckNumberService checkNumberService;
 
     @Autowired
@@ -47,25 +46,29 @@ public class CardServiceImpl implements CardService {
             cardToBeCreated.setExpirationDate(card.getExpirationDate());
 
             // Ensure the card number is stored encrypted in the repository
-            cardToBeCreated.setNumber(encryptedCardNumber);
             cardRepository.update(cardToBeCreated);
+            cardToBeCreated.setNumber(decryptCardNumber(cardToBeCreated.getNumber()));
         } catch (EntityNotFoundException e) {
             // Encrypt the card number before saving the new card
-
-            //TODO Check if cvv number is already created - if not create it - LYUBIMA
-//            checkNumberService.createCheckNumber(card.getCheckNumber().getCvv());
-
             card.setNumber(encryptCardNumber(card.getNumber()));
             cardRepository.create(card);
-            cardRepository.addCardToUser(createdBy.getId(), card.getId());
             card.setNumber(decryptCardNumber(card.getNumber()));
+            addCardToUser(createdBy, card);
             return card;
         }
 
-        cardRepository.addCardToUser(createdBy.getId(), cardToBeCreated.getId());
+        addCardToUser(createdBy, cardToBeCreated);
         return cardToBeCreated;
     }
 
+    private void addCardToUser(User user, Card card) {
+        try{
+            cardRepository.getUserCard(user, card.getId());
+            throw new DuplicateEntityException("Card", "number", String.valueOf(card.getNumber()));
+        } catch (EntityNotFoundException e) {
+            cardRepository.addCardToUser(user.getId(), card.getId());
+        }
+    }
     @Override
     public void deleteCard(int card_id, User user) {
         authorizeCardAccess(card_id, user);
