@@ -7,6 +7,7 @@ import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
 import com.virtualwallet.repositories.contracts.CardRepository;
 import com.virtualwallet.services.contracts.CardService;
+import com.virtualwallet.services.contracts.CheckNumberService;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.utils.AESUtil;
 import com.virtualwallet.utils.UtilHelpers;
@@ -24,14 +25,14 @@ public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final UserService userService;
 
-//  TODO Add CvvNumberService - LYUBIMA
-//    private final CvvNumberService cvvNumberService;
+//  TODO Add CvvNumberService - LYUBIMA - DONE
+    private final CheckNumberService checkNumberService;
 
     @Autowired
-    public CardServiceImpl(CardRepository cardRepository, UserService userService) {
+    public CardServiceImpl(CardRepository cardRepository, UserService userService, CheckNumberService checkNumberService) {
         this.cardRepository = cardRepository;
         this.userService = userService;
-//        this.cvvNumberService = cvvNumberService;
+        this.checkNumberService = checkNumberService;
     }
 
     @Override
@@ -52,7 +53,8 @@ public class CardServiceImpl implements CardService {
             // Encrypt the card number before saving the new card
 
             //TODO Check if cvv number is already created - if not create it - LYUBIMA
-//            cvvNumberService.createCvvNumber(card);
+//            checkNumberService.createCheckNumber(card.getCheckNumber().getCvv());
+
             card.setNumber(encryptCardNumber(card.getNumber()));
             cardRepository.create(card);
             cardRepository.addCardToUser(createdBy.getId(), card.getId());
@@ -67,8 +69,20 @@ public class CardServiceImpl implements CardService {
     @Override
     public void deleteCard(int card_id, User user) {
         authorizeCardAccess(card_id, user);
-        cardRepository.delete(card_id);
+        cardRepository.getByStringField("id", String.valueOf(card_id));
+
+        // Todo implement a method for removing the card
+        //  from the user list of cards
+        //  user.removeCard(card_id);
+        // then update user
+        //  userService.update(user);
+        // then make soft delete
         cardRepository.removeCardFromUser(user.getId(), card_id);
+
+        // TODO Change delete method logic - LYUBIMA
+        //  this method should go and update
+        //  card field isArchived to true
+        cardRepository.delete(card_id);
     }
 
     @Override

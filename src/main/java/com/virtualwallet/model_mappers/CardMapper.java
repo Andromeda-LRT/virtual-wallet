@@ -5,6 +5,7 @@ import com.virtualwallet.models.CardType;
 import com.virtualwallet.models.model_dto.CardDto;
 import com.virtualwallet.models.model_dto.CardForAddingMoneyToWalletDto;
 import com.virtualwallet.services.contracts.CardTypeService;
+import com.virtualwallet.services.contracts.CheckNumberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,17 +16,20 @@ import java.time.Year;
 @Component
 public class CardMapper {
     private final CardTypeService cardTypeService;
+    private final CheckNumberService checkNumberService;
+
 @Autowired
-    public CardMapper(CardTypeService cardTypeService) {
+    public CardMapper(CardTypeService cardTypeService, CheckNumberService checkNumberService) {
         this.cardTypeService = cardTypeService;
-    }
+    this.checkNumberService = checkNumberService;
+}
 
     public Card fromDto(CardDto cardDto) {
         Card card = new Card();
         card.setNumber(cardDto.getNumber());
         card.setExpirationDate(convertToLocalDateTime(cardDto.getExpirationMonth(), cardDto.getExpirationYear()));
         card.setCardHolder(cardDto.getCardHolder());
-        card.setCheckNumber(cardDto.getCheckNumber());
+        card.setCheckNumber(checkNumberService.createCheckNumber(cardDto.getCheckNumber()));
         card.setCardType(cardTypeService.getCardType(cardDto.getCardType()));
         card.setArchived(false);
         return card;
@@ -37,7 +41,7 @@ public class CardMapper {
         card.setNumber(cardDto.getNumber());
         card.setExpirationDate(convertToLocalDateTime(cardDto.getExpirationMonth(), cardDto.getExpirationYear()));
         card.setCardHolder(cardDto.getCardHolder());
-        card.setCheckNumber(cardDto.getCheckNumber());
+        card.setCheckNumber(checkNumberService.createCheckNumber(cardDto.getCheckNumber()));
         card.setCardType(cardTypeService.getCardType(cardDto.getCardType()));
         card.setArchived(false);
         return card;
@@ -49,7 +53,7 @@ public class CardMapper {
         cardDto.setExpirationMonth(card.getExpirationDate().getMonth());
         cardDto.setExpirationYear(Year.of(card.getExpirationDate().getYear()));
         cardDto.setCardHolder(card.getCardHolder());
-        cardDto.setCheckNumber(card.getCheckNumber());
+        cardDto.setCheckNumber(card.getCheckNumber().getCvv());
         cardDto.setCardType(card.getCardType().getId());
         return cardDto;
     }
@@ -59,7 +63,7 @@ public class CardMapper {
         cardDto.setNumber(card.getNumber());
         cardDto.setExpirationDate(card.getExpirationDate());
         cardDto.setCardHolder(cardDto.getCardHolder());
-        cardDto.setCheckNumber(card.getCheckNumber());
+        cardDto.setCheckNumber(card.getCheckNumber().getCvv());
         cardDto.setCardType(card.getCardType().getType());
         return cardDto;
     }
