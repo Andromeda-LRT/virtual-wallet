@@ -2,7 +2,7 @@ package com.virtualwallet.services;
 
 import com.virtualwallet.exceptions.InsufficientFundsException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
-import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
+import com.virtualwallet.model_helpers.TransactionModelFilterOptions;
 import com.virtualwallet.model_mappers.CardMapper;
 import com.virtualwallet.models.*;
 import com.virtualwallet.models.model_dto.CardForAddingMoneyToWalletDto;
@@ -105,7 +105,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter(WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id) {
+    public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter(TransactionModelFilterOptions transactionFilter, User user, int wallet_id) {
         Wallet wallet = verifyWallet(wallet_id, user);
         return walletTransactionService.getAllWalletTransactionsWithFilter(user, transactionFilter, wallet);
     }

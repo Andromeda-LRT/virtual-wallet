@@ -1,6 +1,7 @@
 package com.virtualwallet.repositories;
 
-import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
+import com.virtualwallet.model_helpers.TransactionModelFilterOptions;
+import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.WalletToWalletTransaction;
@@ -17,8 +18,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.virtualwallet.model_helpers.ModelConstantHelper.VALID_NUMBER;
-
 @Repository
 public class WalletToWalletTransactionImpl extends AbstractCrudRepository<WalletToWalletTransaction> implements WalletToWalletTransactionRepository {
 
@@ -28,7 +27,7 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
     }
 
     @Override
-    public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter(User user, WalletTransactionModelFilterOptions transactionFilter, Wallet wallet) {
+    public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter(User user, TransactionModelFilterOptions transactionFilter, Wallet wallet) {
         try (Session session = sessionFactory.openSession()) {
 
             List<String> filters = new ArrayList<>();
@@ -36,47 +35,38 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
 
             params.put("walletId", wallet.getWalletId());
 
-            transactionFilter.getStartDate().ifPresent(startDate  -> {
-                filters.add("time >= :startDate");
-                params.put("startDate", startDate);
+            transactionFilter.getStartDate().ifPresent(value -> {
+                if (!value.toString().isBlank()) {
+                    filters.add("startDate > :startDate");
+                    params.put("startDate", String.format("%%%s%%", value));
+                }
             });
 
-            transactionFilter.getEndDate().ifPresent(endDate -> {
-                filters.add("time <= :endDate");
-                params.put("endDate", endDate);
+            transactionFilter.getEndDate().ifPresent(value -> {
+                if (!value.toString().isBlank()) {
+                    filters.add("endDate < :endDate");
+                    params.put("endDate", String.format("%%%s%%", value));
+                }
             });
 
             transactionFilter.getRecipient().ifPresent(value -> {
                 if (!value.isBlank()) {
-                    try {
-                        int recipientWalletId = Integer.parseInt(value);
-                        filters.add("recipientWalletId = :recipientWalletId");
-                        params.put("recipientWalletId", recipientWalletId);
-                    }
-                    catch (NumberFormatException e) {
-                        throw new IllegalArgumentException(VALID_NUMBER);
-                    }
+                    filters.add("recipient like :recipient");
+                    params.put("recipient", String.format("%%%s%%", value));
                 }
             });
 
             transactionFilter.getSender().ifPresent(value -> {
                 if (!value.isBlank()) {
-                    filters.add("sender.username like :sender");
+                    filters.add("sender like :sender");
                     params.put("sender", String.format("%%%s%%", value));
                 }
             });
 
             transactionFilter.getDirection().ifPresent(value -> {
                 if (!value.isBlank()) {
-
-                    try {
-                        int transactionTypeId = Integer.parseInt(value);
-                        filters.add("transactionTypeId = :direction");
-                        params.put("direction", transactionTypeId);
-                    }
-                    catch (NumberFormatException e) {
-                        throw new IllegalArgumentException(VALID_NUMBER);
-                    }
+                    filters.add("direction like :direction");
+                    params.put("direction", String.format("%%%s%%", value));
                 }
             });
 
@@ -85,8 +75,8 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
             queryString.append("From WalletToWalletTransaction where walletId = :walletId ");
 
             if (!filters.isEmpty()) {
-
-                queryString.append(" and ").append(String.join(" and ", filters));
+                queryString
+                        .append(String.join(" and ", filters));
             }
             queryString.append(generateOrderBy(transactionFilter));
 
@@ -121,7 +111,7 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
         }
     }
 
-    private String generateOrderBy(WalletTransactionModelFilterOptions transactionModelFilterOptions) {
+    private String generateOrderBy(TransactionModelFilterOptions transactionModelFilterOptions) {
 
         if (transactionModelFilterOptions.getSortBy().isEmpty()) {
             return "";

@@ -1,7 +1,7 @@
 package com.virtualwallet.repositories;
 
 import com.virtualwallet.exceptions.EntityNotFoundException;
-import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
+import com.virtualwallet.model_helpers.TransactionModelFilterOptions;
 import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.User;
 import com.virtualwallet.repositories.contracts.CardToWalletTransactionRepository;
@@ -22,7 +22,7 @@ public class CardToWalletTransactionImpl extends AbstractCrudRepository<CardToWa
     }
 
     @Override
-    public List<CardToWalletTransaction> getAllCardTransactionsWithFilter(User user, WalletTransactionModelFilterOptions transactionFilter) {
+    public List<CardToWalletTransaction> getAllCardTransactionsWithFilter(User user, TransactionModelFilterOptions transactionFilter) {
         return null;
     }
 
