@@ -110,7 +110,7 @@ public class UserRepositoryImpl extends AbstractCrudRepository<User> implements 
             Integer adminRoleId = (Integer) roleQuery.uniqueResult();
 
 
-            String userSql = "UPDATE Users SET roleId = :adminRoleId WHERE userId = :userId";
+            String userSql = "UPDATE Users SET role_id = :adminRoleId WHERE user_id = :userId";
             Query userQuery = session.createNativeQuery(userSql);
             userQuery.setParameter("adminRoleId", adminRoleId);
             userQuery.setParameter("userId", user.getId());
@@ -130,7 +130,7 @@ public class UserRepositoryImpl extends AbstractCrudRepository<User> implements 
             Integer userRoleId = (Integer) roleQuery.uniqueResult();
 
 
-            String userSql = "UPDATE Users SET roleId = :adminRoleId WHERE userId = :userId";
+            String userSql = "UPDATE Users SET role_id = :userRoleId WHERE user_id = :userId";
             Query userQuery = session.createNativeQuery(userSql);
             userQuery.setParameter("userRoleId", userRoleId);
             userQuery.setParameter("userId", user.getId());

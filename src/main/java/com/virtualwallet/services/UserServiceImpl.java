@@ -68,11 +68,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(User userToUpdate, User loggedUser) {
         verifyUserAccess(loggedUser, userToUpdate.getId());
-//        Todo change the logic of duplicateCheck(userToUpdate);
-//         or implement a new method for checking if the user is trying to update his profile info
-//         because it checks for duplicated user at all
-//         but not except the user who wants to update
-//         his profile info - TEAM
         duplicateCheck(userToUpdate);
         return userToUpdate;
 
@@ -102,21 +97,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void blockUser(int id, User user) {
-        if (!verifyAdminAccess(user)) {
+        if (!verifyAdminAccess(user) || user.getId() == id) {
             throw new UnauthorizedOperationException(PERMISSIONS_ERROR);
         }
-        // TODO Check if the user is not trying to block himself - TEAM
-        // TODO Check if user exists - TEAM
+        repository.getById(user.getId());
         repository.blockUser(id);
     }
 
     @Override
     public void unblockUser(int id, User user) {
-        if (!verifyAdminAccess(user)) {
+        if (!verifyAdminAccess(user) || user.getId() == id) {
             throw new UnauthorizedOperationException(PERMISSIONS_ERROR);
         }
-        // TODO Check if the user is not trying to unblock himself - TEAM
-        // TODO Check if user exists - TEAM
+        repository.getById(user.getId());
         repository.unblockUser(id);
     }
 
@@ -187,4 +180,5 @@ public class UserServiceImpl implements UserService {
         }
 
     }
+
 }
