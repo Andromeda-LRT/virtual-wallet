@@ -91,8 +91,8 @@ public class WalletController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateWallet(@RequestHeader HttpHeaders headers,
-                               @RequestBody @Valid WalletDto walletDto,
-                               @PathVariable int id) {
+                                          @RequestBody @Valid WalletDto walletDto,
+                                          @PathVariable int id) {
         try {
             User user = authHelper.tryGetUser(headers);
             // TODO Check why -> walletMapper.fromDto(walletDto, id);
@@ -160,15 +160,15 @@ public class WalletController {
 
     @GetMapping("/{wallet_id}/transactions/{transaction_id}")
     public ResponseEntity<?> getTransactionById(@RequestHeader HttpHeaders headers,
-                                                     @PathVariable int wallet_id,
-                                                     @PathVariable int transaction_id) {
+                                                @PathVariable int wallet_id,
+                                                @PathVariable int transaction_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             WalletToWalletTransaction walletToWalletTransaction = walletService.getTransactionById(user, wallet_id, transaction_id);
             TransactionResponseDto transaction = transactionResponseMapper.convertToDto(walletToWalletTransaction);
             return ResponseEntity.status(HttpStatus.OK).body(transaction);
         } catch (UnauthorizedOperationException e) {
-               return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
@@ -176,13 +176,13 @@ public class WalletController {
 
     @PostMapping("/{wallet_id}/transactions")
     public ResponseEntity<?> creteTransaction(@RequestHeader HttpHeaders headers,
-                                                   @PathVariable int wallet_id,
-                                                   @RequestBody @Valid TransactionDto transactionDto) {
+                                              @PathVariable int wallet_id,
+                                              @RequestBody @Valid TransactionDto transactionDto) {
         try {
             User user = authHelper.tryGetUser(headers);
             WalletToWalletTransaction walletToWalletTransaction = transactionMapper.fromDto(transactionDto, user);
             walletService.walletToWalletTransaction(user, wallet_id, walletToWalletTransaction);
-            return  ResponseEntity.status(HttpStatus.CREATED)
+            return ResponseEntity.status(HttpStatus.CREATED)
                     .body(transactionResponseMapper.convertToDto(walletToWalletTransaction));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -214,9 +214,9 @@ public class WalletController {
     //TODO remove at the end
 
     @PutMapping("/{wallet_id}/transactions/{transaction_id}/approve")
-        public ResponseEntity<Void>  approveTransaction(@RequestHeader HttpHeaders headers,
-                                   @PathVariable int wallet_id,
-                                   @PathVariable int transaction_id) {
+    public ResponseEntity<Void> approveTransaction(@RequestHeader HttpHeaders headers,
+                                                   @PathVariable int wallet_id,
+                                                   @PathVariable int transaction_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.approveTransaction(user, transaction_id, wallet_id);
@@ -231,8 +231,8 @@ public class WalletController {
 
     @PutMapping("/{wallet_id}/transactions/{transaction_id}/cancel")
     public ResponseEntity<Void> cancelTransaction(@RequestHeader HttpHeaders headers,
-                                  @PathVariable int wallet_id,
-                                  @PathVariable int transaction_id) {
+                                                  @PathVariable int wallet_id,
+                                                  @PathVariable int transaction_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.cancelTransaction(user, transaction_id, wallet_id);
@@ -247,9 +247,9 @@ public class WalletController {
 
     @PostMapping("/{wallet_id}/transactions/{card_id}")
     public ResponseEntity<Void> createTransactionWithCard(@RequestHeader HttpHeaders headers,
-                                          @PathVariable int wallet_id,
-                                          @PathVariable int card_id,
-                                          @RequestBody CardTransactionDto cardTransactionDto) {
+                                                          @PathVariable int wallet_id,
+                                                          @PathVariable int card_id,
+                                                          @RequestBody CardTransactionDto cardTransactionDto) {
         try {
             User user = authHelper.tryGetUser(headers);
             CardToWalletTransaction cardTransaction = transactionMapper.fromDto(cardTransactionDto);
