@@ -27,6 +27,8 @@ public class User {
     private Role role;
     @Column(name = "is_blocked")
     private boolean isBlocked;
+    @Column(name = "is_Archived")
+    private boolean isArchived;
     @Column(name = "phone_number")
     private String phoneNumber;
     @Column(name = "profile_picture")
@@ -113,6 +115,14 @@ public class User {
 
     public void setBlocked(boolean blocked) {
         isBlocked = blocked;
+    }
+
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public void setIsArchived(boolean archived) {
+        isArchived = archived;
     }
 
     public String getPhoneNumber() {
