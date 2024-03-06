@@ -72,7 +72,7 @@ CREATE TABLE cards
 (
     card_id         int auto_increment
         primary key,
-    number          varchar(19) not null,
+    number          varchar(50) not null,
     expiration_date datetime        not null,
     card_type_id    int         not null,
     card_holder     varchar(50) not null,

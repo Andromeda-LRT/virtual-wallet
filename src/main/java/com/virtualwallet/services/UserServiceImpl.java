@@ -66,6 +66,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User update(User userToUpdate, User loggedUser) {
         verifyUserAccess(loggedUser, userToUpdate.getId());
+//        Todo change the logic of duplicateCheck(userToUpdate);
+//         or implement a new method for checking if the user is trying to update his profile info
+//         because it checks for duplicated user at all
+//         but not except the user who wants to update
+//         his profile info - TEAM
         duplicateCheck(userToUpdate);
         return userToUpdate;
 
@@ -75,7 +80,15 @@ public class UserServiceImpl implements UserService {
     public void delete(int id, User loggedUser) {
         //ToDo if the withdrawing logic is implemented, make it so that a user cannot delete his account if there are funds in it
         verifyUserAccess(loggedUser, id);
+        //TODO Check if user exists - TEAM
         repository.delete(id);
+        /*
+        "message": "could not execute statement [(conn=404)
+        Cannot delete or update a parent row: a foreign key constraint fails
+        (`virtual_wallet`.`wallets`, CONSTRAINT `wallets_users_user_id_fk` FOREIGN KEY (`created_by`)
+        REFERENCES `users` (`user_id`))] [delete from users where user_id=?];
+        SQL [delete from users where user_id=?]; constraint [null]",
+        */
     }
 
     @Override
@@ -83,6 +96,8 @@ public class UserServiceImpl implements UserService {
         if (!verifyAdminAccess(user)) {
             throw new UnauthorizedOperationException(PERMISSIONS_ERROR);
         }
+        // TODO Check if the user is not trying to block himself - TEAM
+        // TODO Check if user exists - TEAM
         repository.blockUser(id);
     }
 
@@ -91,6 +106,8 @@ public class UserServiceImpl implements UserService {
         if (!verifyAdminAccess(user)) {
             throw new UnauthorizedOperationException(PERMISSIONS_ERROR);
         }
+        // TODO Check if the user is not trying to unblock himself - TEAM
+        // TODO Check if user exists - TEAM
         repository.unblockUser(id);
     }
 
@@ -134,11 +151,11 @@ public class UserServiceImpl implements UserService {
         User userToCheck = null;
 
         try {
-           userToCheck = repository.getByStringField("username", user.getUsername());
+            userToCheck = repository.getByStringField("username", user.getUsername());
         } catch (EntityNotFoundException e) {
             duplicateUserNameExists = false;
         }
-        if (duplicateUserNameExists && userToCheck.getId()!=user.getId()) {
+        if (duplicateUserNameExists && userToCheck.getId() != user.getId()) {
             throw new DuplicateEntityException("User", "username", user.getUsername());
         }
 
@@ -147,7 +164,7 @@ public class UserServiceImpl implements UserService {
         } catch (EntityNotFoundException e) {
             duplicateEmailExists = false;
         }
-        if (duplicateEmailExists && userToCheck.getId()!=user.getId()) {
+        if (duplicateEmailExists && userToCheck.getId() != user.getId()) {
             throw new DuplicateEntityException("User", "email", user.getEmail());
         }
 
@@ -156,7 +173,7 @@ public class UserServiceImpl implements UserService {
         } catch (EntityNotFoundException e) {
             duplicatePhoneExists = false;
         }
-        if (duplicatePhoneExists && userToCheck.getId()!=user.getId()) {
+        if (duplicatePhoneExists && userToCheck.getId() != user.getId()) {
             throw new DuplicateEntityException("User", "phone number", user.getPhoneNumber());
         }
 

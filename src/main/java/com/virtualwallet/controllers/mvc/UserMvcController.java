@@ -188,7 +188,7 @@ public class UserMvcController {
 
         try {
             Card card = cardMapper.fromDto(cardDto);
-            cardService.createCard(loggedUser, card);
+            cardService.createCard(loggedUser, card, cardDto.getCardHolder());
             return "redirect:/users/" + id + "/cards/addition";
         } catch (ExpiredCardException e) {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());

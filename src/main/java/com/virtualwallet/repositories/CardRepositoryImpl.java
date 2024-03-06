@@ -28,7 +28,7 @@ public class CardRepositoryImpl extends AbstractCrudRepository<Card> implements 
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             String sql = ("SELECT c.card_id, c.number, c.expiration_date, c.card_holder, c.card_type_id, " +
-                    "c.check_number_id, c.is_archived " +
+                    "c.cvv_number_id, c.is_archived " +
                     "FROM users u " +
                     "JOIN users_cards uc ON u.user_id = uc.user_id " +
                     "JOIN cards c ON c.card_id = uc.card_id " +
@@ -90,7 +90,7 @@ public class CardRepositoryImpl extends AbstractCrudRepository<Card> implements 
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             String sql = ("SELECT c.card_id, c.number, c.expiration_date, c.card_type_id, " +
-                    "c.card_holder, c.check_number_id, c.is_archived FROM cards c " +
+                    "c.card_holder, c.cvv_number_id, c.is_archived FROM cards c " +
                     "JOIN users_cards uc ON c.card_id = uc.card_id " +
                     "WHERE user_id =:userId AND c.card_id =:cardId");
 
