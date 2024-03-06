@@ -3,6 +3,7 @@ package com.virtualwallet.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -118,5 +119,23 @@ public class Wallet {
 
     public void setCardTransactions(Set<CardToWalletTransaction> cardTransactions) {
         this.cardTransactions = cardTransactions;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Wallet wallet)) return false;
+        return walletId == wallet.walletId && Double.compare(balance, wallet.balance) == 0
+                && isArchived == wallet.isArchived
+                && createdBy == wallet.createdBy
+                && Objects.equals(name, wallet.name)
+                && Objects.equals(iban, wallet.iban)
+                && Objects.equals(walletTransactions, wallet.walletTransactions)
+                && Objects.equals(cardTransactions, wallet.cardTransactions);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(walletId, name, iban, balance, isArchived, createdBy, walletTransactions, cardTransactions);
     }
 }
