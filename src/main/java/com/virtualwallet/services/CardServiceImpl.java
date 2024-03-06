@@ -72,8 +72,8 @@ public class CardServiceImpl implements CardService {
     @Override
     public void deleteCard(int card_id, User user) {
         authorizeCardAccess(card_id, user);
-        cardRepository.getByStringField("id", String.valueOf(card_id));
-
+        Card card = cardRepository.getById(card_id);
+        card.setArchived(true);
         // Todo implement a method for removing the card
         //  from the user list of cards
         //  user.removeCard(card_id);
@@ -82,10 +82,7 @@ public class CardServiceImpl implements CardService {
         // then make soft delete
         cardRepository.removeCardFromUser(user.getId(), card_id);
 
-        // TODO Change delete method logic - LYUBIMA
-        //  this method should go and update
-        //  card field isArchived to true
-        cardRepository.delete(card_id);
+        cardRepository.update(card);
     }
 
     @Override

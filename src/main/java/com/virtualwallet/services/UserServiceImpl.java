@@ -3,8 +3,10 @@ package com.virtualwallet.services;
 import com.virtualwallet.exceptions.DuplicateEntityException;
 import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.virtualwallet.exceptions.UnusedWalletBalanceException;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.models.User;
+import com.virtualwallet.models.Wallet;
 import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.utils.PasswordEncoderUtil;
@@ -78,10 +80,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void delete(int id, User loggedUser) {
-        //ToDo if the withdrawing logic is implemented, make it so that a user cannot delete his account if there are funds in it
+
         verifyUserAccess(loggedUser, id);
-        //TODO Check if user exists - TEAM
-        repository.delete(id);
+        User user = repository.getById(id);
+        for (Wallet wallet : user.getWallets()) {
+            if (wallet.getBalance() > 0) {
+                throw new UnusedWalletBalanceException(wallet.getIban(), String.valueOf(wallet.getBalance()));
+            }
+        }
+
+        user.setIsArchived(true);
+        repository.update(user);
         /*
         "message": "could not execute statement [(conn=404)
         Cannot delete or update a parent row: a foreign key constraint fails

@@ -2,6 +2,7 @@ package com.virtualwallet.services;
 
 import com.virtualwallet.exceptions.InsufficientFundsException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.virtualwallet.exceptions.UnusedWalletBalanceException;
 import com.virtualwallet.model_helpers.TransactionModelFilterOptions;
 import com.virtualwallet.model_mappers.CardMapper;
 import com.virtualwallet.models.*;
@@ -92,9 +93,15 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public void delete(User user, int wallet_id) {
-        //todo think about if there are money in the wallet, should we allow deletion of wallet - TEAM
-        verifyWallet(wallet_id, user);
-        walletRepository.delete(wallet_id);
+
+        Wallet walletToBeDeleted = verifyWallet(wallet_id, user);
+        if (walletToBeDeleted.getBalance() > 0) {
+            throw new UnusedWalletBalanceException(String.valueOf(walletToBeDeleted.getBalance()));
+        }
+        walletToBeDeleted.setArchived(true);
+        walletRepository.update(walletToBeDeleted);
+        user.getWallets().remove(walletToBeDeleted);
+        userService.update(user, user);
     }
 
     @Override
