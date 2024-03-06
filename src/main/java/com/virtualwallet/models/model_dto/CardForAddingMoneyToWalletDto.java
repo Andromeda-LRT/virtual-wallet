@@ -6,7 +6,7 @@ public class CardForAddingMoneyToWalletDto {
     private String number;
     private LocalDateTime expirationDate;
     private String cardHolder;
-    private int checkNumber;
+    private String checkNumber;
     private String cardType;
 
     public CardForAddingMoneyToWalletDto () {
@@ -14,7 +14,7 @@ public class CardForAddingMoneyToWalletDto {
     }
 
     public CardForAddingMoneyToWalletDto(String number, LocalDateTime expirationDate,
-                   String cardHolder, int checkNumber, String cardType) {
+                   String cardHolder, String checkNumber, String cardType) {
         this.number = number;
         this.expirationDate = expirationDate;
         this.cardHolder = cardHolder;
@@ -46,11 +46,11 @@ public class CardForAddingMoneyToWalletDto {
         this.cardHolder = cardHolder;
     }
 
-    public int getCheckNumber() {
+    public String getCheckNumber() {
         return checkNumber;
     }
 
-    public void setCheckNumber(int checkNumber) {
+    public void setCheckNumber(String checkNumber) {
         this.checkNumber = checkNumber;
     }
 
