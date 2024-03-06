@@ -122,14 +122,18 @@ public class WalletController {
 
     @GetMapping("/{wallet_id}/transactions")
     public ResponseEntity<?> getWalletTransactionHistory(@RequestHeader HttpHeaders headers,
-                                                                       @PathVariable int wallet_id,
-                                                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime  startDate,
-                                                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
-                                                                       @RequestParam(required = false) String sender,
-                                                                       @RequestParam(required = false) String recipient,
-                                                                       @RequestParam(required = false) String direction,
-                                                                       @RequestParam(required = false) String sortBy,
-                                                                       @RequestParam(required = false) String sortOrder) {
+                                                         @PathVariable int wallet_id,
+                                                         @RequestParam(required = false)
+                                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                             LocalDateTime startDate,
+                                                         @RequestParam(required = false)
+                                                             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                             LocalDateTime endDate,
+                                                         @RequestParam(required = false) String sender,
+                                                         @RequestParam(required = false) String recipient,
+                                                         @RequestParam(required = false) String direction,
+                                                         @RequestParam(required = false) String sortBy,
+                                                         @RequestParam(required = false) String sortOrder) {
         try {
             WalletTransactionModelFilterOptions transactionModelFilterOptions = new WalletTransactionModelFilterOptions(
                     startDate, endDate, sender, recipient, direction, sortBy, sortOrder);
@@ -143,7 +147,7 @@ public class WalletController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-    }
+        }
 
     }
 
