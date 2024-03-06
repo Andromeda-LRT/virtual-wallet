@@ -4,8 +4,7 @@ import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.InsufficientFundsException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
-import com.virtualwallet.model_helpers.TransactionModelFilterOptions;
-import com.virtualwallet.model_helpers.UserModelFilterOptions;
+import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.model_mappers.TransactionMapper;
 import com.virtualwallet.model_mappers.TransactionResponseMapper;
 import com.virtualwallet.model_mappers.WalletMapper;
@@ -18,15 +17,15 @@ import com.virtualwallet.models.model_dto.TransactionResponseDto;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.services.contracts.WalletService;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import com.virtualwallet.models.model_dto.WalletDto;
 import com.virtualwallet.models.model_dto.TransactionDto;
 
-import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -124,15 +123,15 @@ public class WalletController {
     @GetMapping("/{wallet_id}/transactions")
     public ResponseEntity<?> getWalletTransactionHistory(@RequestHeader HttpHeaders headers,
                                                                        @PathVariable int wallet_id,
-                                                                       @RequestParam(required = false) Time startDate,
-                                                                       @RequestParam(required = false) Time endDate,
+                                                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime  startDate,
+                                                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
                                                                        @RequestParam(required = false) String sender,
                                                                        @RequestParam(required = false) String recipient,
                                                                        @RequestParam(required = false) String direction,
                                                                        @RequestParam(required = false) String sortBy,
                                                                        @RequestParam(required = false) String sortOrder) {
         try {
-            TransactionModelFilterOptions transactionModelFilterOptions = new TransactionModelFilterOptions(
+            WalletTransactionModelFilterOptions transactionModelFilterOptions = new WalletTransactionModelFilterOptions(
                     startDate, endDate, sender, recipient, direction, sortBy, sortOrder);
 
             User user = authHelper.tryGetUser(headers);
@@ -142,7 +141,10 @@ public class WalletController {
             return ResponseEntity.status(HttpStatus.OK).body(walletToWalletTransactionList);
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
     }
 
 //    @GetMapping("/transactions")
@@ -258,7 +260,7 @@ public class WalletController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        //TODO will probably have to add move error handling here
+        //TODO will probably have to add more error handling here
     }
 
 //        @GetMapping("/recipient")
