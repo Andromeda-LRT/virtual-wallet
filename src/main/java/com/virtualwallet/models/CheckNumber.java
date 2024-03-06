@@ -12,13 +12,12 @@ public class CheckNumber {
     @Column(name = "cvv_number_id")
     int id;
     @Column(name = "cvv")
-    int cvvNumber;
+    String cvvNumber;
 
     public CheckNumber() {
     }
 
-    public CheckNumber(int id, int cvvNumber) {
-        this.id = id;
+    public CheckNumber(String cvvNumber) {
         this.cvvNumber = cvvNumber;
     }
 
@@ -30,11 +29,11 @@ public class CheckNumber {
         this.id = id;
     }
 
-    public int getCvv() {
+    public String getCvv() {
         return cvvNumber;
     }
 
-    public void setCvv(int cvvNumber) {
+    public void setCvv(String cvvNumber) {
         this.cvvNumber = cvvNumber;
     }
 

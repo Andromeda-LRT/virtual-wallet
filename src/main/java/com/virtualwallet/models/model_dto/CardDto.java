@@ -28,7 +28,7 @@ public class CardDto {
     private String cardHolder;
     @NotEmpty(message = "Check number can't be empty.")
     @Size(min = 3, max = 3, message = "Check number must contain only digits.")
-    private int checkNumber;
+    private String checkNumber;
 
     @NotEmpty(message = "Card type can't be empty.")
     @Positive(message = "Card type id must be a positive number.")
@@ -69,11 +69,11 @@ public class CardDto {
         this.cardHolder = cardHolder;
     }
 
-    public int getCheckNumber() {
+    public String getCheckNumber() {
         return checkNumber;
     }
 
-    public void setCheckNumber(int checkNumber) {
+    public void setCheckNumber(String checkNumber) {
         this.checkNumber = checkNumber;
     }
 
