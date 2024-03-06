@@ -38,7 +38,6 @@ public abstract class AbstractCrudRepository<T> extends AbstractReadRepository<T
             session.beginTransaction();
             session.remove(objToDelete);
             session.getTransaction().commit();
-            //TODO implement soft delete
         }
     }
 

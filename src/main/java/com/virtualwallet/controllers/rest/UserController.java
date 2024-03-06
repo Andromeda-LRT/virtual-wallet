@@ -52,6 +52,7 @@ public class UserController {
     }
 
 
+    // TODO Add catch block for AuthenticationFailure exception to all methods - TEAM
     @GetMapping
     public ResponseEntity<?> getAllUsers(@RequestHeader HttpHeaders headers,
                                   @RequestParam(required = false) String phoneNumber,
