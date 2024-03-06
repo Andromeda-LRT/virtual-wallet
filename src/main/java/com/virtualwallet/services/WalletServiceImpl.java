@@ -66,7 +66,6 @@ public class WalletServiceImpl implements WalletService {
     public Wallet getWalletById(User user, int wallet_id) {
         Wallet wallet = walletRepository.getById(wallet_id);
         checkWalletOwnership(user, wallet);
-        // TODO Check why this method does not work - LYUBIMA
 
         // todo check if user is part of this wallet - RENI
         //  checkUserPartOfWallet(user_id, wallet_id);
@@ -208,13 +207,6 @@ public class WalletServiceImpl implements WalletService {
     public Wallet getByStringField(String id, String s) {
         return walletRepository.getByStringField(id, s);
     }
-
-//    private void checkUserPartOfWallet(int user_id, int wallet_id) {
-//        // TODO this method should throw exception if user is not part of wallet - RENI
-//        if (!walletRepository.checkIfUserIsPartOfWallet(user_id, wallet_id)) {
-//            throw new UnauthorizedOperationException("You are not part of this wallet");
-//        }
-//    }
 
     private void checkWalletOwnership(User user, Wallet wallet) {
         if (!walletRepository.checkWalletOwnership(user.getId(), wallet.getWalletId()) && !userService.verifyAdminAccess(user)) {
