@@ -15,5 +15,5 @@ public interface CheckNumberRepository {
 
     CheckNumber getById(int id);
 
-    CheckNumber getByNumber(int fieldValue);
+    CheckNumber getByNumber(String fieldValue);
 }

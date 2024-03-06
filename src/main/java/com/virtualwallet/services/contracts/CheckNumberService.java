@@ -6,10 +6,10 @@ import com.virtualwallet.models.User;
 import java.util.List;
 
 public interface CheckNumberService {
-    CheckNumber createCheckNumber(User user, CheckNumber checkNumber);
+    CheckNumber createCheckNumber(String checkNumber);
     void deleteCheckNumber(int checkNumberId, User user);
     void updateCheckNumber(CheckNumber checkNumber, User user);
     CheckNumber getCheckNumberById(int checkNumberId);
-    CheckNumber getCheckNumberByNumber(int cvvNumber);
+    CheckNumber getCheckNumberByNumber(String cvvNumber);
     List<CheckNumber> getAllCheckNumbers();
 }

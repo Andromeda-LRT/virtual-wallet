@@ -19,14 +19,14 @@ public class CheckNumberRepositoryImpl extends AbstractCrudRepository<CheckNumbe
     }
 
     @Override
-    public CheckNumber getByNumber(int cvv) {
+    public CheckNumber getByNumber(String cvv) {
         try (Session session = sessionFactory.openSession()) {
             Query<CheckNumber> query = session.createQuery
                     ("From CheckNumber where cvvNumber =:cvv", CheckNumber.class)
                     .setParameter("cvv", cvv);
 
             List<CheckNumber> result = query.list();
-            if (result == null) {
+            if (result.isEmpty()) {
                 throw new EntityNotFoundException("CheckNumber", "number", String.valueOf(cvv));
             }
             return result.get(0);

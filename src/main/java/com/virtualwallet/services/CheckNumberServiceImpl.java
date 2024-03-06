@@ -24,10 +24,14 @@ public class CheckNumberServiceImpl implements CheckNumberService {
     }
 
     @Override
-    public CheckNumber createCheckNumber(User user, CheckNumber checkNumber) {
-        checkIfAdmin(user);
-        checkNumberRepository.create(checkNumber);
-        return checkNumber;
+    public CheckNumber createCheckNumber(String checkNumber) {
+//        checkIfAdmin(user);
+        try{
+            return checkNumberRepository.getByNumber(checkNumber);
+        } catch (EntityNotFoundException e) {
+            checkNumberRepository.create(new CheckNumber(checkNumber));
+            return checkNumberRepository.getByNumber(checkNumber);
+        }
     }
 
     @Override
@@ -62,7 +66,7 @@ public class CheckNumberServiceImpl implements CheckNumberService {
     }
 
     @Override
-    public CheckNumber getCheckNumberByNumber(int cvvNumber) {
+    public CheckNumber getCheckNumberByNumber(String cvvNumber) {
         return checkNumberRepository.getByNumber(cvvNumber);
     }
 
