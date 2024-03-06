@@ -53,7 +53,6 @@ public class WalletController {
         this.transactionMapper = transactionMapper;
     }
 
-    // TODO Add catch block for AuthenticationFailure exception to all methods - TEAM
     @GetMapping
     public ResponseEntity<?> getAllWallets(@RequestHeader HttpHeaders headers) {
         try {
