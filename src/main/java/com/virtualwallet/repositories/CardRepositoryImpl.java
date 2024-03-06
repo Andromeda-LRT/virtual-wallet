@@ -38,7 +38,7 @@ public class CardRepositoryImpl extends AbstractCrudRepository<Card> implements 
                     .setParameter("userId", userid);
 
             List<Card> result = query.getResultList();
-            if (result == null) {
+            if (result.isEmpty()) {
                 throw new EntityNotFoundException("user", "id", String.valueOf(userid), "cards");
             }
             return result;
@@ -99,7 +99,7 @@ public class CardRepositoryImpl extends AbstractCrudRepository<Card> implements 
                     .setParameter("cardId", cardId);
 
             List<Card> result = query.getResultList();
-            if (result == null) {
+            if (result.isEmpty()) {
                 throw new EntityNotFoundException("user", "id", String.valueOf(user.getId()), "cards");
             }
             return result.get(0);
