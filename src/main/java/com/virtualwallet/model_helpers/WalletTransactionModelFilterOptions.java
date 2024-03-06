@@ -1,25 +1,25 @@
 package com.virtualwallet.model_helpers;
 
-import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
-public class TransactionModelFilterOptions {
+public class WalletTransactionModelFilterOptions {
 
-    private Optional<Time> startDate;
-    private Optional<Time> endDate;
+    private Optional<LocalDateTime> startDate;
+    private Optional<LocalDateTime> endDate;
     private Optional<String> sender;
     private Optional<String> recipient;
     private Optional<String> direction;
     private Optional<String> sortBy;
     private Optional<String> sortOrder;
 
-    public TransactionModelFilterOptions(Time startDate,
-                                         Time endDate,
-                                         String sender,
-                                         String recipient,
-                                         String direction,
-                                         String sortBy,
-                                         String sortOrder) {
+    public WalletTransactionModelFilterOptions(LocalDateTime startDate,
+                                               LocalDateTime  endDate,
+                                               String sender,
+                                               String recipient,
+                                               String direction,
+                                               String sortBy,
+                                               String sortOrder) {
         this.startDate = Optional.ofNullable(startDate);
         this.endDate = Optional.ofNullable(endDate);
         this.sender = Optional.ofNullable(sender);
@@ -30,19 +30,19 @@ public class TransactionModelFilterOptions {
     }
 
 
-    public Optional<Time> getStartDate() {
+    public Optional<LocalDateTime> getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Optional<Time> startDate) {
+    public void setStartDate(Optional<LocalDateTime> startDate) {
         this.startDate = startDate;
     }
 
-    public Optional<Time> getEndDate() {
+    public Optional<LocalDateTime> getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Optional<Time> endDate) {
+    public void setEndDate(Optional<LocalDateTime> endDate) {
         this.endDate = endDate;
     }
 

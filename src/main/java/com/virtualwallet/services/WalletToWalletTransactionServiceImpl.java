@@ -1,6 +1,6 @@
 package com.virtualwallet.services;
 
-import com.virtualwallet.model_helpers.TransactionModelFilterOptions;
+import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.WalletToWalletTransaction;
@@ -34,7 +34,7 @@ public class WalletToWalletTransactionServiceImpl implements WalletTransactionSe
 
     @Override
     public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter
-            (User user, TransactionModelFilterOptions transactionFilter, Wallet wallet) {
+            (User user, WalletTransactionModelFilterOptions transactionFilter, Wallet wallet) {
 
         return walletTransactionRepository.getAllWalletTransactionsWithFilter(user, transactionFilter, wallet);
     }
