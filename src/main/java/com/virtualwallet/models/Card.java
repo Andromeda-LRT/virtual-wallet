@@ -19,8 +19,9 @@ public class Card {
 
     @Column(name = "card_holder")
     private String cardHolder;
-    @Column(name = "cvv_number_id")
-    private int checkNumber;
+    @ManyToOne
+    @JoinColumn(name = "cvv_number_id")
+    private CheckNumber checkNumber;
 
     @ManyToOne
     @JoinColumn(name = "card_type_id")
@@ -36,7 +37,7 @@ public class Card {
     public Card(int id, String number,
                 LocalDateTime expirationDate,
                 String cardHolder,
-                int checkNumber,
+                CheckNumber checkNumber,
                 CardType cardType) {
         this.id = id;
         this.number = number;
@@ -78,11 +79,11 @@ public class Card {
         this.cardHolder = cardHolder;
     }
 
-    public int getCheckNumber() {
+    public CheckNumber getCheckNumber() {
         return checkNumber;
     }
 
-    public void setCheckNumber(int checkNumber) {
+    public void setCheckNumber(CheckNumber checkNumber) {
         this.checkNumber = checkNumber;
     }
 
