@@ -69,6 +69,7 @@ public class UserServiceImpl implements UserService {
     public User update(User userToUpdate, User loggedUser) {
         verifyUserAccess(loggedUser, userToUpdate.getId());
         duplicateCheck(userToUpdate);
+        repository.update(userToUpdate);
         return userToUpdate;
 
     }
