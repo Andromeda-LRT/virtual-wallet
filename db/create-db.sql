@@ -49,7 +49,7 @@ CREATE TABLE user_wallets
     user_id   int not null,
     wallet_id int not null,
     constraint users_wallets_users_user_id_fk
-        foreign key (user_id) references users (user_id),
+        foreign key (user_id) references users (user_id) on delete cascade,
     constraint users_wallets_wallets_wallet_id_fk
         foreign key (wallet_id) references wallets (wallet_id) on delete cascade
 );
@@ -92,7 +92,7 @@ CREATE TABLE users_cards
     constraint user_cards_cards_card_id_fk
         foreign key (card_id) references cards (card_id) on delete cascade,
     constraint user_cards_users_user_id_fk
-        foreign key (user_id) references users (user_id)
+        foreign key (user_id) references users (user_id) on delete cascade
 );
 
 CREATE TABLE transaction_types
