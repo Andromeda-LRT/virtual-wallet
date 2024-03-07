@@ -95,9 +95,7 @@ public class WalletController {
                                           @PathVariable int id) {
         try {
             User user = authHelper.tryGetUser(headers);
-            // TODO Check why -> walletMapper.fromDto(walletDto, id);
-            //  is not working when updating wallet - TEAM
-            Wallet wallet = walletMapper.fromDto(walletDto, id);
+            Wallet wallet = walletMapper.fromDto(walletDto, id, user);
             walletService.updateWallet(user, wallet);
             return ResponseEntity.status(HttpStatus.OK).body(wallet);
         } catch (UnauthorizedOperationException e) {
@@ -184,7 +182,7 @@ public class WalletController {
                                               @RequestBody @Valid TransactionDto transactionDto) {
         try {
             User user = authHelper.tryGetUser(headers);
-            WalletToWalletTransaction walletToWalletTransaction = transactionMapper.fromDto(transactionDto, user);
+            WalletToWalletTransaction walletToWalletTransaction = transactionMapper.fromDto(transactionDto, user, wallet_id);
             walletService.walletToWalletTransaction(user, wallet_id, walletToWalletTransaction);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(transactionResponseMapper.convertToDto(walletToWalletTransaction));
@@ -245,6 +243,8 @@ public class WalletController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }catch (InsufficientFundsException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
         //Only a transaction that has NOT been approved can be canceled
     }
@@ -264,9 +264,7 @@ public class WalletController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        //TODO will probably have to add more error handling here
     }
-
 //        @GetMapping("/recipient")
 //    public String getRecipient(@RequestHeader HttpHeaders headers,
 //                               @RequestParam(required = false) String username,
