@@ -53,11 +53,11 @@ public class CardServiceImpl implements CardService {
             card.setNumber(encryptCardNumber(card.getNumber()));
             cardRepository.create(card);
             card.setNumber(decryptCardNumber(card.getNumber()));
-            addCardToUser(createdBy, card);
+            //addCardToUser(createdBy, card);
             return card;
         }
 
-        addCardToUser(createdBy, cardToBeCreated);
+        //addCardToUser(createdBy, cardToBeCreated);
         return cardToBeCreated;
     }
 
@@ -73,6 +73,7 @@ public class CardServiceImpl implements CardService {
     public void deleteCard(int card_id, User user) {
         authorizeCardAccess(card_id, user);
         Card card = cardRepository.getById(card_id);
+        cardRepository.removeCardFromUser(user.getId(), card_id);
         card.setArchived(true);
         // Todo implement a method for removing the card
         //  from the user list of cards
@@ -80,7 +81,7 @@ public class CardServiceImpl implements CardService {
         // then update user
         //  userService.update(user);
         // then make soft delete
-        cardRepository.removeCardFromUser(user.getId(), card_id);
+
 
         cardRepository.update(card);
     }
