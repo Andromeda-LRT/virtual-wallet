@@ -27,6 +27,8 @@ public class User {
     private Role role;
     @Column(name = "is_blocked")
     private boolean isBlocked;
+    @Column(name = "is_Archived")
+    private boolean isArchived;
     @Column(name = "phone_number")
     private String phoneNumber;
     @Column(name = "profile_picture")
@@ -39,6 +41,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "wallet_id")
     )
     private Set<Wallet> wallets;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "card_holder_id")
+     private Set<Card> cards;
 
     public User() {
     }
@@ -115,6 +121,14 @@ public class User {
         isBlocked = blocked;
     }
 
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public void setIsArchived(boolean archived) {
+        isArchived = archived;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -129,6 +143,14 @@ public class User {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public Set<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(Set<Card> cards) {
+        this.cards = cards;
     }
 
     @Override

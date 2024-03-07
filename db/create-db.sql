@@ -16,16 +16,16 @@ CREATE TABLE users
 (
     user_id         int auto_increment
         primary key,
-    username        varchar(50) not null,
-    password        varchar(65) not null,
-    first_name      varchar(50) not null,
-    last_name       varchar(50) not null,
-    email           varchar(50) not null,
-    role_id         int         default 1,
+    username        varchar(50)          not null,
+    password        varchar(65)          not null,
+    first_name      varchar(50)          not null,
+    last_name       varchar(50)          not null,
+    email           varchar(50)          not null,
+    role_id         int        default 1,
     is_blocked      tinyint(1) default 0 not null,
     is_archived     tinyint(1) default 0 not null,
-    phone_number    varchar(10) not null,
-    profile_picture varchar(100) null,
+    phone_number    varchar(10)          not null,
+    profile_picture varchar(100)         null,
     constraint users_roles_role_id_fk
         foreign key (role_id) references roles (role_id)
 );
@@ -34,11 +34,11 @@ CREATE TABLE wallets
 (
     wallet_id   int auto_increment
         primary key,
-    iban        varchar(34) not null,
+    iban        varchar(34)                not null,
     balance     double precision default 0,
-    is_archived tinyint(1) default 0 not null,
-    created_by  int         not null,
-    name        varchar(30) not null,
+    is_archived tinyint(1)       default 0 not null,
+    created_by  int                        not null,
+    name        varchar(30)                not null,
     constraint wallets_users_user_id_fk
         foreign key (created_by) references users (user_id)
 
@@ -49,9 +49,9 @@ CREATE TABLE user_wallets
     user_id   int not null,
     wallet_id int not null,
     constraint users_wallets_users_user_id_fk
-        foreign key (user_id) references users (user_id),
+        foreign key (user_id) references users (user_id) on delete cascade,
     constraint users_wallets_wallets_wallet_id_fk
-        foreign key (wallet_id) references wallets (wallet_id)
+        foreign key (wallet_id) references wallets (wallet_id) on delete cascade
 );
 
 CREATE TABLE card_types
@@ -65,23 +65,26 @@ CREATE TABLE cvv_numbers
 (
     cvv_number_id int auto_increment
         primary key,
-    cvv           int not null
+    cvv           varchar(3) not null
 );
 
 CREATE TABLE cards
 (
-    card_id         int auto_increment
+    card_id               int auto_increment
         primary key,
-    number          varchar(50) not null,
-    expiration_date datetime        not null,
-    card_type_id    int         not null,
-    card_holder     varchar(50) not null,
-    cvv_number_id int         not null,
-    is_archived     tinyint(1) default 0 not null,
+    number                varchar(50)          not null,
+    expiration_date       datetime             not null,
+    card_type_id          int                  not null,
+    card_holder_full_name varchar(50)          not null,
+    cvv_number_id         int                  not null,
+    is_archived           tinyint(1) default 0 not null,
+    card_holder_id        int                  not null,
     constraint cards_card_types_card_type_id_fk
         foreign key (card_type_id) references card_types (card_type_id),
     constraint cards_cvv_numbers_cvv_number_id_fk
-        foreign key (cvv_number_id) references cvv_numbers (cvv_number_id)
+        foreign key (cvv_number_id) references cvv_numbers (cvv_number_id),
+    constraint cards_users_user_id_fk
+        foreign key (card_holder_id) references users (user_id)
 );
 
 

@@ -1,8 +1,10 @@
 package com.virtualwallet.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "cards")
@@ -17,7 +19,7 @@ public class Card {
     @Column(name = "expiration_date")
     private LocalDateTime expirationDate;
 
-    @Column(name = "card_holder")
+    @Column(name = "card_holder_full_name")
     private String cardHolder;
     @ManyToOne
     @JoinColumn(name = "cvv_number_id")
@@ -30,6 +32,10 @@ public class Card {
     @Column(name = "is_archived")
     private boolean isArchived;
 
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "card_holder_id")
+    private User cardHolderId;
 
     public Card() {
     }
@@ -38,13 +44,14 @@ public class Card {
                 LocalDateTime expirationDate,
                 String cardHolder,
                 CheckNumber checkNumber,
-                CardType cardType) {
+                CardType cardType, User cardHolderId) {
         this.id = id;
         this.number = number;
         this.expirationDate = expirationDate;
         this.cardHolder = cardHolder;
         this.checkNumber = checkNumber;
         this.cardType = cardType;
+        this.cardHolderId = cardHolderId;
     }
 
     public int getId() {
@@ -100,6 +107,40 @@ public class Card {
     }
 
     public void setArchived(boolean archived) {
-        isArchived = archived;
+        this.isArchived = archived;
+    }
+
+    public User getCardHolderId() {
+        return cardHolderId;
+    }
+
+    public void setCardHolderId(User cardHolderId) {
+        this.cardHolderId = cardHolderId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Card card)) return false;
+        return getId() == card.getId()
+                && isArchived() == card.isArchived()
+                && Objects.equals(getNumber(), card.getNumber())
+                && Objects.equals(getExpirationDate(), card.getExpirationDate())
+                && Objects.equals(getCardHolder(), card.getCardHolder())
+                && Objects.equals(getCheckNumber(), card.getCheckNumber())
+                && Objects.equals(getCardType(), card.getCardType())
+                && Objects.equals(getCardHolderId(), card.getCardHolderId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(),
+                getNumber(),
+                getExpirationDate(),
+                getCardHolder(),
+                getCheckNumber(),
+                getCardType(),
+                isArchived(),
+                getCardHolderId());
     }
 }

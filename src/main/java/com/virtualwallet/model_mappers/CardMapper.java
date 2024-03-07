@@ -70,7 +70,7 @@ public class CardMapper {
 
     private LocalDateTime convertToLocalDateTime(Month month, Year year) {
         LocalDateTime date = LocalDateTime.of(year.getValue(), month.getValue(), month.maxLength(),
-                23, 59, 59, 999999999);
+                23, 59, 59);
         return date;
     }
 }

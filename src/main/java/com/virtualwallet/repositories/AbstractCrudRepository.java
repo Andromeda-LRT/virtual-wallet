@@ -6,9 +6,7 @@ import org.hibernate.SessionFactory;
 
 
 public abstract class AbstractCrudRepository<T> extends AbstractReadRepository<T> implements BaseCrudRepository<T> {
-    //todo have all other repoes extend abstractCrudRepo,
-    // when extending apply the relevant class the repo will be working with
-    // E.g. if its User repo --> <User> as type
+
     public AbstractCrudRepository(Class<T> klas, SessionFactory sessionFactory) {
         super(klas, sessionFactory);
     }
