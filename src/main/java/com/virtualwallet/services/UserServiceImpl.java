@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -62,6 +63,7 @@ public class UserServiceImpl implements UserService {
     public void create(User user) {
         duplicateCheck(user);
         user.setPassword(PasswordEncoderUtil.encodePassword(user.getPassword()));
+        user.setCards(new HashSet<>());
         repository.create(user);
     }
 
@@ -71,7 +73,6 @@ public class UserServiceImpl implements UserService {
         duplicateCheck(userToUpdate);
         repository.update(userToUpdate);
         return userToUpdate;
-
     }
 
     @Override

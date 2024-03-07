@@ -124,10 +124,11 @@ public class UserController {
 
     @PostMapping("/cards")
     public ResponseEntity<?> createUserCard(@RequestHeader HttpHeaders headers,
-                                            @RequestBody CardDto cardDto) {
+                                            @Valid @RequestBody CardDto cardDto) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             Card cardToBeCreated = cardMapper.fromDto(cardDto);
+            // TODO Think about the card holder - Logged user or the one from the dto - LYUBIMA
             cardService.createCard(loggedUser, cardToBeCreated, cardDto.getCardHolder());
             return ResponseEntity.status(HttpStatus.CREATED).body(cardToBeCreated);
         } catch (UnauthorizedOperationException e) {
@@ -230,7 +231,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("{user_id}/admin-approval")
+    @PutMapping("/{user_id}/admin-approval")
     public ResponseEntity<Void> giveUserAdminRights(@RequestHeader HttpHeaders headers,
                                                     @PathVariable int user_id) {
         try {
@@ -244,7 +245,7 @@ public class UserController {
         }
     }
 
-    @PutMapping("{user_id}/admin-cancellation")
+    @PutMapping("/{user_id}/admin-cancellation")
     public ResponseEntity<Void> removeUserAdminRights(@RequestHeader HttpHeaders headers,
                                       @PathVariable int user_id) {
         try {

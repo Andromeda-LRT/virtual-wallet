@@ -42,6 +42,10 @@ public class User {
     )
     private Set<Wallet> wallets;
 
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "card_holder_id")
+     private Set<Card> cards;
+
     public User() {
     }
 
@@ -139,6 +143,14 @@ public class User {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public Set<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(Set<Card> cards) {
+        this.cards = cards;
     }
 
     @Override

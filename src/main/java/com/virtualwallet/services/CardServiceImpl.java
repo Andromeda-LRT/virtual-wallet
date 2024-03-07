@@ -25,13 +25,11 @@ import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final UserService userService;
-    private final CheckNumberService checkNumberService;
 
     @Autowired
-    public CardServiceImpl(CardRepository cardRepository, UserService userService, CheckNumberService checkNumberService) {
+    public CardServiceImpl(CardRepository cardRepository, UserService userService) {
         this.cardRepository = cardRepository;
         this.userService = userService;
-        this.checkNumberService = checkNumberService;
     }
 
     @Override
@@ -44,45 +42,38 @@ public class CardServiceImpl implements CardService {
             String encryptedCardNumber = encryptCardNumber(card.getNumber());
             cardToBeCreated = cardRepository.getByStringField("number", encryptedCardNumber);
             cardToBeCreated.setExpirationDate(card.getExpirationDate());
-
+            //cardToBeCreated.setCardHolderId(createdBy);
             // Ensure the card number is stored encrypted in the repository
             cardRepository.update(cardToBeCreated);
-            cardToBeCreated.setNumber(decryptCardNumber(cardToBeCreated.getNumber()));
         } catch (EntityNotFoundException e) {
             // Encrypt the card number before saving the new card
             card.setNumber(encryptCardNumber(card.getNumber()));
+            card.setCardHolderId(createdBy);
             cardRepository.create(card);
             card.setNumber(decryptCardNumber(card.getNumber()));
-            //addCardToUser(createdBy, card);
+            addCardToUser(createdBy, card);
             return card;
         }
 
-        //addCardToUser(createdBy, cardToBeCreated);
+        addCardToUser(createdBy, cardToBeCreated);
+        cardToBeCreated.setNumber(decryptCardNumber(cardToBeCreated.getNumber()));
         return cardToBeCreated;
     }
 
     private void addCardToUser(User user, Card card) {
-        try{
-            cardRepository.getUserCard(user, card.getId());
-            throw new DuplicateEntityException("Card", "number", String.valueOf(card.getNumber()));
-        } catch (EntityNotFoundException e) {
-            cardRepository.addCardToUser(user.getId(), card.getId());
-        }
+            if(user.getCards().contains(card)){
+                throw new DuplicateEntityException("Card", "number",
+                        String.valueOf(decryptCardNumber(card.getNumber())));
+            }
+            user.getCards().add(card);
+            userService.update(user, user);
     }
     @Override
     public void deleteCard(int card_id, User user) {
         authorizeCardAccess(card_id, user);
         Card card = cardRepository.getById(card_id);
-        cardRepository.removeCardFromUser(user.getId(), card_id);
-        card.setArchived(true);
-        // Todo implement a method for removing the card
-        //  from the user list of cards
-        //  user.removeCard(card_id);
-        // then update user
-        //  userService.update(user);
-        // then make soft delete
-
-
+        user.getCards().remove(card);
+        userService.update(user, user);
         cardRepository.update(card);
     }
 
@@ -103,8 +94,10 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public List<Card> getAllUserCards(User user) {
+        userService.getByUsername(user.getUsername());
+
         List<Card> cardsWithDecryptedNumbers = new ArrayList<>();
-        for (Card card : cardRepository.getAllUserCards(user.getId())) {
+        for (Card card : user.getCards()) {
             card.setNumber(decryptCardNumber(card.getNumber()));
             cardsWithDecryptedNumbers.add(card);
         }
@@ -120,7 +113,7 @@ public class CardServiceImpl implements CardService {
     public void authorizeCardAccess(int card_id, User user) {
         StringBuilder cardHolderFullName = new StringBuilder();
         cardHolderFullName.append(user.getFirstName()).append(" ").append(user.getLastName());
-
+        //TODO WHY this do not work - LYUBIMA
         if (!cardRepository.getById(card_id).getCardHolder().equals(cardHolderFullName.toString())
                 && !user.getRole().getName().equals("admin")) {
             throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);
