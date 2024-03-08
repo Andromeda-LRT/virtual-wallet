@@ -11,20 +11,18 @@ import com.virtualwallet.model_mappers.UpdateUserMapper;
 import com.virtualwallet.model_mappers.UserMapper;
 import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
-import com.virtualwallet.models.model_dto.CardDto;
-import com.virtualwallet.models.model_dto.CardResponseDto;
-import com.virtualwallet.models.model_dto.UpdateUserDto;
-import com.virtualwallet.models.model_dto.UserDto;
+import com.virtualwallet.models.input_model_dto.CardDto;
+import com.virtualwallet.models.response_model_dto.CardResponseDto;
+import com.virtualwallet.models.input_model_dto.UpdateUserDto;
+import com.virtualwallet.models.input_model_dto.UserDto;
 import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.UserService;
 import jakarta.validation.Valid;
-import org.mariadb.jdbc.client.result.UpdatableResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 

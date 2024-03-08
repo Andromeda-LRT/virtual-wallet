@@ -3,7 +3,7 @@ package com.virtualwallet.model_mappers;
 import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
-import com.virtualwallet.models.model_dto.WalletDto;
+import com.virtualwallet.models.input_model_dto.WalletDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.virtualwallet.services.contracts.WalletService;

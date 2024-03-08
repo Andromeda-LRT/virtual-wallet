@@ -1,13 +1,11 @@
 package com.virtualwallet.model_mappers;
 
 import com.virtualwallet.models.Card;
-import com.virtualwallet.models.CardType;
 import com.virtualwallet.models.User;
-import com.virtualwallet.models.model_dto.CardDto;
-import com.virtualwallet.models.model_dto.CardForAddingMoneyToWalletDto;
+import com.virtualwallet.models.input_model_dto.CardDto;
+import com.virtualwallet.models.input_model_dto.CardForAddingMoneyToWalletDto;
 import com.virtualwallet.services.contracts.CardTypeService;
 import com.virtualwallet.services.contracts.CheckNumberService;
-import com.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package com.virtualwallet.models.model_dto;
+package com.virtualwallet.models.input_model_dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;

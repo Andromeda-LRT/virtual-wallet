@@ -1,10 +1,10 @@
-package com.virtualwallet.models.model_dto;
+package com.virtualwallet.models.mvc_input_model_dto;
 
-import java.sql.Time;
+import java.time.LocalDateTime;
 
 public class TransactionModelFilterDto {
-    private Time startDate;
-    private Time endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private String sender;
     private String recipient;
     private String direction;
@@ -14,8 +14,8 @@ public class TransactionModelFilterDto {
     public TransactionModelFilterDto() {
     }
 
-    public TransactionModelFilterDto(Time startDate,
-                                     Time endDate,
+    public TransactionModelFilterDto(LocalDateTime startDate,
+                                     LocalDateTime endDate,
                                      String sender,
                                      String recipient,
                                      String direction,
@@ -30,19 +30,19 @@ public class TransactionModelFilterDto {
         this.sortOrder = sortOrder;
     }
 
-    public Time getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Time startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public Time getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Time endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 

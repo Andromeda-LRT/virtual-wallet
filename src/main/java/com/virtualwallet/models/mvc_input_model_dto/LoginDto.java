@@ -1,4 +1,4 @@
-package com.virtualwallet.models.model_dto;
+package com.virtualwallet.models.mvc_input_model_dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;

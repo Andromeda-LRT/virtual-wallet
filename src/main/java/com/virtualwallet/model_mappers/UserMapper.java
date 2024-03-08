@@ -1,16 +1,17 @@
 package com.virtualwallet.model_mappers;
 
 import com.virtualwallet.models.User;
-import com.virtualwallet.models.model_dto.RegisterDto;
-import com.virtualwallet.models.model_dto.UserDto;
-import com.virtualwallet.repositories.contracts.RoleRepository;
+import com.virtualwallet.models.Wallet;
+import com.virtualwallet.models.mvc_input_model_dto.RegisterDto;
+import com.virtualwallet.models.input_model_dto.UserDto;
+import com.virtualwallet.models.response_model_dto.RecipientResponseDto;
+import com.virtualwallet.models.response_model_dto.WalletIbanResponseDto;
 import com.virtualwallet.services.contracts.RoleService;
 import com.virtualwallet.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 @Component
@@ -26,27 +27,27 @@ public class UserMapper {
         this.roleService = roleService;
     }
 
-    public User fromDto (int id, UserDto userDto, User loggedUser) {
-        User user = userService.get(id,loggedUser);
+    public User fromDto(int id, UserDto userDto, User loggedUser) {
+        User user = userService.get(id, loggedUser);
         toDtoObj(user, userDto);
         return user;
     }
 
 
-    public User fromDto(RegisterDto dto){
+    public User fromDto(RegisterDto dto) {
         User user = new User();
         toDtoObj(user, dto);
         return user;
 
     }
 
-    public User fromDto (UserDto userDto) {
+    public User fromDto(UserDto userDto) {
         User user = new User();
         toDtoObj(user, userDto);
         return user;
     }
 
-    public UserDto toDto(User user){
+    public UserDto toDto(User user) {
         UserDto userDto = new UserDto();
         userDto.setUsername(user.getUsername());
         userDto.setFirstName(user.getFirstName());
@@ -81,5 +82,20 @@ public class UserMapper {
             userDtos.add(toDto(user));
         }
         return userDtos;
+    }
+
+    public List<RecipientResponseDto> toRecipientDto(List<User> users) {
+        List<RecipientResponseDto> recipientList = new ArrayList<>();
+        for (User user : users) {
+            RecipientResponseDto recipient = new RecipientResponseDto();
+            recipient.setUsername(user.getUsername());
+            for (Wallet wallet : user.getWallets()) {
+                WalletIbanResponseDto walletIban = new WalletIbanResponseDto();
+                walletIban.setIban(walletIban.getIban());
+                recipient.getWalletIban().add(walletIban);
+            }
+            recipientList.add(recipient);
+        }
+        return recipientList;
     }
 }

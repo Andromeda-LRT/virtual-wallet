@@ -1,9 +1,7 @@
 package com.virtualwallet.model_mappers;
 
-import com.virtualwallet.models.User;
 import com.virtualwallet.models.WalletToWalletTransaction;
-import com.virtualwallet.models.model_dto.TransactionResponseDto;
-import com.virtualwallet.models.model_dto.UserDto;
+import com.virtualwallet.models.response_model_dto.TransactionResponseDto;
 import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.repositories.contracts.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
