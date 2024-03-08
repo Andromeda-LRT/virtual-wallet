@@ -75,6 +75,7 @@ public Card createCard(User createdBy, Card card) {
         authorizeCardAccess(card_id, user);
         Card card = cardRepository.getById(card_id);
         user.getCards().remove(card);
+        card.setArchived(true);
         userService.update(user, user);
         cardRepository.update(card);
     }
