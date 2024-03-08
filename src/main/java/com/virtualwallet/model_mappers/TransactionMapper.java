@@ -27,13 +27,16 @@ public class TransactionMapper {
         this.statusService = statusService;
     }
 
-    public WalletToWalletTransaction fromDto(TransactionDto transactionDto, User user) {
+    public WalletToWalletTransaction fromDto(TransactionDto transactionDto, User user, int walletId) {
         WalletToWalletTransaction walletToWalletTransaction = new WalletToWalletTransaction();
+
         walletToWalletTransaction.setAmount(transactionDto.getAmount());
         walletToWalletTransaction.setSender(user);
         walletToWalletTransaction.setStatus(statusService.getStatus(PENDING_TRANSACTION_ID));
         walletToWalletTransaction.setRecipientWalletId(walletService.checkIbanExistence(transactionDto.getIban()).getWalletId());
         walletToWalletTransaction.setTime(LocalDateTime.now());
+        walletToWalletTransaction.setWalletId(walletId);
+
         return walletToWalletTransaction;
     }
 

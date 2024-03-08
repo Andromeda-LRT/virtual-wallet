@@ -1,6 +1,7 @@
 package com.virtualwallet.model_mappers;
 
 import com.virtualwallet.exceptions.EntityNotFoundException;
+import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.model_dto.WalletDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,9 +26,8 @@ public class WalletMapper {
         return wallet;
     }
 
-    public Wallet fromDto(WalletDto walletDto, int id){
-        Wallet wallet = new Wallet();
-        wallet.setWalletId(id);
+    public Wallet fromDto(WalletDto walletDto, int id, User user){
+        Wallet wallet = walletService.getWalletById(user, id);
         wallet.setName(walletDto.getName());
         return wallet;
     }
