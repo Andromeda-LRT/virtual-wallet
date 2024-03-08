@@ -89,18 +89,16 @@ public class CardRepositoryImpl extends AbstractCrudRepository<Card> implements 
     public Card getUserCard(User user, int cardId) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
-            String sql = ("SELECT c.card_id, c.number, c.expiration_date, c.card_type_id, " +
-                    "c.card_holder, c.cvv_number_id, c.is_archived FROM cards c " +
-                    "JOIN users_cards uc ON c.card_id = uc.card_id " +
-                    "WHERE user_id =:userId AND c.card_id =:cardId");
+            String sql = ("SELECT * FROM cards c WHERE c.card_holder_id = :userId AND c.card_id = :cardId");
 
             Query<Card> query = session.createNativeQuery(sql, Card.class)
                     .setParameter("userId", user.getId())
                     .setParameter("cardId", cardId);
 
             List<Card> result = query.getResultList();
+            session.getTransaction().commit();
             if (result.isEmpty()) {
-                throw new EntityNotFoundException("user", "id", String.valueOf(user.getId()), "cards");
+                throw new EntityNotFoundException("Card", "id" , String.valueOf(cardId));
             }
             return result.get(0);
         }

@@ -106,11 +106,11 @@ public class WalletController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteWallet(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+    public ResponseEntity<?> deleteWallet(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.delete(user, id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
@@ -216,13 +216,13 @@ public class WalletController {
     //TODO remove at the end
 
     @PutMapping("/{wallet_id}/transactions/{transaction_id}/approve")
-    public ResponseEntity<Void> approveTransaction(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<?> approveTransaction(@RequestHeader HttpHeaders headers,
                                                    @PathVariable int wallet_id,
                                                    @PathVariable int transaction_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.approveTransaction(user, transaction_id, wallet_id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
@@ -232,13 +232,13 @@ public class WalletController {
 
 
     @PutMapping("/{wallet_id}/transactions/{transaction_id}/cancel")
-    public ResponseEntity<Void> cancelTransaction(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<?> cancelTransaction(@RequestHeader HttpHeaders headers,
                                                   @PathVariable int wallet_id,
                                                   @PathVariable int transaction_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.cancelTransaction(user, transaction_id, wallet_id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {

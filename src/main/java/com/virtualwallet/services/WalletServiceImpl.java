@@ -195,7 +195,7 @@ public class WalletServiceImpl implements WalletService {
         WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = webClient.method(HttpMethod.POST);
         WebClient.RequestBodySpec bodySpec = uriSpec.uri(URI.create(DUMMY_API_COMPLETE_URL));
         Wallet wallet = getWalletById(user, wallet_id);
-        Card card = cardService.getCard(card_id, user);
+        Card card = cardService.getCard(card_id, user, user.getId());
         CardForAddingMoneyToWalletDto cardDto = cardMapper.toDummyApiDto(card);
         WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(cardDto);
         WebClient.ResponseSpec responseSpec = populateResponseSpec(headersSpec);

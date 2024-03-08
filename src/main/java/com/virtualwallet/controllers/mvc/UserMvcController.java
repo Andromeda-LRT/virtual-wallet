@@ -187,8 +187,8 @@ public class UserMvcController {
         }
 
         try {
-            Card card = cardMapper.fromDto(cardDto);
-            cardService.createCard(loggedUser, card, cardDto.getCardHolder());
+            Card card = cardMapper.fromDto(cardDto, loggedUser);
+            cardService.createCard(loggedUser, card);
             return "redirect:/users/" + id + "/cards/addition";
         } catch (ExpiredCardException e) {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
@@ -205,11 +205,11 @@ public class UserMvcController {
         }
     }
 
-    @GetMapping("/{id}/cards/{cardId}")
-    public String showCardDetails(@PathVariable int id, @PathVariable int cardId, Model model, HttpSession session) {
+    @GetMapping("/{userId}/cards/{cardId}")
+    public String showCardDetails(@PathVariable int userId, @PathVariable int cardId, Model model, HttpSession session) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
-            Card card = cardService.getCard(cardId, loggedUser);
+            Card card = cardService.getCard(cardId, loggedUser, userId);
             model.addAttribute("card", card);
             return "CardDetailsView";
         } catch (AuthenticationFailureException e) {
@@ -248,7 +248,7 @@ public class UserMvcController {
         }
 
         try {
-            Card card = cardMapper.fromDto(cardDto, cardId);
+            Card card = cardMapper.fromDto(cardDto, cardId, loggedUser);
             cardService.updateCard(card, loggedUser);
             return "redirect:/users/" + id + "/cards/" + cardId;
         } catch (ExpiredCardException e) {

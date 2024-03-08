@@ -32,42 +32,44 @@ public class CardServiceImpl implements CardService {
         this.userService = userService;
     }
 
-    @Override
-    public Card createCard(User createdBy, Card card, String cardHolder) {
-        verifyCardExpirationDate(card);
-        checkCardHolder(createdBy, cardHolder);
-        Card cardToBeCreated;
-        try {
-            // Encrypt the card number before checking/using it in the repository
-            String encryptedCardNumber = encryptCardNumber(card.getNumber());
-            cardToBeCreated = cardRepository.getByStringField("number", encryptedCardNumber);
-            cardToBeCreated.setExpirationDate(card.getExpirationDate());
-            //cardToBeCreated.setCardHolderId(createdBy);
-            // Ensure the card number is stored encrypted in the repository
-            cardRepository.update(cardToBeCreated);
-        } catch (EntityNotFoundException e) {
-            // Encrypt the card number before saving the new card
-            card.setNumber(encryptCardNumber(card.getNumber()));
-            card.setCardHolderId(createdBy);
-            cardRepository.create(card);
-            card.setNumber(decryptCardNumber(card.getNumber()));
-            addCardToUser(createdBy, card);
-            return card;
-        }
+@Override
+public Card createCard(User createdBy, Card card) {
+    verifyCardExpirationDate(card);
+    Card cardToBeCreated;
+    try {
+        // Encrypt the card number before checking/using it in the repository
+        String encryptedCardNumber = encryptCardNumber(card.getNumber());
+        cardToBeCreated = cardRepository.getByStringField("number", encryptedCardNumber);
+        checkCardHolder(createdBy, cardToBeCreated);
 
-        addCardToUser(createdBy, cardToBeCreated);
-        cardToBeCreated.setNumber(decryptCardNumber(cardToBeCreated.getNumber()));
-        return cardToBeCreated;
+        cardToBeCreated.setExpirationDate(card.getExpirationDate());
+        // Ensure the card number is stored encrypted in the repository
+        cardRepository.update(cardToBeCreated);
+    } catch (EntityNotFoundException e) {
+        // Encrypt the card number before saving the new card
+        checkCardHolder(createdBy, card);
+        card.setNumber(encryptCardNumber(card.getNumber()));
+        card.setCardHolderId(createdBy);
+        cardRepository.create(card);
+        card.setNumber(decryptCardNumber(card.getNumber()));
+        addCardToUser(createdBy, card);
+        return card;
     }
+
+    addCardToUser(createdBy, cardToBeCreated);
+    cardToBeCreated.setNumber(decryptCardNumber(cardToBeCreated.getNumber()));
+    return cardToBeCreated;
+}
 
     private void addCardToUser(User user, Card card) {
-            if(user.getCards().contains(card)){
-                throw new DuplicateEntityException("Card", "number",
-                        String.valueOf(decryptCardNumber(card.getNumber())));
-            }
-            user.getCards().add(card);
-            userService.update(user, user);
+        if (user.getCards().contains(card)) {
+            throw new DuplicateEntityException("Card", "number",
+                    String.valueOf(decryptCardNumber(card.getNumber())));
+        }
+        user.getCards().add(card);
+        userService.update(user, user);
     }
+
     @Override
     public void deleteCard(int card_id, User user) {
         authorizeCardAccess(card_id, user);
@@ -87,8 +89,9 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public Card getCard(int card_id, User user) {
-        authorizeCardAccess(card_id, user);
+    public Card getCard(int card_id, User loggedUser, int userId) {
+        authorizeCardAccess(card_id, loggedUser);
+        User user = userService.get(userId, loggedUser);
         return cardRepository.getUserCard(user, card_id);
     }
 
@@ -120,12 +123,12 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-    private void checkCardHolder(User loggedUser, String cardHolderFullName) {
+    private void checkCardHolder(User loggedUser, Card card) {
         StringBuilder loggedUserFullName = new StringBuilder();
         loggedUserFullName.append(loggedUser.getFirstName()).append(" ").append(loggedUser.getLastName());
 
-        if (!loggedUserFullName.toString().equalsIgnoreCase(cardHolderFullName)
-                && !loggedUser.getRole().getName().equals("admin")) {
+        if (!(loggedUserFullName.toString().equalsIgnoreCase(card.getCardHolder()))
+         || !(loggedUser.getId() == card.getCardHolderId().getId())) {
             throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);
         }
     }
