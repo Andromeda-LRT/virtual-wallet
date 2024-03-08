@@ -6,11 +6,13 @@ import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_mappers.CardMapper;
+import com.virtualwallet.model_mappers.CardResponseMapper;
 import com.virtualwallet.model_mappers.UpdateUserMapper;
 import com.virtualwallet.model_mappers.UserMapper;
 import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.model_dto.CardDto;
+import com.virtualwallet.models.model_dto.CardResponseDto;
 import com.virtualwallet.models.model_dto.UpdateUserDto;
 import com.virtualwallet.models.model_dto.UserDto;
 import com.virtualwallet.services.contracts.CardService;
@@ -34,19 +36,21 @@ public class UserController {
     private final CardService cardService;
     private final UserMapper userMapper;
     private final UpdateUserMapper updateUserMapper;
+    private final CardResponseMapper cardResponseMapper;
     private final CardMapper cardMapper;
     private final AuthenticationHelper authHelper;
 
     @Autowired
     public UserController(UserService userService,
                           CardService cardService,
-                          UserMapper userMapper, UpdateUserMapper updateUserMapper,
+                          UserMapper userMapper, UpdateUserMapper updateUserMapper, CardResponseMapper cardResponseMapper,
                           CardMapper cardMapper,
                           AuthenticationHelper authHelper) {
         this.userService = userService;
         this.cardService = cardService;
         this.userMapper = userMapper;
         this.updateUserMapper = updateUserMapper;
+        this.cardResponseMapper = cardResponseMapper;
         this.cardMapper = cardMapper;
         this.authHelper = authHelper;
     }
@@ -54,11 +58,11 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<?> getAllUsers(@RequestHeader HttpHeaders headers,
-                                  @RequestParam(required = false) String phoneNumber,
-                                  @RequestParam(required = false) String username,
-                                  @RequestParam(required = false) String email,
-                                  @RequestParam(required = false) String sortBy,
-                                  @RequestParam(required = false) String sortOrder) {
+                                         @RequestParam(required = false) String phoneNumber,
+                                         @RequestParam(required = false) String username,
+                                         @RequestParam(required = false) String email,
+                                         @RequestParam(required = false) String sortBy,
+                                         @RequestParam(required = false) String sortOrder) {
         UserModelFilterOptions userFilter = new UserModelFilterOptions(
                 username, email, phoneNumber, sortBy, sortOrder);
         try {
@@ -86,7 +90,9 @@ public class UserController {
     public ResponseEntity<?> getAllUserCards(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            List<Card> cards = cardService.getAllUserCards(userService.get(id, loggedUser));
+            List<CardResponseDto> cards = cardResponseMapper.toResponseDtoList(
+                    cardService.getAllUserCards(userService.get(id, loggedUser))
+            );
             return ResponseEntity.status(HttpStatus.OK).body(cards);
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -98,12 +104,14 @@ public class UserController {
 
     @GetMapping("/{user_id}/cards/{card_id}")
     public ResponseEntity<?> getUserCard(@RequestHeader HttpHeaders headers,
-                            @PathVariable int user_id,
-                            @PathVariable int card_id) {
+                                         @PathVariable int user_id,
+                                         @PathVariable int card_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            Card card = cardService.getCard(card_id, userService.get(user_id, loggedUser));
-            return ResponseEntity.status(HttpStatus.OK).body(card);
+            CardResponseDto cardResponseDto = cardResponseMapper.toResponseDto(
+                    cardService.getCard(card_id, loggedUser, user_id)
+            );
+            return ResponseEntity.status(HttpStatus.OK).body(cardResponseDto);
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (EntityNotFoundException e) {
@@ -127,9 +135,10 @@ public class UserController {
                                             @Valid @RequestBody CardDto cardDto) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            Card cardToBeCreated = cardMapper.fromDto(cardDto);
+            Card cardToBeCreated = cardMapper.fromDto(cardDto, loggedUser);
             // TODO Think about the card holder - Logged user or the one from the dto - LYUBIMA
-            cardService.createCard(loggedUser, cardToBeCreated, cardDto.getCardHolder());
+//            cardService.createCard(loggedUser, cardToBeCreated, cardDto.getCardHolder());
+            cardService.createCard(loggedUser, cardToBeCreated);
             return ResponseEntity.status(HttpStatus.CREATED).body(cardToBeCreated);
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -157,12 +166,12 @@ public class UserController {
     }
 
     @PutMapping("/{id}/block")
-    public ResponseEntity<Void> blockUser(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<?> blockUser(@RequestHeader HttpHeaders headers,
                                           @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.blockUser(id, loggedUser);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
@@ -191,9 +200,10 @@ public class UserController {
                                             @PathVariable int card_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            Card card = cardMapper.fromDto(cardDto, card_id);
+            Card card = cardMapper.fromDto(cardDto, card_id, loggedUser);
             cardService.updateCard(card, userService.get(user_id, loggedUser));
-            return ResponseEntity.status(HttpStatus.OK).body(card);
+            CardResponseDto cardResponseDto = cardResponseMapper.toResponseDto(card);
+            return ResponseEntity.status(HttpStatus.OK).body(cardResponseDto);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (DuplicateEntityException e) {
@@ -204,11 +214,11 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {
+    public ResponseEntity<?> deleteUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.delete(id, loggedUser);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
@@ -217,13 +227,13 @@ public class UserController {
     }
 
     @DeleteMapping("/{user_id}/cards/{card_id}")
-    public ResponseEntity<Void> deleteUserCard(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<?> deleteUserCard(@RequestHeader HttpHeaders headers,
                                                @PathVariable int user_id,
                                                @PathVariable int card_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             cardService.deleteCard(card_id, userService.get(user_id, loggedUser));
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
@@ -232,12 +242,12 @@ public class UserController {
     }
 
     @PutMapping("/{user_id}/admin-approval")
-    public ResponseEntity<Void> giveUserAdminRights(@RequestHeader HttpHeaders headers,
+    public ResponseEntity<?> giveUserAdminRights(@RequestHeader HttpHeaders headers,
                                                     @PathVariable int user_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.giveUserAdminRights(userService.get(user_id, loggedUser), loggedUser);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
@@ -246,12 +256,12 @@ public class UserController {
     }
 
     @PutMapping("/{user_id}/admin-cancellation")
-    public ResponseEntity<Void> removeUserAdminRights(@RequestHeader HttpHeaders headers,
-                                      @PathVariable int user_id) {
+    public ResponseEntity<?> removeUserAdminRights(@RequestHeader HttpHeaders headers,
+                                                      @PathVariable int user_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.removeUserAdminRights(userService.get(user_id, loggedUser), loggedUser);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (EntityNotFoundException e) {
