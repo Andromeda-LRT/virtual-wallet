@@ -1,5 +1,6 @@
 package com.virtualwallet.services.contracts;
 
+import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.models.*;
 
@@ -10,6 +11,7 @@ public interface WalletService {
     //String addMoneyToWallet(User user, int card_id);
 
     List<Wallet> getAllWallets(User user);
+    List<User> getRecipient(UserModelFilterOptions userFilter);
 
     Wallet getWalletById(User user, int wallet_id);
 
@@ -33,12 +35,18 @@ public interface WalletService {
 
     Wallet checkIbanExistence(String ibanTo);
 
-    void approveTransaction(User user, int transaction_id, int wallet_id);
-
-    void cancelTransaction(User user, int transaction_id, int wallet_id);
+//    void approveTransaction(User user, int transaction_id, int wallet_id);
+//
+//    void cancelTransaction(User user, int transaction_id, int wallet_id);
 
     CardToWalletTransaction transactionWithCard(User user, int card_id, int wallet_id,
                                                 CardToWalletTransaction cardTransaction);
 
     Wallet getByStringField(String id, String s);
+
+    void checkWalletBalance(Wallet wallet, double amount);
+
+    void chargeWallet(Wallet wallet, double amount);
+
+    void transferMoneyToRecipientWallet(Wallet recipientWallet, double amount);
 }

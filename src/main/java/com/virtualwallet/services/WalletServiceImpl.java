@@ -3,10 +3,11 @@ package com.virtualwallet.services;
 import com.virtualwallet.exceptions.InsufficientFundsException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.exceptions.UnusedWalletBalanceException;
+import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.model_mappers.CardMapper;
 import com.virtualwallet.models.*;
-import com.virtualwallet.models.model_dto.CardForAddingMoneyToWalletDto;
+import com.virtualwallet.models.input_model_dto.CardForAddingMoneyToWalletDto;
 import com.virtualwallet.repositories.contracts.WalletRepository;
 import com.virtualwallet.services.contracts.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +65,11 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
+    public List<User> getRecipient(UserModelFilterOptions userFilter) {
+        return userService.getRecipient(userFilter);
+    }
+
+    @Override
     public Wallet getWalletById(User user, int wallet_id) {
         Wallet wallet = walletRepository.getById(wallet_id);
         checkWalletOwnership(user, wallet);
@@ -113,7 +119,8 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter(WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id) {
+    public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter
+            (WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id) {
         Wallet wallet = verifyWallet(wallet_id, user);
         return walletTransactionService.getAllWalletTransactionsWithFilter(user, transactionFilter, wallet);
     }
@@ -155,37 +162,37 @@ public class WalletServiceImpl implements WalletService {
 //        return transactionService.updateTransaction(user, transaction, wallet_id);
 //    }
 
-    @Override
-    public void approveTransaction(User user, int transaction_id, int wallet_id) {
-        // TODO To be implemented - TED consider using a transactionObj since
-        //  a transaction will be already have been created at this point or alternatively just its id
-        WalletToWalletTransaction transactionToBeApproved =
-                walletTransactionService.getWalletTransactionById(transaction_id);
-        Wallet senderWallet;
-        Wallet recipientWallet;
-        try {
-            senderWallet = checkWalletExistence(wallet_id);
-            recipientWallet = getWalletById(user, transactionToBeApproved.getRecipientWalletId());
-            checkWalletBalance(senderWallet, transactionToBeApproved.getAmount());
-            walletTransactionService.approveTransaction(transactionToBeApproved, recipientWallet);
-            chargeWallet(senderWallet, transactionToBeApproved.getAmount());
-            transferMoneyToRecipientWallet(recipientWallet, transactionToBeApproved.getAmount());
-         //   walletRepository.update(recipientWallet);
-        } catch (InsufficientFundsException e) {
-            walletTransactionService.cancelTransaction(transactionToBeApproved);
-        }
-    }
-
-    @Override
-    public void cancelTransaction(User user, int transaction_id, int wallet_id) {
-        // TODO To be implemented - TED consider using a transactionObj since
-        //  a transaction will be already have been created at this point or alternatively just its id
-
-        WalletToWalletTransaction transactionToBeCancelled =
-                walletTransactionService.getWalletTransactionById(transaction_id);
-
-        walletTransactionService.cancelTransaction(transactionToBeCancelled);
-    }
+//    @Override
+//    public void approveTransaction(User user, int transaction_id, int wallet_id) {
+//        // TODO To be implemented - TED consider using a transactionObj since
+//        //  a transaction will be already have been created at this point or alternatively just its id
+//        WalletToWalletTransaction transactionToBeApproved =
+//                walletTransactionService.getWalletTransactionById(transaction_id);
+//        Wallet senderWallet;
+//        Wallet recipientWallet;
+//        try {
+//            senderWallet = checkWalletExistence(wallet_id);
+//            recipientWallet = getWalletById(user, transactionToBeApproved.getRecipientWalletId());
+//            checkWalletBalance(senderWallet, transactionToBeApproved.getAmount());
+//            walletTransactionService.approveTransaction(transactionToBeApproved, recipientWallet);
+//            chargeWallet(senderWallet, transactionToBeApproved.getAmount());
+//            transferMoneyToRecipientWallet(recipientWallet, transactionToBeApproved.getAmount());
+//            //   walletRepository.update(recipientWallet);
+//        } catch (InsufficientFundsException e) {
+//            walletTransactionService.cancelTransaction(transactionToBeApproved);
+//        }
+//    }
+//
+//    @Override
+//    public void cancelTransaction(User user, int transaction_id, int wallet_id) {
+//        // TODO To be implemented - TED consider using a transactionObj since
+//        //  a transaction will be already have been created at this point or alternatively just its id
+//
+//        WalletToWalletTransaction transactionToBeCancelled =
+//                walletTransactionService.getWalletTransactionById(transaction_id);
+//
+//        walletTransactionService.cancelTransaction(transactionToBeCancelled);
+//    }
 
     //todo have request and response handling extracted inside a separate method
     // after ensuring functionality is working as intended - Ted
@@ -202,13 +209,13 @@ public class WalletServiceImpl implements WalletService {
         Mono<String> response = headersSpec.retrieve().bodyToMono(String.class);
         if (response.block().equals(APPROVED_TRANSFER)) {
             wallet.setBalance(cardTransaction.getAmount() + wallet.getBalance());
-           // walletRepository.update(wallet);
+            // walletRepository.update(wallet);
             cardTransactionService.approveTransaction(cardTransaction, user, card, wallet);
         }
         if (response.block().equals(DECLINED_TRANSFER)) {
             cardTransactionService.declineTransaction(cardTransaction, user, card, wallet);
         }
-       // walletRepository.update(wallet);
+        // walletRepository.update(wallet);
         return cardTransaction;
     }
 
@@ -254,19 +261,22 @@ public class WalletServiceImpl implements WalletService {
         return walletRepository.getByStringField("iban", ibanTo);
     }
 
-    private void checkWalletBalance(Wallet wallet, double amount) {
+    @Override
+    public void checkWalletBalance(Wallet wallet, double amount) {
         if (wallet.getBalance() <= amount) {
             throw new InsufficientFundsException("wallet", wallet.getIban(), wallet.getBalance(), amount);
         }
     }
 
-    private void chargeWallet(Wallet wallet, double amount) {
+    @Override
+    public void chargeWallet(Wallet wallet, double amount) {
         double newBalance = wallet.getBalance() - amount;
         wallet.setBalance(newBalance);
         walletRepository.update(wallet);
     }
 
-    private void transferMoneyToRecipientWallet(Wallet recipientWallet, double amount) {
+    @Override
+    public void transferMoneyToRecipientWallet(Wallet recipientWallet, double amount) {
         double newWalletBalance = recipientWallet.getBalance() + amount;
         recipientWallet.setBalance(newWalletBalance);
         walletRepository.update(recipientWallet);
