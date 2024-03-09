@@ -194,28 +194,20 @@ public class WalletServiceImpl implements WalletService {
 //        walletTransactionService.cancelTransaction(transactionToBeCancelled);
 //    }
 
-    //todo have request and response handling extracted inside a separate method
-    // after ensuring functionality is working as intended - Ted
     @Override
     public CardToWalletTransaction transactionWithCard(User user, int card_id, int wallet_id,
                                                        CardToWalletTransaction cardTransaction) {
-        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = webClient.method(HttpMethod.POST);
-        WebClient.RequestBodySpec bodySpec = uriSpec.uri(URI.create(DUMMY_API_COMPLETE_URL));
         Wallet wallet = getWalletById(user, wallet_id);
         Card card = cardService.getCard(card_id, user, user.getId());
-        CardForAddingMoneyToWalletDto cardDto = cardMapper.toDummyApiDto(card);
-        WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(cardDto);
-        WebClient.ResponseSpec responseSpec = populateResponseSpec(headersSpec);
-        Mono<String> response = headersSpec.retrieve().bodyToMono(String.class);
-        if (response.block().equals(APPROVED_TRANSFER)) {
+        String responseResult = sendTransferRequest(card);
+        if (responseResult.equals(APPROVED_TRANSFER)) {
             wallet.setBalance(cardTransaction.getAmount() + wallet.getBalance());
-            // walletRepository.update(wallet);
             cardTransactionService.approveTransaction(cardTransaction, user, card, wallet);
-        }
-        if (response.block().equals(DECLINED_TRANSFER)) {
+            walletRepository.update(wallet);
+        } else if (responseResult.equals(DECLINED_TRANSFER)){
             cardTransactionService.declineTransaction(cardTransaction, user, card, wallet);
+            walletRepository.update(wallet);
         }
-        // walletRepository.update(wallet);
         return cardTransaction;
     }
 
@@ -280,5 +272,15 @@ public class WalletServiceImpl implements WalletService {
         double newWalletBalance = recipientWallet.getBalance() + amount;
         recipientWallet.setBalance(newWalletBalance);
         walletRepository.update(recipientWallet);
+    }
+
+    private String sendTransferRequest(Card card) {
+        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = webClient.method(HttpMethod.POST);
+        WebClient.RequestBodySpec bodySpec = uriSpec.uri(URI.create(DUMMY_API_COMPLETE_URL));
+        CardForAddingMoneyToWalletDto cardDto = cardMapper.toDummyApiDto(card);
+        WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(cardDto);
+        WebClient.ResponseSpec responseSpec = populateResponseSpec(headersSpec);
+        Mono<String> response = headersSpec.retrieve().bodyToMono(String.class);
+        return response.block();
     }
 }
