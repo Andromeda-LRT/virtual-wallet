@@ -1,11 +1,12 @@
 package com.virtualwallet.models.response_model_dto;
 
 public class WalletIbanResponseDto {
-    String iban;
+    private String iban;
 
-    public WalletIbanResponseDto () {
+    public WalletIbanResponseDto() {
 
     }
+
     public WalletIbanResponseDto(String iban) {
         this.iban = iban;
     }

@@ -256,13 +256,14 @@ public class WalletController {
 
     @PostMapping("/{wallet_id}/transactions/{card_id}")
     public ResponseEntity<?> createTransactionWithCard(@RequestHeader HttpHeaders headers,
-                                                          @PathVariable int wallet_id,
-                                                          @PathVariable int card_id,
-                                                          @RequestBody CardTransactionDto cardTransactionDto) {
+                                                       @PathVariable int wallet_id,
+                                                       @PathVariable int card_id,
+                                                       @RequestBody CardTransactionDto cardTransactionDto) {
         try {
             User user = authHelper.tryGetUser(headers);
             CardToWalletTransaction cardTransaction = transactionMapper.fromDto(cardTransactionDto);
-          CardToWalletTransaction transactionResult =  walletService.transactionWithCard(user, card_id, wallet_id, cardTransaction);
+            CardToWalletTransaction transactionResult = walletService
+                    .transactionWithCard(user, card_id, wallet_id, cardTransaction);
             return ResponseEntity.status(HttpStatus.CREATED).body(transactionResult);
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -271,14 +272,24 @@ public class WalletController {
         }
     }
 
+    /**
+     * @param headers     Authenticated user
+     * @param username    name of recipient
+     * @param email       email of recipient
+     * @param phoneNumber phoneNumber of recipient
+     * @return returns a list <b>only</b> of recipients that have created wallets,
+     * containing their username and their created wallets' ibans.
+     */
     @GetMapping("/recipient")
     public List<RecipientResponseDto> getRecipient(@RequestHeader HttpHeaders headers,
                                                    @RequestParam(required = false) String username,
                                                    @RequestParam(required = false) String email,
-                                                   @RequestParam(required = false) String phoneNumber) {
+                                                   @RequestParam(required = false) String phoneNumber,
+                                                   @RequestParam(required = false) String sortBy,
+                                                   @RequestParam(required = false) String orderBy) {
 
         UserModelFilterOptions userFilter = new UserModelFilterOptions(
-                username, email, phoneNumber);
+                username, email, phoneNumber, sortBy, orderBy);
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             List<User> recipient = walletService.getRecipient(userFilter);

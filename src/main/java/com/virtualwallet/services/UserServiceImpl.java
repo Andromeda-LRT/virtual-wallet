@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getRecipient(UserModelFilterOptions userFilter) {
-        return repository.getRecipient(userFilter);
+        return repository.getAllWithFilter(userFilter);
     }
 
 

@@ -55,7 +55,7 @@ public class CardToWalletTransactionServiceImpl implements CardTransactionServic
     public void approveTransaction(CardToWalletTransaction cardTransaction,
                                    User user, Card card, Wallet wallet) {
         populateCardTransactionDetails(cardTransaction, user, card, statusService
-                .getStatus(CONFIRMED_TRANSACTION_ID));
+                .getStatus(CONFIRMED_TRANSACTION_ID), wallet);
         cardTransactionRepository.create(cardTransaction);
         wallet.getCardTransactions().add(cardTransaction);
     }
@@ -64,15 +64,16 @@ public class CardToWalletTransactionServiceImpl implements CardTransactionServic
     public void declineTransaction(CardToWalletTransaction cardTransaction,
                                    User user, Card card, Wallet wallet) {
         populateCardTransactionDetails(cardTransaction, user, card, statusService
-                .getStatus(DECLINED_TRANSACTION_ID));
+                .getStatus(DECLINED_TRANSACTION_ID), wallet);
         cardTransactionRepository.create(cardTransaction);
         wallet.getCardTransactions().add(cardTransaction);
     }
 
     private void populateCardTransactionDetails(CardToWalletTransaction cardTransaction,
-                                                User user, Card card, Status status) {
+                                                User user, Card card, Status status, Wallet wallet) {
         cardTransaction.setCardId(card.getId());
         cardTransaction.setUserId(user.getId());
+        cardTransaction.setWalletId(wallet.getWalletId());
         cardTransaction.setTransactionTypeId(INCOMING_TRANSACTION_TYPE_ID);
         cardTransaction.setStatus(status);
     }

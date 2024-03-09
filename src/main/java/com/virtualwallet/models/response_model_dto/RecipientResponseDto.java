@@ -1,12 +1,11 @@
 package com.virtualwallet.models.response_model_dto;
 
-import com.virtualwallet.models.Wallet;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class RecipientResponseDto {
-    String username;
-    List<WalletIbanResponseDto> walletIban;
+    private String username;
+    private List<WalletIbanResponseDto> walletIban;
 
     public RecipientResponseDto() {
 

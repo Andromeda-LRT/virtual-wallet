@@ -9,7 +9,7 @@ public interface UserRepository {
 
     List<User> getAll();
     List<User> getAllWithFilter(UserModelFilterOptions userFilter);
-    List<User> getRecipient(UserModelFilterOptions userFilter);
+    //List<User> getRecipient(UserModelFilterOptions userFilter);
     User getByStringField(String fieldName, String fieldValue);
     User getById(int id);
     void create(User user);

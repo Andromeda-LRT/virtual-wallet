@@ -16,7 +16,6 @@ import java.util.List;
 
 @Component
 public class UserMapper {
-
     private final UserService userService;
 
     private final RoleService roleService;
@@ -88,10 +87,15 @@ public class UserMapper {
         List<RecipientResponseDto> recipientList = new ArrayList<>();
         for (User user : users) {
             RecipientResponseDto recipient = new RecipientResponseDto();
+            List<WalletIbanResponseDto> walletIbanList = new ArrayList<>();
+            recipient.setWalletIban(walletIbanList);
             recipient.setUsername(user.getUsername());
+            if (user.getWallets().isEmpty()){
+                continue;
+            }
             for (Wallet wallet : user.getWallets()) {
                 WalletIbanResponseDto walletIban = new WalletIbanResponseDto();
-                walletIban.setIban(walletIban.getIban());
+                walletIban.setIban(wallet.getIban());
                 recipient.getWalletIban().add(walletIban);
             }
             recipientList.add(recipient);

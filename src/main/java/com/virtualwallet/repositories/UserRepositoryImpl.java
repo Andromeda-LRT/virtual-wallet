@@ -47,30 +47,30 @@ public class UserRepositoryImpl extends AbstractCrudRepository<User> implements 
         }
     }
 
-    @Override
-    public List<User> getRecipient(UserModelFilterOptions userFilter) {
-        try (Session session = sessionFactory.openSession()) {
-            List<String> filters = new ArrayList<>();
-            Map<String, Object> params = new HashMap<>();
-
-            populateFilterAndParams(userFilter, filters, params);
-
-            StringBuilder queryString = new StringBuilder();
-
-            queryString.append("select username, wallets from User");
-
-            if (!filters.isEmpty()) {
-                queryString
-                        .append(" where ")
-                        .append(String.join(" and ", filters));
-            }
-            queryString.append(generateOrderBy(userFilter));
-
-            Query<User> query = session.createQuery(queryString.toString(), User.class);
-            query.setProperties(params);
-            return query.list();
-        }
-    }
+//    @Override
+//    public List<User> getRecipient(UserModelFilterOptions userFilter) {
+//        try (Session session = sessionFactory.openSession()) {
+//            List<String> filters = new ArrayList<>();
+//            Map<String, Object> params = new HashMap<>();
+//
+//            populateFilterAndParams(userFilter, filters, params);
+//
+//            StringBuilder queryString = new StringBuilder();
+//
+//            queryString.append("from User");
+//
+//            if (!filters.isEmpty()) {
+//                queryString
+//                        .append(" where ")
+//                        .append(String.join(" and ", filters));
+//            }
+//            queryString.append(generateOrderBy(userFilter));
+//
+//            Query<User> query = session.createQuery(queryString.toString(), User.class);
+//            query.setProperties(params);
+//            return query.list();
+//        }
+//    }
 
     @Override
     public void blockUser(int user_id) {
