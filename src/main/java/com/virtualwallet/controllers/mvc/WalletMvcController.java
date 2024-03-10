@@ -5,6 +5,7 @@ import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.InsufficientFundsException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
+import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.model_mappers.TransactionMapper;
@@ -254,6 +255,44 @@ public class WalletMvcController {
         }
     }
 
+    @GetMapping("{wallet_id}/transfers")
+    public String showCardToWalletTransactionsPage(@PathVariable int wallet_id,
+                                                   Model model,
+                                                   @ModelAttribute("cardFilterOptions")
+                                                   TransactionModelFilterDto transactionFilterDto,
+                                                   HttpSession session) {
+
+        User user;
+        try {
+            user = authHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            CardTransactionModelFilterOptions transactionFilter =
+                    populateCardTransactionFilterOptions(transactionFilterDto);
+            //todo getAllCardTransaction should work with filterOttions
+//            List<CardToWalletTransaction> cardTransactions =
+//                    walletService.getAllCardTransactions(transactionFilter, user, wallet_id);
+            //todo transactionMapper to return CardTransactionResponseDto
+//            List<CardTransactionResponseDto> outputTransactions = transactionResponseMapper
+//                    .convertToDto(walletTransactions, wallet_id);
+           //model.addAttribute("cardTransactions", outputTransactions);
+            model.addAttribute("cardFilterOptions", transactionFilter);
+            return "CardTransactionsview";
+        } catch (UnauthorizedOperationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "UnauthorizedView";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "BadRequestView";
+        }
+
+    }
+
     @GetMapping("/{wallet_id}/transactions/new")
     public String showCreateTransactionPage(Model model,
                                             @PathVariable int wallet_id,
@@ -394,6 +433,18 @@ public class WalletMvcController {
     private WalletTransactionModelFilterOptions populateWalletTransactionFilterOptions
             (TransactionModelFilterDto dto) {
         return new WalletTransactionModelFilterOptions(
+                dto.getStartDate(),
+                dto.getEndDate(),
+                dto.getSender(),
+                dto.getRecipient(),
+                dto.getDirection(),
+                dto.getSortBy(),
+                dto.getSortOrder()
+        );
+    }
+    private CardTransactionModelFilterOptions populateCardTransactionFilterOptions
+            (TransactionModelFilterDto dto) {
+        return new CardTransactionModelFilterOptions(
                 dto.getStartDate(),
                 dto.getEndDate(),
                 dto.getSender(),
