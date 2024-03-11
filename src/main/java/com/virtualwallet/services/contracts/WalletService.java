@@ -7,8 +7,6 @@ import com.virtualwallet.models.*;
 import java.util.List;
 
 public interface WalletService {
-    //todo delete method once transition to transactionwithCard is complete -- Ted
-    //String addMoneyToWallet(User user, int card_id);
 
     List<Wallet> getAllWallets(User user);
     List<User> getRecipient(UserModelFilterOptions userFilter);
@@ -34,10 +32,6 @@ public interface WalletService {
 //   Transaction updateTransaction(User user,Transaction transaction, int wallet_id);
 
     Wallet checkIbanExistence(String ibanTo);
-
-//    void approveTransaction(User user, int transaction_id, int wallet_id);
-//
-//    void cancelTransaction(User user, int transaction_id, int wallet_id);
 
     CardToWalletTransaction transactionWithCard(User user, int card_id, int wallet_id,
                                                 CardToWalletTransaction cardTransaction);

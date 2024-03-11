@@ -54,11 +54,6 @@ public class WalletServiceImpl implements WalletService {
         this.cardTransactionService = cardTransactionService;
     }
 
-//    @Override
-//    public String addMoneyToWallet(User user, int card_id) {
-//
-//    }
-
     @Override
     public List<Wallet> getAllWallets(User user) {
         return walletRepository.getAllWallets(user);

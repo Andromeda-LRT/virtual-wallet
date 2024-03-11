@@ -11,8 +11,6 @@ import static com.virtualwallet.model_helpers.ModelConstantHelper.DUMMY_API_BASE
 @Configuration
 public class WebClientConfig {
 
-
-
     @Bean
     public WebClient webClient() {
         return WebClient.builder()
