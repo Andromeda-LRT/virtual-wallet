@@ -11,6 +11,8 @@ import com.virtualwallet.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -42,64 +44,74 @@ public class AuthenticationController {
     }
 
     @GetMapping("/login")
-    public String showLoginPage(Model model) {
+    public ResponseEntity<?> showLoginPage(Model model) {
         model.addAttribute("login", new LoginDto());
-        return "LoginView";
+//        return "LoginView";
+        return ResponseEntity.status(HttpStatus.OK).body("LoginView");
     }
 
     @PostMapping("/login")
-    public String handleLogin(@Valid @ModelAttribute("login") LoginDto dto,
-                              BindingResult bindingResult,
-                              HttpSession session) {
+    public ResponseEntity<?> handleLogin(@Valid @ModelAttribute("login") LoginDto dto,
+                                         BindingResult bindingResult,
+                                         HttpSession session) {
         if (bindingResult.hasErrors()) {
-            return "LoginView";
+//            return "LoginView";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("LoginView");
         }
 
         try {
             User user = authenticationHelper.verifyAuthentication(dto.getUsername(), dto.getPassword());
             session.setAttribute("currentUser", dto.getUsername());
             session.setAttribute("isAdmin", userService.verifyAdminAccess(user));
-            return "redirect:/home";
+//            return "redirect:/home";
+            return ResponseEntity.status(HttpStatus.OK).body("redirect:/home");
         } catch (AuthenticationFailureException e) {
             bindingResult.rejectValue("username", "auth_error", e.getMessage());
-            return "LoginView";
+//            return "LoginView";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("LoginView");
         }
 
     }
 
     @GetMapping("/logout")
-    public String handleLogout(HttpSession session) {
+    public ResponseEntity<?> handleLogout(HttpSession session) {
         session.removeAttribute("currentUser");
-        return "redirect:/home";
+//        return "redirect:/home";
+        return ResponseEntity.status(HttpStatus.OK).body("redirect:/home");
     }
 
     @GetMapping("/register")
-    public String showRegisterPage(Model model) {
+    public ResponseEntity<?> showRegisterPage(Model model) {
         model.addAttribute("register", new RegisterDto());
-        return "RegisterView";
+//        return "RegisterView";
+        return ResponseEntity.status(HttpStatus.OK).body("RegisterView");
     }
 
 
     @PostMapping("/register")
-    public String handleRegister(@Valid @ModelAttribute("register") RegisterDto register,
+    public ResponseEntity<?> handleRegister(@Valid @ModelAttribute("register") RegisterDto register,
                                  BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return "RegisterView";
+//            return "RegisterView";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("RegisterView");
         }
 
         if (!register.getPassword().equals(register.getPasswordConfirm())) {
             bindingResult.rejectValue("passwordConfirm",
                     "password_error", "Passwords mismatch.");
-            return "RegisterView";
+//            return "RegisterView";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("RegisterView");
         }
 
         try {
             User user = userMapper.fromDto(register);
             userService.create(user);
-            return "redirect:/auth/login";
+//            return "redirect:/auth/login";
+            return ResponseEntity.status(HttpStatus.OK).body("redirect:/auth/login");
         } catch (DuplicateEntityException e) {
             bindingResult.rejectValue("username", "username_error", e.getMessage());
-            return "RegisterView";
+//            return "RegisterView";
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("RegisterView");
         }
     }
 }
