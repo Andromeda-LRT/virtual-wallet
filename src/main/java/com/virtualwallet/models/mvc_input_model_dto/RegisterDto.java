@@ -1,53 +1,36 @@
-package com.virtualwallet.models.model_dto;
+package com.virtualwallet.models.mvc_input_model_dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
+import static com.virtualwallet.model_helpers.ModelConstantHelper.EMPTY_ERROR_MESSAGE;
 
-public class UpdateUserDto {
+public class RegisterDto extends LoginDto {
+
     @Schema(name = "firstName", example = "Ivan", required = true)
     @NotNull(message = EMPTY_ERROR_MESSAGE)
-    @Size(min = 3, max = 20, message = NAME_ERROR_MESSAGE)
     String firstName;
 
     @Schema(name = "lastName", example = "Ivanov", required = true)
     @NotNull(message = EMPTY_ERROR_MESSAGE)
-    @Size(min = 3, max = 20, message = NAME_ERROR_MESSAGE)
     String lastName;
 
-    @Schema(name = "email", example = "email@email.com", required = true)
+    @NotEmpty(message = "Password confirmation can't be empty.")
+    private String passwordConfirm;
     @Email(
             message = INVALID_EMAIL_ERROR_MESSAGE,
             regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$"
     )
-    @NotNull(message = EMPTY_ERROR_MESSAGE)
-    String email;
-
-    @Schema(name = "password", example = "Pass1234!", required = true)
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,20}$",
-            message = PASSWORD_ERROR_MESSAGE)
-    @NotNull(message = EMPTY_ERROR_MESSAGE)
-    String password;
+    @NotEmpty(message = "Email can't be empty.")
+    private String email;
 
     @Pattern(regexp = "^[0-9]+$",
             message = "Phone number must include only digits")
-    @NotNull(message = EMPTY_ERROR_MESSAGE)
     @Size(min = 10, max = 10, message = INVALID_PHONE_NUMBER_ERROR_MESSAGE)
     String phoneNumber;
 
-    public UpdateUserDto() {
-    }
-
-    public UpdateUserDto(String firstName, String lastName, String email, String password, String phoneNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.phoneNumber = phoneNumber;
+    public RegisterDto() {
     }
 
     public String getFirstName() {
@@ -66,12 +49,12 @@ public class UpdateUserDto {
         this.lastName = lastName;
     }
 
-    public String getPassword() {
-        return password;
+    public String getPasswordConfirm() {
+        return passwordConfirm;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordConfirm(String passwordConfirm) {
+        this.passwordConfirm = passwordConfirm;
     }
 
     public String getEmail() {

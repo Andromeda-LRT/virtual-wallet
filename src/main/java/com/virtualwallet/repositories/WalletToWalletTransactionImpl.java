@@ -28,7 +28,8 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
     }
 
     @Override
-    public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter(User user, WalletTransactionModelFilterOptions transactionFilter, Wallet wallet) {
+    public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter
+            (User user, WalletTransactionModelFilterOptions transactionFilter, Wallet wallet) {
         try (Session session = sessionFactory.openSession()) {
 
             List<String> filters = new ArrayList<>();

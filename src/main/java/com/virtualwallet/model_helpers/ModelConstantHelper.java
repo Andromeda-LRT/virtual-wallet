@@ -54,4 +54,7 @@ public class ModelConstantHelper {
     public static final String USER_PHONE_NUMBER = "phoneNumber";
     public static final String VALID_NUMBER = "Input must be a valid number.";
 
+    public static final String TRANSACTION_PENDING_STATUS = "Pending";
+    public static final String PROCESSED_TRANSACTION_MESSAGE = "Transaction is already processed";
+
 }

@@ -10,6 +10,8 @@ public interface UserService {
 
     List<User> getAllWithFilter(User user, UserModelFilterOptions userFilter);
 
+    List<User> getRecipient(UserModelFilterOptions userFilter);
+
     User get(int id, User user);
 
     User getByUsername(String username);

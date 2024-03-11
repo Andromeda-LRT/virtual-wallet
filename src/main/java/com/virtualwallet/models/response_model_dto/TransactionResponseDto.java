@@ -1,4 +1,4 @@
-package com.virtualwallet.models.model_dto;
+package com.virtualwallet.models.response_model_dto;
 
 import java.time.LocalDateTime;
 

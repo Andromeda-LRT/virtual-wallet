@@ -35,8 +35,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getAllWithFilter(User user, UserModelFilterOptions userFilter) {
-        return repository.getAllWithFilter(user, userFilter);
+        return repository.getAllWithFilter(userFilter);
     }
+
+    @Override
+    public List<User> getRecipient(UserModelFilterOptions userFilter) {
+        return repository.getAllWithFilter(userFilter);
+    }
+
 
     @Override
     public User get(int id, User user) {

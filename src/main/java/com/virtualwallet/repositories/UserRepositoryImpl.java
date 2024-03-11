@@ -23,40 +23,16 @@ public class UserRepositoryImpl extends AbstractCrudRepository<User> implements 
     }
 
     @Override
-    public List<User> getAllWithFilter(User user, UserModelFilterOptions userFilter) {
+    public List<User> getAllWithFilter(UserModelFilterOptions userFilter) {
         try (Session session = sessionFactory.openSession()) {
-
             List<String> filters = new ArrayList<>();
             Map<String, Object> params = new HashMap<>();
 
-            userFilter.getPhoneNumber().ifPresent(value -> {
-                if (!value.isBlank()) {
-                    filters.add("phoneNumber like :phoneNumber");
-                    params.put("phoneNumber", String.format("%%%s%%", value));
-                }
-            });
-
-            userFilter.getUsername().ifPresent(value -> {
-                if (!value.isBlank()) {
-                    filters.add("username like :username");
-                    params.put("username", String.format("%%%s%%", value));
-                }
-            });
-
-            userFilter.getEmail().ifPresent(value -> {
-                if (!value.isBlank()) {
-                    filters.add("email like :email");
-                    params.put("email", String.format("%%%s%%", value));
-                }
-            });
+            populateFilterAndParams(userFilter, filters, params);
 
             StringBuilder queryString = new StringBuilder();
 
-            if (user.getRole().getName().equals("admin")) {
-                queryString.append("from User");
-            } else {
-                queryString.append("select username, wallets from User");
-            }
+            queryString.append("from User");
 
             if (!filters.isEmpty()) {
                 queryString
@@ -70,6 +46,31 @@ public class UserRepositoryImpl extends AbstractCrudRepository<User> implements 
             return query.list();
         }
     }
+
+//    @Override
+//    public List<User> getRecipient(UserModelFilterOptions userFilter) {
+//        try (Session session = sessionFactory.openSession()) {
+//            List<String> filters = new ArrayList<>();
+//            Map<String, Object> params = new HashMap<>();
+//
+//            populateFilterAndParams(userFilter, filters, params);
+//
+//            StringBuilder queryString = new StringBuilder();
+//
+//            queryString.append("from User");
+//
+//            if (!filters.isEmpty()) {
+//                queryString
+//                        .append(" where ")
+//                        .append(String.join(" and ", filters));
+//            }
+//            queryString.append(generateOrderBy(userFilter));
+//
+//            Query<User> query = session.createQuery(queryString.toString(), User.class);
+//            query.setProperties(params);
+//            return query.list();
+//        }
+//    }
 
     @Override
     public void blockUser(int user_id) {
@@ -137,6 +138,31 @@ public class UserRepositoryImpl extends AbstractCrudRepository<User> implements 
             userQuery.executeUpdate();
             session.getTransaction().commit();
         }
+    }
+
+    private void populateFilterAndParams(UserModelFilterOptions userFilter,
+                                         List<String> filters,
+                                         Map<String, Object> params) {
+        userFilter.getPhoneNumber().ifPresent(value -> {
+            if (!value.isBlank()) {
+                filters.add("phoneNumber like :phoneNumber");
+                params.put("phoneNumber", String.format("%%%s%%", value));
+            }
+        });
+
+        userFilter.getUsername().ifPresent(value -> {
+            if (!value.isBlank()) {
+                filters.add("username like :username");
+                params.put("username", String.format("%%%s%%", value));
+            }
+        });
+
+        userFilter.getEmail().ifPresent(value -> {
+            if (!value.isBlank()) {
+                filters.add("email like :email");
+                params.put("email", String.format("%%%s%%", value));
+            }
+        });
     }
 
     private String generateOrderBy(UserModelFilterOptions userFilter) {

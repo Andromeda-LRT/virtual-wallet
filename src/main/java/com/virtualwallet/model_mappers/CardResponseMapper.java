@@ -1,7 +1,7 @@
 package com.virtualwallet.model_mappers;
 
 import com.virtualwallet.models.Card;
-import com.virtualwallet.models.model_dto.CardResponseDto;
+import com.virtualwallet.models.response_model_dto.CardResponseDto;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

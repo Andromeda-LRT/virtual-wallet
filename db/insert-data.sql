@@ -3,8 +3,8 @@ VALUES ('user'),
        ('admin');
 
 INSERT INTO statuses(status_name)
-VALUES ('Pending'),
-       ('Approved'),
+VALUES ('Confirmed'),
+       ('Pending'),
        ('Cancelled');
 
 INSERT INTO users (username, password, first_name, last_name, email, role_id, is_blocked, is_archived, phone_number)

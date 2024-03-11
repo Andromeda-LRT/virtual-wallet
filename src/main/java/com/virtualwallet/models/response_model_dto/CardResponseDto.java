@@ -1,20 +1,18 @@
-package com.virtualwallet.models.model_dto;
+package com.virtualwallet.models.response_model_dto;
 
 import java.time.LocalDateTime;
 
-public class CardForAddingMoneyToWalletDto {
+public class CardResponseDto {
     private String number;
     private LocalDateTime expirationDate;
     private String cardHolder;
     private String checkNumber;
     private String cardType;
 
-    public CardForAddingMoneyToWalletDto () {
-
+    public CardResponseDto() {
     }
 
-    public CardForAddingMoneyToWalletDto(String number, LocalDateTime expirationDate,
-                   String cardHolder, String checkNumber, String cardType) {
+    public CardResponseDto(String number, LocalDateTime expirationDate, String cardHolder, String checkNumber, String cardType) {
         this.number = number;
         this.expirationDate = expirationDate;
         this.cardHolder = cardHolder;
