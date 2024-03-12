@@ -82,7 +82,6 @@ public class WalletMvcController {
         List<Wallet> wallets = walletService.getAllWallets(user);
         model.addAttribute("wallets", wallets);
         model.addAttribute("userId", user.getId());
-        ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         return "WalletsView";
     }
 
