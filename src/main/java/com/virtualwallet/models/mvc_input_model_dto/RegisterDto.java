@@ -9,24 +9,23 @@ import static com.virtualwallet.model_helpers.ModelConstantHelper.EMPTY_ERROR_ME
 public class RegisterDto extends LoginDto {
 
     @Schema(name = "firstName", example = "Ivan", required = true)
-    @NotNull(message = EMPTY_ERROR_MESSAGE)
+    @NotBlank(message = EMPTY_ERROR_MESSAGE)
     String firstName;
 
     @Schema(name = "lastName", example = "Ivanov", required = true)
-    @NotNull(message = EMPTY_ERROR_MESSAGE)
+    @NotBlank(message = EMPTY_ERROR_MESSAGE)
     String lastName;
 
-    @NotEmpty(message = "Password confirmation can't be empty.")
+    @NotBlank(message = "Password confirmation can't be blank.")
     private String passwordConfirm;
     @Email(
             message = INVALID_EMAIL_ERROR_MESSAGE,
             regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$"
     )
-    @NotEmpty(message = "Email can't be empty.")
+    @NotBlank(message = "Email can't be empty.")
     private String email;
 
-    @Pattern(regexp = "^[0-9]+$",
-            message = "Phone number must include only digits")
+    @Pattern(regexp = "^[0-9]+$", message = "Phone number must include only digits")
     @Size(min = 10, max = 10, message = INVALID_PHONE_NUMBER_ERROR_MESSAGE)
     String phoneNumber;
 
