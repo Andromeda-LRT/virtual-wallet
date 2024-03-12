@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
+
+    <title>E-Wallet Home</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet">
+
+    <!--
+
+    TemplateMo 570 Chain App Dev
+
+    https://templatemo.com/tm-570-chain-app-dev
+
+    -->
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/assets/css/templatemo-chain-app-dev.css"
+          th:href="@{/assets/css/templatemo-chain-app-dev.css}">
+    <link rel="stylesheet" href="../static/assets/css/animated.css" th:href="@{/assets/css/animated.css}">
+    <link rel="stylesheet" href="../static/assets/css/owl.css" th:href="@{/assets/css/owl.css}">
+
+
+    <style>
+        .black-button a {
+            color: white;
+            background-color: black;
+            padding: 10px 40px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 2.5vh;
+            text-decoration: none;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .black-button a:hover {
+            transform: scale(1.1);
+            background-color: #333;
+        }
+
+
+        .gradient-button-copy a {
+            color: white !important;
+            background-color: black !important;
+            padding: 10px 40px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 2.5vh;
+            text-decoration: none;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .gradient-button a:hover {
+            transform: scale(1.1);
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+<!--header-->
+<div th:replace="~{fragments/VirtualWalletFragments :: header}"></div>
+<!--header-->
+
+<div id="about" class="about-us section">
+    <section class="section-padding section-bg" style="margin-top: 100px;">
+        <div class="container">
+            <div class="row">
+                <div class="card border-0 rounded-4">
+                    <div class="card-body p-3 p-md-4 p-xl-5">
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-4">
+                                    <h3 style="color: #4b8ef1">Login</h3>
+                                    <p style="color: #7a7a7a;">Don't have an account? <a href="#" th:href="@{/auth/register}"
+                                    style="color: black;font-weight: bold;">
+                                        Sign up
+                                    </a></p>
+                                </div>
+                            </div>
+                        </div>
+                        <form action="#" th:action="@{/auth/login}" th:object="${login}" method="post">
+                            <div class="row gy-3 overflow-hidden">
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control"
+                                               name="username" id="email" placeholder="usrename"
+                                               th:field="*{username}"
+                                               required/>
+                                        <label class="form-label">Username</label>
+                                        <span style=" color: red;" class="error" th:errors="*{username}"></span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-floating mb-3">
+                                        <input type="password" class="form-control" name="password" id="password"
+                                               placeholder="Password"
+                                               th:field="*{password}"
+                                               required/>
+                                        <label for="password" class="form-label">Password</label>
+                                        <span style=" color: red;" class="error" th:errors="*{password}"></span>
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="form-check">
+                                    </div>
+                                </div>
+                                <div class="col-12">
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary btn-lg"
+                                                style="background-color: #4b8ef1; border-color: #4b8ef1;"
+                                                type="submit" value="Login">
+                                            Log in now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+<div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/VirtualWalletFragments :: scripts}"></div>
+</body>
+</html>
