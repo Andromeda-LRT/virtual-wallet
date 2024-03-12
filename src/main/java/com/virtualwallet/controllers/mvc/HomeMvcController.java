@@ -13,22 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/home")
 public class HomeMvcController {
-//
-//    public final UserService userService;
-//    public final WalletService walletService;
-//
-//    @Autowired
-//    public HomeMvcController(UserService userService, WalletService walletService) {
-//        this.userService = userService;
-//        this.walletService = walletService;
-//    }
-
     @ModelAttribute("isAuthenticated")
     public boolean populateIsAuthenticated(HttpSession session) {
         return session.getAttribute("currentUser") != null;
     }
 
-    @GetMapping("/home")
+    @GetMapping
     public String showHomePage(Model model) {
         return "HomePageView";
     }
