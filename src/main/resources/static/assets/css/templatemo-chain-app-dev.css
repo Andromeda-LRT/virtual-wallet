@@ -1154,7 +1154,7 @@ About Us
 }
 
 .about-us:after {
-  background-image: url(../images/about-bg.jpg);
+  /*background-image: url(../images/about-bg.jpg);*/
   width: 777px;
   height: 1132px;
   content: '';
@@ -2036,9 +2036,9 @@ responsive
   .about-us .box-item {
     text-align: center;
   }
-  .about-us:after {
-    display: none;
-  }
+  /*.about-us:after {*/
+  /*  display: none;*/
+  /*}*/
   .about-us .gradient-button,
   .about-us span {
     text-align: center;
