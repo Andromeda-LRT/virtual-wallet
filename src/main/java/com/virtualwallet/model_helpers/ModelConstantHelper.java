@@ -6,7 +6,7 @@ public class ModelConstantHelper {
 
     public static final String INVALID_EMAIL_ERROR_MESSAGE = "Please enter a valid email address";
 
-    public static final String USERNAME_ERROR_MESSAGE = "Username must be of between 2 to 20 symbols long" +
+    public static final String USERNAME_ERROR_MESSAGE = "Username must be of between 6 to 16 symbols long" +
             " with no special characters";
     public static final String PASSWORD_ERROR_MESSAGE = "Password must be at least 8 and up to 20 symbols long, " +
             "containing at least 1 uppercase, 1 lowercase, 1 special character and 1 digit ";
