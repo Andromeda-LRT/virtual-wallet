@@ -70,120 +70,108 @@ public class WalletMvcController {
     }
 
     @GetMapping()
-    public ResponseEntity<?> showUserWallets(HttpSession session, Model model) {
+    public String showUserWallets(HttpSession session, Model model) {
 
         User user;
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
         //todo do we want walletResponseDto?
         List<Wallet> wallets = walletService.getAllWallets(user);
         model.addAttribute("wallets", wallets);
-        //return "WalletsView";
-        return ResponseEntity.status(HttpStatus.OK).body("WalletsView");
+        model.addAttribute("userId", user.getId());
+        ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return "WalletsView";
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<?> showSingleWallet(@PathVariable int id,
+    @GetMapping("/{id}")
+    public String showSingleWallet(@PathVariable int id,
                                    Model model,
                                    HttpSession session) {
         User user;
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
         try {
             Wallet wallet = walletService.getWalletById(user, id);
 
             model.addAttribute("walletId", id);
             model.addAttribute("wallet", wallet);
-//            return "WalletView";
-            return ResponseEntity.status(HttpStatus.OK).body("WalletView");
+            return "WalletView";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
+            return "UnauthorizedView";
         }
 
     }
 
     @GetMapping("/new")
-    public ResponseEntity<?> showCreateWalletPage(Model model, HttpSession session) {
+    public String showCreateWalletPage(Model model, HttpSession session) {
         User user;
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
         model.addAttribute("newWallet", new WalletDto());
-//        return "CreateNewWalletView";
-        return ResponseEntity.status(HttpStatus.OK).body("CreateNewWalletView");
+        return "CreateNewWalletView";
     }
 
     @PostMapping("/new")
-    public ResponseEntity<?> createWallet(@ModelAttribute("newWallet") @Valid WalletDto walletDto,
+    public String createWallet(@ModelAttribute("newWallet") @Valid WalletDto walletDto,
                                BindingResult errors,
                                HttpSession session,
                                Model model) {
         if (errors.hasErrors()) {
-//            return "CreateNewWalletView";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CreateNewWalletView");
+            return "CreateNewWalletView";
         }
 
         User user;
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
 
         try {
             Wallet wallet = walletMapper.fromDto(walletDto);
             walletService.createWallet(user, wallet);
-//            return "redirect:/wallets";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/wallets");
+            return "redirect:/wallets";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
+            return "UnauthorizedView";
         }
     }
 
     @GetMapping("/{id}/update")
-    public ResponseEntity<?> showEditWalletPage(@PathVariable int id,
+    public String showEditWalletPage(@PathVariable int id,
                                      Model model,
                                      HttpSession session) {
         User user;
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
 
         Wallet wallet = walletService.getWalletById(user, id);
         model.addAttribute("walletId", id);
         model.addAttribute("wallet", wallet);
-//        return "UpdateWalletView";
-        return ResponseEntity.status(HttpStatus.OK).body("UpdateWalletView");
+        return "UpdateWalletView";
     }
 
     @PostMapping("/{id}/update")
-    public ResponseEntity<?> updateWallet(@PathVariable int id,
+    public String updateWallet(@PathVariable int id,
                                @Valid @ModelAttribute("wallet") WalletDto walletDto,
                                BindingResult errors,
                                HttpSession session,
@@ -193,59 +181,51 @@ public class WalletMvcController {
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
 
         if (errors.hasErrors()) {
             model.addAttribute("walletId", id);
             model.addAttribute("wallet", walletDto);
-//            return "UpdateWalletView";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("UpdateWalletView");
+            return "UpdateWalletView";
         }
         try {
             Wallet newWallet = walletMapper.fromDto(walletDto, id, user);
             walletService.updateWallet(user, newWallet);
-//            return "redirect:/wallets/" + id;
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/wallets/" + id);
+            return "redirect:/wallets/" + id;
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         }
     }
 
     @GetMapping("/{id}/delete")
-    public ResponseEntity<?> deleteWallet(@PathVariable int id, Model model, HttpSession session) {
+    public String deleteWallet(@PathVariable int id, Model model, HttpSession session) {
 
         User user;
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
 
         try {
             walletService.delete(user, id);
-//            return "redirect:/wallets";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/wallets");
+            return "redirect:/wallets";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
+            return "UnauthorizedView";
         }
     }
 
     @GetMapping("/{wallet_id}/transactions")
-    public ResponseEntity<?> showWalletTransactionPage(@PathVariable int wallet_id,
+    public String showWalletTransactionPage(@PathVariable int wallet_id,
                                             Model model,
                                             @ModelAttribute("walletFilterOptions")
                                             TransactionModelFilterDto transactionFilterDto,
@@ -255,8 +235,7 @@ public class WalletMvcController {
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
         try {
             WalletTransactionModelFilterOptions transactionFilter =
@@ -267,23 +246,20 @@ public class WalletMvcController {
                     .convertToDto(walletTransactions, wallet_id);
             model.addAttribute("walletTransactions", outputTransactions);
             model.addAttribute("walletFilterOptions", transactionFilter);
-//            return "WalletTransactionsview";
-            return ResponseEntity.status(HttpStatus.OK).body("WalletTransactionsview");
+            return "WalletTransactionsview";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
-        }  catch (IllegalArgumentException e) {
-//            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            return "UnauthorizedView";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "BadRequestView";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BadRequestView");
+            return "BadRequestView";
         }
     }
 
     @GetMapping("{wallet_id}/transfers")
-    public ResponseEntity<?> showCardToWalletTransactionsPage(@PathVariable int wallet_id,
+    public String showCardToWalletTransactionsPage(@PathVariable int wallet_id,
                                                    Model model,
                                                    @ModelAttribute("cardFilterOptions")
                                                    TransactionModelFilterDto transactionFilterDto,
@@ -293,8 +269,7 @@ public class WalletMvcController {
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-            // return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
 
         try {
@@ -306,26 +281,23 @@ public class WalletMvcController {
             //todo transactionMapper to return CardTransactionResponseDto
 //            List<CardTransactionResponseDto> outputTransactions = transactionResponseMapper
 //                    .convertToDto(walletTransactions, wallet_id);
-           //model.addAttribute("cardTransactions", outputTransactions);
+            //model.addAttribute("cardTransactions", outputTransactions);
             model.addAttribute("cardFilterOptions", transactionFilter);
-//            return "CardTransactionsview";
-            return ResponseEntity.status(HttpStatus.OK).body("CardTransactionsview");
+            return "CardTransactionsview";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
+            return "UnauthorizedView";
         } catch (IllegalArgumentException e) {
-//            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "BadRequestView";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("BadRequestView");
+            return "BadRequestView";
         }
 
     }
 
     @GetMapping("/{wallet_id}/transactions/new")
-    public ResponseEntity<?> showCreateTransactionPage(Model model,
+    public String showCreateTransactionPage(Model model,
                                             @PathVariable int wallet_id,
                                             @ModelAttribute("transactionFilter")
                                             UserModelFilterDto userFilterDto,
@@ -334,8 +306,7 @@ public class WalletMvcController {
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
 
         try {
@@ -348,61 +319,49 @@ public class WalletMvcController {
             model.addAttribute("recipient", recipientList);
             model.addAttribute("newTransaction", transactionDto);
             model.addAttribute("walletId", wallet_id);
-//            return "CreateNewTransactionVIew";
-            return ResponseEntity.status(HttpStatus.OK).body("CreateNewTransactionVIew");
+            return "CreateNewTransactionVIew";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
+            return "UnauthorizedView";
         }
     }
 
     @PostMapping("/{wallet_id}/transactions/new")
-    public ResponseEntity<?> createTransaction(@ModelAttribute("newTransaction") @Valid TransactionDto transactionDto,
+    public String createTransaction(@ModelAttribute("newTransaction") @Valid TransactionDto transactionDto,
                                     @PathVariable int wallet_id,
                                     BindingResult errors,
                                     HttpSession session,
                                     Model model) {
         if (errors.hasErrors()) {
-//            return "CreateNewTransactionVIew";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CreateNewTransactionVIew");
+            return "CreateNewTransactionVIew";
         }
 
         User user;
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-           // return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
 
         try {
             WalletToWalletTransaction walletTransaction = transactionMapper.fromDto(transactionDto, user, wallet_id);
             walletService.walletToWalletTransaction(user, walletTransaction.getWalletId(), walletTransaction);
-            //return "redirect:/wallets/" + wallet_id + "transactions";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/wallets/" + wallet_id + "transactions");
+            return "redirect:/wallets/" + wallet_id + "transactions";
         } catch (InsufficientFundsException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "InsufficientFundsView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("InsufficientFundsView");
-        } catch (EntityNotFoundException e) {
-            //            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "UnauthorizedView";
         }
     }
 
 
     @GetMapping("/{wallet_id}/transfer")
-    public ResponseEntity<?>  showCreateTransactionWithCardPage(HttpSession session,
+    public String showCreateTransactionWithCardPage(HttpSession session,
                                                     @PathVariable int wallet_id,
                                                     Model model) {
 
@@ -410,8 +369,7 @@ public class WalletMvcController {
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-            // return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
 
         try {
@@ -420,23 +378,20 @@ public class WalletMvcController {
             model.addAttribute("walletId", wallet.getWalletId());
             model.addAttribute("cardList", cardList);
             model.addAttribute("cardDto", new CardTransactionDto());
-            // return "CardTransferView";
-            return ResponseEntity.status(HttpStatus.OK).body("CardTransferView");
+            return "CardTransferView";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
+            return "UnauthorizedView";
         }
     }
 
     @PostMapping("/{wallet_id}/transfer/{card_id}")
-    public ResponseEntity<?>  createTransactionWithCard(HttpSession session,
+    public String createTransactionWithCard(HttpSession session,
                                             @PathVariable int wallet_id,
                                             @PathVariable int card_id,
                                             @ModelAttribute("cardDto") @Valid CardTransactionDto cardDto,
@@ -444,33 +399,28 @@ public class WalletMvcController {
                                             Model model) {
 
         if (errors.hasErrors()) {
-            // return "CardTransferView";
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("CardTransferView");
+            return "CardTransferView";
         }
 
         User user;
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-           //  return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.FOUND).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         }
         try {
             cardService.authorizeCardAccess(card_id, user);
             CardToWalletTransaction cardTransaction = transactionMapper.fromDto(cardDto);
             walletService.transactionWithCard(user, card_id, wallet_id, cardTransaction);
-//            return "CardTransactionsView";
-            return ResponseEntity.status(HttpStatus.OK).body("CardTransactionsView");
-        }  catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            return "CardTransactionsView";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
+            return "UnauthorizedView";
         }
     }
 
