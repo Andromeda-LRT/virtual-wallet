@@ -16,6 +16,7 @@ import com.virtualwallet.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,21 +30,18 @@ public class UserMvcController {
     private final UserService userService;
     private final CardService cardService;
     private final AuthenticationHelper authenticationHelper;
-
     private final UserMapper userMapper;
-
-    private final CardMapper cardMapper;
+    
 
     @Autowired
     public UserMvcController(UserService userService,
                              CardService cardService,
                              AuthenticationHelper authenticationHelper,
-                             UserMapper userMapper, CardMapper cardMapper) {
+                             UserMapper userMapper) {
         this.userService = userService;
         this.cardService = cardService;
         this.authenticationHelper = authenticationHelper;
         this.userMapper = userMapper;
-        this.cardMapper = cardMapper;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -65,7 +63,7 @@ public class UserMvcController {
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -75,10 +73,10 @@ public class UserMvcController {
 
     @PostMapping("/{id}")
     public String updateUserProfile(@PathVariable int id,
-                                    @ModelAttribute("user") UserDto userDto,
-                                    BindingResult bindingResult,
-                                    Model model,
-                                    HttpSession session) {
+                                               @ModelAttribute("user") UserDto userDto,
+                                               BindingResult bindingResult,
+                                               Model model,
+                                               HttpSession session) {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
@@ -87,7 +85,7 @@ public class UserMvcController {
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "NotFoundView";
         }
 
         if (bindingResult.hasErrors()) {
@@ -101,7 +99,7 @@ public class UserMvcController {
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -120,169 +118,12 @@ public class UserMvcController {
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "ErrorView";
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "UnauthorizedView";
         }
     }
-
-    @GetMapping("/{id}/cards")
-    public String showUserCards(@PathVariable int id, Model model, HttpSession session) {
-        try {
-            User loggedUser = authenticationHelper.tryGetUser(session);
-            List<Card> cards = cardService.getAllUserCards(loggedUser);
-            model.addAttribute("cards", cards);
-            return "UserCardsView";
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        } catch (UnauthorizedOperationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "UnauthorizedView";
-        }
-    }
-
-    @GetMapping("/{id}/cards/addition")
-    public String showAddCardPage(@PathVariable int id, Model model, HttpSession session) {
-        try {
-            User loggedUser = authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-
-        model.addAttribute("card", new CardDto());
-        return "AddNewCardView";
-    }
-
-
-    @PostMapping("/{id}/cards/addition")
-    public String addCard(@PathVariable int id,
-                          @ModelAttribute("card") CardDto cardDto,
-                          BindingResult bindingResult,
-                          Model model,
-                          HttpSession session) {
-        User loggedUser;
-        try {
-            loggedUser = authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-
-        if (bindingResult.hasErrors()) {
-            return "AddNewCardView";
-        }
-
-        try {
-            Card card = cardMapper.fromDto(cardDto, loggedUser);
-            cardService.createCard(loggedUser, card);
-            return "redirect:/users/" + id + "/cards/addition";
-        } catch (ExpiredCardException e) {
-            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "AddNewCardView";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        } catch (UnauthorizedOperationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "UnauthorizedView";
-        }
-    }
-
-    @GetMapping("/{userId}/cards/{cardId}")
-    public String showCardDetails(@PathVariable int userId, @PathVariable int cardId, Model model, HttpSession session) {
-        try {
-            User loggedUser = authenticationHelper.tryGetUser(session);
-            Card card = cardService.getCard(cardId, loggedUser, userId);
-            model.addAttribute("card", card);
-            return "CardDetailsView";
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        } catch (UnauthorizedOperationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "UnauthorizedView";
-        }
-    }
-
-    @PostMapping("/{id}/cards/{cardId}")
-    public String updateCard(@PathVariable int id,
-                             @PathVariable int cardId,
-                             @ModelAttribute("card") CardDto cardDto,
-                             BindingResult bindingResult,
-                             Model model,
-                             HttpSession session) {
-        User loggedUser;
-        try {
-            loggedUser = authenticationHelper.tryGetUser(session);
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        }
-
-        if (bindingResult.hasErrors()) {
-            return "CardDetailsView";
-        }
-
-        try {
-            Card card = cardMapper.fromDto(cardDto, cardId, loggedUser);
-            cardService.updateCard(card, loggedUser);
-            return "redirect:/users/" + id + "/cards/" + cardId;
-        } catch (ExpiredCardException e) {
-            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "AddNewCardView";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        } catch (UnauthorizedOperationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "UnauthorizedView";
-        }
-    }
-
-
-    @GetMapping("/{id}/cards/{cardId}/deletion")
-    public String deleteCard(@PathVariable int id, @PathVariable int cardId, Model model, HttpSession session) {
-        try {
-            User loggedUser = authenticationHelper.tryGetUser(session);
-            cardService.deleteCard(cardId, loggedUser);
-            return "redirect:/users/" + id + "/cards";
-        } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login";
-        } catch (EntityNotFoundException e) {
-            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "ErrorView";
-        } catch (UnauthorizedOperationException e) {
-            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
-            model.addAttribute("error", e.getMessage());
-            return "UnauthorizedView";
-        }
-    }
+    
 }
