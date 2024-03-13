@@ -101,6 +101,9 @@ public class WalletServiceImpl implements WalletService {
         if (walletToBeDeleted.getBalance() > 0) {
             throw new UnusedWalletBalanceException(String.valueOf(walletToBeDeleted.getBalance()));
         }
+        if (walletToBeDeleted.getCreatedBy()!=user.getId()){
+            throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
+        }
         user.getWallets().remove(walletToBeDeleted);
         walletToBeDeleted.setArchived(true);
         walletRepository.update(walletToBeDeleted);
@@ -267,6 +270,36 @@ public class WalletServiceImpl implements WalletService {
         double newWalletBalance = recipientWallet.getBalance() + amount;
         recipientWallet.setBalance(newWalletBalance);
         walletRepository.update(recipientWallet);
+    }
+
+    @Override
+    public void addUserToWallet(User user, int wallet_id, int user_id){
+    Wallet wallet = getWalletById(user, wallet_id);
+    if (wallet.getWalletTypeId() == 1 || wallet.getCreatedBy()!=user.getId()) {
+        throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
+    }
+        UserWallets userWallets = new UserWallets(userService.verifyUserExistence(user_id), wallet);
+    walletRepository.addUserToWallet(userWallets);
+    }
+
+    @Override
+    public void removeUserFromWallet(User user, int wallet_id, int user_id){
+        Wallet wallet = getWalletById(user, wallet_id);
+        if (wallet.getWalletTypeId() == 1 || wallet.getCreatedBy()!=user.getId()) {
+            throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
+        }
+
+        UserWallets userWallets = new UserWallets(userService.verifyUserExistence(user_id), wallet);
+        walletRepository.removeUserFromWallet(userWallets);
+    }
+
+    @Override
+    public List<User> getWalletUsers(User user, int wallet_id){
+        Wallet wallet = getWalletById(user, wallet_id);
+        if (wallet.getCreatedBy()!=user.getId()) {
+            throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
+        }
+        return walletRepository.getWalletUsers(wallet_id);
     }
 
     private String sendTransferRequest(Card card) {

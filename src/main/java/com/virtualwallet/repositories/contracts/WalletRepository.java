@@ -1,10 +1,7 @@
 package com.virtualwallet.repositories.contracts;
 
 
-import com.virtualwallet.models.Card;
-import com.virtualwallet.models.User;
-import com.virtualwallet.models.Wallet;
-import com.virtualwallet.models.WalletToWalletTransaction;
+import com.virtualwallet.models.*;
 
 import java.util.List;
 
@@ -19,4 +16,10 @@ public interface WalletRepository {
     List<Wallet> getAllWallets(User user);
 
     boolean checkWalletOwnership(int userId, int walletId);
+
+    void addUserToWallet(UserWallets userWallets);
+
+    void removeUserFromWallet(UserWallets userWallets);
+
+    List<User> getWalletUsers(int wallet_id);
 }

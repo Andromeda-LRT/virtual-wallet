@@ -43,4 +43,10 @@ public interface WalletService {
     void chargeWallet(Wallet wallet, double amount);
 
     void transferMoneyToRecipientWallet(Wallet recipientWallet, double amount);
+
+    void addUserToWallet(User user, int wallet_id, int user_id);
+
+    void removeUserFromWallet(User user, int wallet_id, int user_id);
+
+    List<User> getWalletUsers(User user, int wallet_id);
 }
