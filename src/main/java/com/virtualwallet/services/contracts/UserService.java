@@ -38,4 +38,5 @@ public interface UserService {
 
     void verifyUserAccess(User loggedUser, int id);
 
+    User verifyUserExistence(int id);
 }
