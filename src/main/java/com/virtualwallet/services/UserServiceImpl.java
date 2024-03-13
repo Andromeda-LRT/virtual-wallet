@@ -166,6 +166,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public User verifyUserExistence(int id){
+        return repository.getById(id);
+    }
+
     private void duplicateCheck(User user) {
         boolean duplicateUserNameExists = true;
         boolean duplicateEmailExists = true;

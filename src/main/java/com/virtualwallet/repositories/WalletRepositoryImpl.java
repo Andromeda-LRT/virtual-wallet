@@ -1,8 +1,8 @@
 package com.virtualwallet.repositories;
 
 import com.virtualwallet.models.User;
+import com.virtualwallet.models.UserWallets;
 import com.virtualwallet.models.Wallet;
-import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.repositories.contracts.WalletRepository;
 import jakarta.persistence.NoResultException;
 import org.hibernate.Session;
@@ -40,6 +40,37 @@ public class WalletRepositoryImpl extends AbstractCrudRepository<Wallet> impleme
             return count > 0;
         } catch (NoResultException e) {
              return false;
+        }
+    }
+
+    @Override
+    public void addUserToWallet(UserWallets userWallets){
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.merge(userWallets);
+            session.getTransaction().commit();
+        }
+    }
+
+    @Override
+    public void removeUserFromWallet(UserWallets userWallets){
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            session.remove(userWallets);
+            session.getTransaction().commit();
+        }
+    }
+
+    @Override
+    public List<User> getWalletUsers(int wallet_id){
+        String sql = "SELECT u.* FROM users u " +
+                "JOIN user_wallets uw ON u.user_id = uw.user_id " +
+                "WHERE uw.wallet_id = :walletId";
+
+        try (Session session = sessionFactory.openSession()) {
+            return session.createNativeQuery(sql, User.class)
+                    .setParameter("walletId", wallet_id)
+                    .getResultList();
         }
     }
 }

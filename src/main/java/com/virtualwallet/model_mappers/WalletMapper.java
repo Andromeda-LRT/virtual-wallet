@@ -23,12 +23,14 @@ public class WalletMapper {
         Wallet wallet = new Wallet();
         wallet.setName(walletDto.getName());
         wallet.setIban(setUniqueIban());
+        wallet.setWalletTypeId(walletDto.getWalletTypeId());
         return wallet;
     }
 
     public Wallet fromDto(WalletDto walletDto, int id, User user){
         Wallet wallet = walletService.getWalletById(user, id);
         wallet.setName(walletDto.getName());
+        wallet.setWalletTypeId(walletDto.getWalletTypeId());
         return wallet;
     }
 

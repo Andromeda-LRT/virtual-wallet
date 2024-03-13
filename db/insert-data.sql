@@ -14,11 +14,15 @@ VALUES ('john_doe', 'pass123', 'John', 'Doe', 'john.doe@example.com', 2, false, 
        ('robert_miller', 'pass123', 'Robert', 'Miller', 'robert.miller@example.com', 1, false, false, '0875523548'),
        ('laura_moore', 'pass123', 'Laura', 'Moore', 'laura.moore@example.com', 1, false, false, '0875587478');
 
-INSERT INTO wallets (iban, balance, is_archived, created_by, name)
-VALUES ('NL52ABNA7650143244', 0, false, 3, 'Wallet'),
-       ('BG46BNPA94405271973851', 0, false, 1, 'Wallet'),
-       ('MK42539481826851967', 0, false, 2, 'Wallet'),
-       ('BG91TTBB94003263799846', 0, false, 4, 'Wallet');
+INSERT INTO wallet_types(type_name)
+VALUES ('Personal'),
+       ('Joined');
+
+INSERT INTO wallets (iban, balance, is_archived, created_by, name, wallet_type_id)
+VALUES ('NL52ABNA7650143244', 0, false, 3, 'Wallet', 1),
+       ('BG46BNPA94405271973851', 0, false, 1, 'Wallet', 1),
+       ('MK42539481826851967', 0, false, 2, 'Wallet', 1),
+       ('BG91TTBB94003263799846', 0, false, 4, 'Wallet', 1);
 
 INSERT INTO user_wallets (user_id, wallet_id)
 VALUES (3, 1),

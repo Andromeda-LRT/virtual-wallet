@@ -40,6 +40,8 @@ public interface UserService {
 
     void verifyUserAccess(User loggedUser, int id);
 
+    User verifyUserExistence(int id);
+
     void updateProfilePicture(User user, MultipartFile multipartFile) throws IOException;
 
 }

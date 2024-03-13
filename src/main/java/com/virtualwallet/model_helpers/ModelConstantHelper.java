@@ -59,6 +59,10 @@ public class ModelConstantHelper {
     public static final String TRANSACTION_PENDING_STATUS = "Pending";
     public static final String PROCESSED_TRANSACTION_MESSAGE = "Transaction is already processed";
 
+    public static final String AUTHORIZATION = "Authorization";
+
+    public static final String PERMISSIONS_ERROR_GENERAL =
+            "You don't have the permissions to perform this operation";
     public static final String IMGBB_IMG_UPLOAD_ENDPOINT_URL = "https://api.imgbb.com/1/upload";
     public static final String REQUEST_KEY_IMAGE = "image";
     public static final String UPLOAD_IMG_API_REQUEST_KEY = "key";

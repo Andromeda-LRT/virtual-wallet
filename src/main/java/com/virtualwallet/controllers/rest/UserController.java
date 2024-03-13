@@ -17,6 +17,7 @@ import com.virtualwallet.models.input_model_dto.UpdateUserDto;
 import com.virtualwallet.models.input_model_dto.UserDto;
 import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +26,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.virtualwallet.model_helpers.ModelConstantHelper.AUTHORIZATION;
 
 @RestController
 @RequestMapping("/api/users")
@@ -54,6 +57,7 @@ public class UserController {
     }
 
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping
     public ResponseEntity<?> getAllUsers(@RequestHeader HttpHeaders headers,
                                          @RequestParam(required = false) String phoneNumber,
@@ -71,6 +75,7 @@ public class UserController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
@@ -84,6 +89,7 @@ public class UserController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{id}/cards")
     public ResponseEntity<?> getAllUserCards(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
@@ -100,6 +106,7 @@ public class UserController {
 
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{user_id}/cards/{card_id}")
     public ResponseEntity<?> getUserCard(@RequestHeader HttpHeaders headers,
                                          @PathVariable int user_id,
@@ -128,6 +135,7 @@ public class UserController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @PostMapping("/cards")
     public ResponseEntity<?> createUserCard(@RequestHeader HttpHeaders headers,
                                             @Valid @RequestBody CardDto cardDto) {
@@ -145,6 +153,7 @@ public class UserController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@RequestHeader HttpHeaders headers,
                                         @Valid @RequestBody UpdateUserDto userDto,
@@ -163,6 +172,7 @@ public class UserController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{id}/block")
     public ResponseEntity<?> blockUser(@RequestHeader HttpHeaders headers,
                                           @PathVariable int id) {
@@ -177,6 +187,7 @@ public class UserController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{id}/unblock")
     public ResponseEntity<Void> unblockUser(@RequestHeader HttpHeaders headers,
                                             @PathVariable int id) {
@@ -191,6 +202,7 @@ public class UserController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{user_id}/cards/{card_id}")
     public ResponseEntity<?> updateUserCard(@RequestHeader HttpHeaders headers,
                                             @PathVariable int user_id,
@@ -211,6 +223,7 @@ public class UserController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
@@ -224,6 +237,7 @@ public class UserController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @DeleteMapping("/{user_id}/cards/{card_id}")
     public ResponseEntity<?> deleteUserCard(@RequestHeader HttpHeaders headers,
                                                @PathVariable int user_id,
@@ -239,6 +253,7 @@ public class UserController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{user_id}/admin-approval")
     public ResponseEntity<?> giveUserAdminRights(@RequestHeader HttpHeaders headers,
                                                     @PathVariable int user_id) {
@@ -253,6 +268,7 @@ public class UserController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{user_id}/admin-cancellation")
     public ResponseEntity<?> removeUserAdminRights(@RequestHeader HttpHeaders headers,
                                                       @PathVariable int user_id) {

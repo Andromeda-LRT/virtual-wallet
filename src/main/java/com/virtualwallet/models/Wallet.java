@@ -28,6 +28,9 @@ public class Wallet {
 
     @Column(name = "created_by")
     private int createdBy;
+
+    @Column(name = "wallet_type_id")
+    private int walletTypeId;
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -45,16 +48,25 @@ public class Wallet {
     )
     private Set<CardToWalletTransaction> cardTransactions;
 
-    public Wallet(int walletId, String iban, double balance, boolean isArchived, String name, int createdBy) {
+    public Wallet(int walletId, String iban, double balance, boolean isArchived, String name, int createdBy, int walletTypeId) {
         this.walletId = walletId;
         this.iban = iban;
         this.balance = balance;
         this.isArchived = isArchived;
         this.name = name;
         this.createdBy = createdBy;
+        this.walletTypeId = walletTypeId;
     }
 
     public Wallet() {
+    }
+
+    public int getWalletTypeId() {
+        return walletTypeId;
+    }
+
+    public void setWalletTypeId(int walletTypeId) {
+        this.walletTypeId = walletTypeId;
     }
 
     public int getWalletId() {
