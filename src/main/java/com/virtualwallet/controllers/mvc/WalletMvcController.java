@@ -26,6 +26,7 @@ import com.virtualwallet.services.contracts.WalletService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -80,10 +81,11 @@ public class WalletMvcController {
         //todo do we want walletResponseDto?
         List<Wallet> wallets = walletService.getAllWallets(user);
         model.addAttribute("wallets", wallets);
+        model.addAttribute("userId", user.getId());
         return "WalletsView";
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public String showSingleWallet(@PathVariable int id,
                                    Model model,
                                    HttpSession session) {
@@ -278,7 +280,7 @@ public class WalletMvcController {
             //todo transactionMapper to return CardTransactionResponseDto
 //            List<CardTransactionResponseDto> outputTransactions = transactionResponseMapper
 //                    .convertToDto(walletTransactions, wallet_id);
-           //model.addAttribute("cardTransactions", outputTransactions);
+            //model.addAttribute("cardTransactions", outputTransactions);
             model.addAttribute("cardFilterOptions", transactionFilter);
             return "CardTransactionsview";
         } catch (UnauthorizedOperationException e) {
