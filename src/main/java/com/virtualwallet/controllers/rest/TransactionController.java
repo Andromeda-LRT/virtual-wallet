@@ -4,8 +4,10 @@ import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.exceptions.InvalidOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
+import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.model_mappers.TransactionResponseMapper;
+import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.services.contracts.IntermediateTransactionService;
@@ -33,7 +35,7 @@ public class TransactionController {
         this.transactionResponseMapper = transactionResponseMapper;
     }
 
-    @GetMapping
+    @GetMapping("/wallets")
     public ResponseEntity<?> getAllTransactions(@RequestHeader HttpHeaders headers,
                                                 @RequestParam(required = false)
                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -56,6 +58,35 @@ public class TransactionController {
                     middleTransactionService.getAllWithFilter(user, transactionModelFilterOptions);
 //            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
             return ResponseEntity.status(HttpStatus.OK).body(walletToWalletTransactionList);
+        } catch (UnauthorizedOperationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/cards")
+    public ResponseEntity<?> getAllCardTransfers(@RequestHeader HttpHeaders headers,
+                                                 @RequestParam(required = false)
+                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                 LocalDateTime startDate,
+                                                 @RequestParam(required = false)
+                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                 LocalDateTime endDate,
+                                                 @RequestParam(required = false) String cardLastFourDigits,
+                                                 @RequestParam(required = false) String recipient,
+                                                 @RequestParam(required = false) String direction,
+                                                 @RequestParam(required = false) String sortBy,
+                                                 @RequestParam(required = false) String sortOrder) {
+        try {
+            CardTransactionModelFilterOptions cardTransactionModelFilterOptions = new CardTransactionModelFilterOptions(
+                    startDate, endDate, cardLastFourDigits, recipient, direction, sortBy, sortOrder);
+
+            User user = authHelper.tryGetUser(headers);
+            List<CardToWalletTransaction> cardToWalletTransactionList =
+                    middleTransactionService.getAllCardTransactionsWithFilter(user, cardTransactionModelFilterOptions);
+//            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
+            return ResponseEntity.status(HttpStatus.OK).body(cardTransactionModelFilterOptions);
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (IllegalArgumentException e) {
