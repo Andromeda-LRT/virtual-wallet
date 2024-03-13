@@ -19,6 +19,7 @@ import com.virtualwallet.models.response_model_dto.RecipientResponseDto;
 import com.virtualwallet.models.response_model_dto.TransactionResponseDto;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.services.contracts.WalletService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +32,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.virtualwallet.model_helpers.ModelConstantHelper.AUTHORIZATION;
 
 @RestController
 @RequestMapping("/api/wallets")
@@ -59,6 +62,7 @@ public class WalletController {
         this.transactionMapper = transactionMapper;
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping
     public ResponseEntity<?> getAllWallets(@RequestHeader HttpHeaders headers) {
         try {
@@ -70,6 +74,7 @@ public class WalletController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{id}")
     public ResponseEntity<?> getWalletById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
@@ -83,6 +88,7 @@ public class WalletController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @PostMapping()
     public ResponseEntity<?> createWallet(@RequestHeader HttpHeaders headers,
                                           @RequestBody @Valid WalletDto walletDto) {
@@ -96,6 +102,7 @@ public class WalletController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{id}")
     public ResponseEntity<?> updateWallet(@RequestHeader HttpHeaders headers,
                                           @RequestBody @Valid WalletDto walletDto,
@@ -112,6 +119,7 @@ public class WalletController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteWallet(@RequestHeader HttpHeaders headers, @PathVariable int id) {
         try {
@@ -125,6 +133,7 @@ public class WalletController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{wallet_id}/transactions")
     public ResponseEntity<?> getWalletTransactionHistory(@RequestHeader HttpHeaders headers,
                                                          @PathVariable int wallet_id,
@@ -167,6 +176,7 @@ public class WalletController {
 //        }
 //    }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{wallet_id}/transactions/{transaction_id}")
     public ResponseEntity<?> getTransactionById(@RequestHeader HttpHeaders headers,
                                                 @PathVariable int wallet_id,
@@ -183,6 +193,7 @@ public class WalletController {
         }
     }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @PostMapping("/{wallet_id}/transactions")
     public ResponseEntity<?> createTransaction(@RequestHeader HttpHeaders headers,
                                                @PathVariable int wallet_id,
@@ -254,6 +265,7 @@ public class WalletController {
 //        //Only a transaction that has NOT been approved can be canceled
 //    }
 
+    @SecurityRequirement(name = AUTHORIZATION)
     @PostMapping("/{wallet_id}/transactions/{card_id}")
     public ResponseEntity<?> createTransactionWithCard(@RequestHeader HttpHeaders headers,
                                                        @PathVariable int wallet_id,
@@ -280,6 +292,7 @@ public class WalletController {
      * @return returns a list <b>only</b> of recipients that have created wallets,
      * containing their username and their created wallets' ibans.
      */
+    @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/recipient")
     public List<RecipientResponseDto> getRecipient(@RequestHeader HttpHeaders headers,
                                                    @RequestParam(required = false) String username,
@@ -301,4 +314,49 @@ public class WalletController {
         }
         //todo consider if badRequest would need to be added, due to userFilter
     }
+
+    @SecurityRequirement(name = AUTHORIZATION)
+    @PostMapping("/{wallet_id}/addUserToWallet/{user_id}")
+    public ResponseEntity<?> addUserToWallet(@RequestHeader HttpHeaders headers,
+                                             @PathVariable int wallet_id,
+                                             @PathVariable int user_id){
+        try {
+            User user = authHelper.tryGetUser(headers);
+            walletService.addUserToWallet(user, wallet_id, user_id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (UnauthorizedOperationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @SecurityRequirement(name = AUTHORIZATION)
+    @DeleteMapping("/{wallet_id}/removeUserFromWallet/{user_id}")
+    public ResponseEntity<?> removeUserFromWallet(@RequestHeader HttpHeaders headers,
+                                             @PathVariable int wallet_id,
+                                             @PathVariable int user_id){
+        try {
+            User user = authHelper.tryGetUser(headers);
+            walletService.removeUserFromWallet(user, wallet_id, user_id);
+            return ResponseEntity.status(HttpStatus.OK).build();
+        } catch (UnauthorizedOperationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @SecurityRequirement(name = AUTHORIZATION)
+    @GetMapping("/{wallet_id}/users")
+    public List<User> getWalletUsers(@RequestHeader HttpHeaders headers,
+                                                  @PathVariable int wallet_id){
+        try {
+            User user = authHelper.tryGetUser(headers);
+            return walletService.getWalletUsers(user, wallet_id);
+        } catch (UnauthorizedOperationException e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
+
 }

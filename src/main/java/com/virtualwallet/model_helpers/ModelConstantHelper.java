@@ -57,4 +57,8 @@ public class ModelConstantHelper {
     public static final String TRANSACTION_PENDING_STATUS = "Pending";
     public static final String PROCESSED_TRANSACTION_MESSAGE = "Transaction is already processed";
 
+    public static final String AUTHORIZATION = "Authorization";
+
+    public static final String PERMISSIONS_ERROR_GENERAL =
+            "You don't have the permissions to perform this operation";
 }

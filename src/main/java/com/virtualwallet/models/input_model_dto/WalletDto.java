@@ -11,6 +11,9 @@ public class WalletDto {
     @Size(min = 3, max = 20, message = NAME_ERROR_MESSAGE)
     String name;
 
+    @NotNull(message = EMPTY_ERROR_MESSAGE)
+    int walletTypeId;
+
     public WalletDto() {
     }
 
@@ -24,5 +27,13 @@ public class WalletDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getWalletTypeId() {
+        return walletTypeId;
+    }
+
+    public void setWalletTypeId(int walletTypeId) {
+        this.walletTypeId = walletTypeId;
     }
 }
