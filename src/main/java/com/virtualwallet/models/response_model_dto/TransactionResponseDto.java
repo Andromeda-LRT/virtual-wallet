@@ -1,5 +1,7 @@
 package com.virtualwallet.models.response_model_dto;
 
+import com.virtualwallet.models.Status;
+
 import java.time.LocalDateTime;
 
 public class TransactionResponseDto {
@@ -9,6 +11,7 @@ public class TransactionResponseDto {
     private String sender;
     private String recipient;
     private LocalDateTime time;
+    private String status;
 
     public TransactionResponseDto() {
     }
@@ -18,7 +21,7 @@ public class TransactionResponseDto {
                                   String transactionType,
                                   String userName,
                                   String walletIban,
-                                  LocalDateTime time) {
+                                  LocalDateTime time, String status) {
         this.transactionId = transactionId;
         this.amount = amount;
         this.transactionType = transactionType;
@@ -26,6 +29,7 @@ public class TransactionResponseDto {
         this.recipient = walletIban;
         this.time = time;
 
+        this.status = status;
     }
 
     public int getTransactionId() {
@@ -77,4 +81,11 @@ public class TransactionResponseDto {
         this.time = time;
     }
 
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
