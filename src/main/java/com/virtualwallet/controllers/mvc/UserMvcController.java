@@ -107,7 +107,7 @@ public class UserMvcController {
         }
     }
 
-    @PostMapping()
+    @PostMapping("/{id}/picture")
     public String updateUserProfilePicture(@RequestParam("fileImage") MultipartFile multipartFile,
                                            HttpSession session,
                                            Model model,
@@ -122,7 +122,7 @@ public class UserMvcController {
         try {
             userService.updateProfilePicture(loggedUser, multipartFile);
             model.addAttribute("user", loggedUser);
-            return "uploadImageTest";
+            return "redirect:/users/ProfileView";
         } catch (FileNotFoundException e) {
             throw new RuntimeException("This should never happen," +
                     " since file being uploaded is taken from file system");
