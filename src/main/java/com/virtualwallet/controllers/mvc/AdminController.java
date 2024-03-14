@@ -8,14 +8,13 @@ import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
+import com.virtualwallet.model_mappers.TransactionResponseMapper;
 import com.virtualwallet.model_mappers.UserMapper;
-import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.WalletToWalletTransaction;
-import com.virtualwallet.models.input_model_dto.CardTransactionDto;
-import com.virtualwallet.models.input_model_dto.UserDto;
 import com.virtualwallet.models.mvc_input_model_dto.TransactionModelFilterDto;
 import com.virtualwallet.models.mvc_input_model_dto.UserModelFilterDto;
+import com.virtualwallet.models.response_model_dto.TransactionResponseDto;
 import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.IntermediateTransactionService;
 import com.virtualwallet.services.contracts.UserService;
@@ -23,7 +22,6 @@ import com.virtualwallet.services.contracts.WalletService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,43 +32,73 @@ import static com.virtualwallet.utils.UtilHelpers.populateCardTransactionFilterO
 import static com.virtualwallet.utils.UtilHelpers.populateWalletTransactionFilterOptions;
 
 @Controller
-@RequestMapping("/admins")
+@RequestMapping("/admin")
 public class AdminController {
     private final UserService userService;
     private final CardService cardService;
     private final WalletService walletService;
     private final IntermediateTransactionService middleTransactionService;
     private final AuthenticationHelper authenticationHelper;
+    private final TransactionResponseMapper transactionResponseMapper;
     private final UserMapper userMapper;
 
     @Autowired
     public AdminController(UserService userService, CardService cardService,
                            WalletService walletService, IntermediateTransactionService middleTransactionService,
-                           AuthenticationHelper authenticationHelper,
+                           AuthenticationHelper authenticationHelper, TransactionResponseMapper transactionResponseMapper,
                            UserMapper userMapper) {
         this.userService = userService;
         this.cardService = cardService;
         this.walletService = walletService;
         this.middleTransactionService = middleTransactionService;
         this.authenticationHelper = authenticationHelper;
+        this.transactionResponseMapper = transactionResponseMapper;
         this.userMapper = userMapper;
     }
 
-    @GetMapping("/users")
-    public ResponseEntity<?> showAllUsers(Model model,
-                                          @ModelAttribute("userFilterOptions") UserModelFilterDto userModelFilterDto,
-                                          HttpSession session) {
+    @ModelAttribute("isAuthenticated")
+    public boolean populateIsAuthenticated(HttpSession session) {
+        return session.getAttribute("currentUser") != null;
+    }
+
+    @GetMapping()
+    public String showAdminDashboard(HttpSession session, Model model) {
+
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
+        }
+
+        try {
+            userService.verifyAdminAccess(loggedUser);
+            model.addAttribute("admin", loggedUser);
+            return "AdminPanelView";
+        } catch (UnauthorizedOperationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "UnauthorizedView";
+        }
+    }
+
+    @GetMapping("/users")
+    public String showAllUsers(Model model,
+                               @ModelAttribute("userFilterOptions") UserModelFilterDto userModelFilterDto,
+                               HttpSession session) {
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "NotFoundView";
         }
 
         UserModelFilterOptions userFilter = new UserModelFilterOptions(
@@ -83,157 +111,135 @@ public class AdminController {
 
         try {
             List<User> users = userService.getAllWithFilter(loggedUser, userFilter);
-            List<UserDto> userDtos = userMapper.toDto(users);
-            model.addAttribute("users", userDtos);
-            model.addAttribute("userFilterOptions", userFilter);
-//            return "AllUsersView";
-            return ResponseEntity.status(HttpStatus.OK).body("AllUsersView");
+            //TODO: Implement UserMapper FOR USER RESPONSE DTO - LYUBIMA
+//            List<UserDto> userDtos = userMapper.toDto(users);
+            model.addAttribute("users", users);
+            model.addAttribute("userFilterOptions", userModelFilterDto);
+            return "AllUsersView";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         }
     }
 
-    @GetMapping("/{id}/block")
-    public ResponseEntity<?> blockUser(@PathVariable int id, Model model, HttpSession session) {
+    @GetMapping("/users/{id}/block")
+    public String blockUser(@PathVariable int id, Model model, HttpSession session) {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         }
 
         try {
             userService.blockUser(id, loggedUser);
-//            return "redirect:/admins/users";
-            return ResponseEntity.status(HttpStatus.OK).body("redirect:/admins/users");
+            return "redirect:/admins/users";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
+            return "UnauthorizedView";
         }
     }
 
-    @GetMapping("/{id}/unblock")
-    public ResponseEntity<?> unblockUser(@PathVariable int id, Model model, HttpSession session) {
+    @GetMapping("/users/{id}/unblock")
+    public String unblockUser(@PathVariable int id, Model model, HttpSession session) {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         }
 
         try {
             userService.unblockUser(id, loggedUser);
-//            return "redirect:/admins/users";
-            return ResponseEntity.status(HttpStatus.OK).body("redirect:/admins/users");
+            return "redirect:/admins/users";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
+            return "UnauthorizedView";
         }
     }
 
     @PostMapping("/users/{id}/admin-approval")
-    public ResponseEntity<?> giveUserAdminRights(@PathVariable int id,
-                                                 HttpSession session,
-                                                 Model model) {
+    public String giveUserAdminRights(@PathVariable int id,
+                                      HttpSession session,
+                                      Model model) {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         }
 
         try {
             User user = userService.get(id, loggedUser);
             userService.giveUserAdminRights(user, loggedUser);
-//            return "redirect:/admin/users";
-            return ResponseEntity.status(HttpStatus.OK).body("redirect:/admin/users");
+            return "redirect:/admin/users";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
+            return "UnauthorizedView";
         }
     }
 
     @PostMapping("/users/{id}/admin-cancellation")
-    public ResponseEntity<?> removeUserAdminRights(@PathVariable int id,
-                                                   HttpSession session,
-                                                   Model model) {
+    public String removeUserAdminRights(@PathVariable int id,
+                                        HttpSession session,
+                                        Model model) {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
-//            return "redirect:/auth/login";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("redirect:/auth/login");
+            return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         }
 
         try {
             User user = userService.get(id, loggedUser);
             userService.removeUserAdminRights(user, loggedUser);
-//            return "redirect:/admin/users";
-            return ResponseEntity.status(HttpStatus.OK).body("redirect:/admin/users");
+            return "redirect:/admin/users";
         } catch (EntityNotFoundException e) {
-//            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "NotFoundView";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("NotFoundView");
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
-//            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-//            return "UnauthorizedView";
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("UnauthorizedView");
+            return "UnauthorizedView";
         }
     }
 
     @GetMapping("/cards/transfers")
     public String showCardTransfersPage(Model model,
-                                        @ModelAttribute("cardTransactionFilter")
-                                        TransactionModelFilterDto cardFilterDto,
+                                        @ModelAttribute("cardTransactionFilter") TransactionModelFilterDto cardFilterDto,
                                         HttpSession session) {
 
         User user;
@@ -243,12 +249,16 @@ public class AdminController {
             return "redirect:/auth/login";
         }
         try {
-            CardTransactionModelFilterOptions cardFilter = populateCardTransactionFilterOptions(cardFilterDto);
-            //todo to convert to transactionDto
-            List<CardToWalletTransaction> cardTransactionList =
-                    middleTransactionService.getAllCardTransactionsWithFilter(user, cardFilter);
+            CardTransactionModelFilterOptions cardFilter = populateCardTransactionFilterOptions(
+                    cardFilterDto);
+//            List<CardToWalletTransaction> cardTransactionList =
+//                    middleTransactionService.getAllCardTransactionsWithFilter(user, cardFilter);
+            List<TransactionResponseDto> cardTransactionList = transactionResponseMapper.convertCardTransactionsToDto(
+                    middleTransactionService.getAllCardTransactionsWithFilter(user, cardFilter)
+            );
             model.addAttribute("cardTransfersList", cardTransactionList);
-            return "CardTransfersView";
+            model.addAttribute("cardTransactionFilter", cardFilterDto);
+            return "AllCardTransfersView";
         } catch (UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -273,11 +283,14 @@ public class AdminController {
         }
         try {
             WalletTransactionModelFilterOptions walletFilter = populateWalletTransactionFilterOptions(walletFilterDto);
-            List<WalletToWalletTransaction> walletTransactionList =
+            List<WalletToWalletTransaction> walletTransactions =
                     middleTransactionService.getAllWithFilter(user, walletFilter);
-            //todo to convert to transactionDto
+
+            List<TransactionResponseDto> walletTransactionList = transactionResponseMapper.convertWalletTransactionsToDto(
+                    walletTransactions
+            );
             model.addAttribute("walletTransactionList", walletTransactionList);
-            return "WalletTransactionsView";
+            return "AllWalletTransactionsView";
         } catch (UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());

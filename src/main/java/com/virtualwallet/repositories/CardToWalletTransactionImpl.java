@@ -4,8 +4,10 @@ import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.User;
+import com.virtualwallet.models.Wallet;
 import com.virtualwallet.repositories.contracts.CardToWalletTransactionRepository;
 import com.virtualwallet.repositories.contracts.UserRepository;
+import com.virtualwallet.repositories.contracts.WalletRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -22,10 +24,13 @@ public class CardToWalletTransactionImpl extends AbstractCrudRepository<CardToWa
 
     private final UserRepository userRepository;
 
+    private final WalletRepository walletRepository;
+
     @Autowired
-    public CardToWalletTransactionImpl(SessionFactory sessionFactory, UserRepository userRepository) {
+    public CardToWalletTransactionImpl(SessionFactory sessionFactory, UserRepository userRepository, WalletRepository walletRepository) {
         super(CardToWalletTransaction.class, sessionFactory);
         this.userRepository = userRepository;
+        this.walletRepository = walletRepository;
     }
 
     @Override
@@ -48,18 +53,33 @@ public class CardToWalletTransactionImpl extends AbstractCrudRepository<CardToWa
                 params.put("endDate", endDate);
             });
 
+//            transactionFilter.getRecipient().ifPresent(value -> {
+//                if (!value.isBlank()) {
+//                    User user1;
+//                    int id;
+//                    try {
+//                        user1 = userRepository.getByStringField("username", value);
+//                       id = user1.getId();
+//                    }catch (EntityNotFoundException e){
+//                        id = -1;
+//                    }
+//
+//                    filters.add("userId = :recipient");
+//                    params.put("recipient", id);
+//                }
+//            });
+
             transactionFilter.getRecipient().ifPresent(value -> {
                 if (!value.isBlank()) {
-                    User user1;
+                    Wallet wallet1;
                     int id;
-                    try {
-                        user1 = userRepository.getByStringField("username", value);
-                       id = user1.getId();
+                    try{
+                        wallet1 = walletRepository.getByStringField("iban", value);
+                        id = wallet1.getWalletId();
                     }catch (EntityNotFoundException e){
                         id = -1;
                     }
-
-                    filters.add("userId = :recipient");
+                    filters.add("walletId = :recipient");
                     params.put("recipient", id);
                 }
             });
