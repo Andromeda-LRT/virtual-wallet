@@ -1,5 +1,6 @@
 package com.virtualwallet.repositories.contracts;
 
+import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.User;
@@ -10,7 +11,7 @@ public interface CardToWalletTransactionRepository {
     List<CardToWalletTransaction> getAll();
 
     List<CardToWalletTransaction> getAllCardTransactionsWithFilter
-            (User user, WalletTransactionModelFilterOptions transactionFilter);
+            (User user, CardTransactionModelFilterOptions transactionFilter);
 
     List<CardToWalletTransaction> getAllUserCardTransactions(int cardId);
 

@@ -1,5 +1,6 @@
 package com.virtualwallet.services.contracts;
 
+import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.models.*;
 
@@ -8,7 +9,7 @@ import java.util.List;
 public interface CardTransactionService {
     List<CardToWalletTransaction> getAllCardTransactions();
     List<CardToWalletTransaction> getAllCardTransactionsWithFilter
-            (User user, WalletTransactionModelFilterOptions transactionFilter);
+            (User user, CardTransactionModelFilterOptions transactionFilter);
     List<CardToWalletTransaction> getUserCardTransactions(Card card);
     CardToWalletTransaction getCardTransactionById(int cardTransactionId);
     void updateCardTransaction(CardToWalletTransaction cardTransaction, User user);

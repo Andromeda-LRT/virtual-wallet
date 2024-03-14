@@ -69,6 +69,8 @@ public class ModelConstantHelper {
     public static final String EXPIRATION_QUERY_PARAM_REQUEST_KEY = "expiration";
     public static final int RESPONSE_STATUS_OK = 200;
 
+    public static final String ACCOUNTS_LIMIT_REACHED = "The limits for users in a Joined account is 5.";
+
     public static final String DEFAULT_PROFILE_IMAGE = "https://img.freepik.com/free-vector/user-circles-set_78370-4704." +
             "jpg?t=st=1710328051~exp=1710331651~hmac" +
             "=a5557b44bd4d12b7016d8ab8cb91c28b4952259e577fd680212da0a18b196430&w=1060";

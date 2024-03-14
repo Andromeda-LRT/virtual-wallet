@@ -40,10 +40,14 @@ VALUES (425),
        (894),
        (774);
 
-INSERT INTO cards(number, expiration_date, card_type_id, card_holder_full_name, cvv_number_id, is_archived, card_holder_id)
+INSERT INTO cards(number, expiration_date, card_type_id, card_holder_full_name, cvv_number_id, is_archived,
+                  card_holder_id)
 VALUES ('5425233430109903', '2024-02-18', 1, 'John Doe', 1, false, 2),
        ('2222420000001113', '2024-02-18', 1, 'Jane Smith', 2, false, 1),
-       ('4917484589897107', '2024-02-18', 2, 'Laura Moore', 3, false, 3);
+       ('4917484589897107', '2024-02-18', 2, 'Laura Moore', 3, false, 3),
+       ('5425233430109503', '2026-02-18', 1, 'Gosho Georgiev', 1, false, 6),
+       ('2222420000005113', '2026-02-18', 1, 'Gosho Georgiev', 2, false, 6),
+       ('4917484589857107', '2026-02-18', 2, 'Gosho Georgiev', 3, false, 6);
 
 # Change the date
 
@@ -61,3 +65,9 @@ INSERT INTO wallet_transactions(amount, time, transaction_type_id, user_id, reci
 VALUES ('3000', '2024-01-25 20:50:00', 1, 1, 2, 1, 2),
        ('4000', '2024-01-24 20:50:00', 1, 2, 1, 2, 2),
        ('5000', '2024-01-23 20:50:00', 1, 2, 3, 2, 2);
+
+
+INSERT INTO card_transactions(amount, time, transaction_type_id, user_id, wallet_id, card_id, status_id)
+VALUES ('3000', '2024-01-25 20:50:00', 1, 6, 6, 4, 2),
+       ('4000', '2024-01-24 20:50:00', 1, 6, 6, 5, 2),
+       ('5000', '2024-01-23 20:50:00', 2, 6, 6, 6, 2);

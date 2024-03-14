@@ -1,8 +1,10 @@
 package com.virtualwallet.services;
 
 import com.virtualwallet.exceptions.InsufficientFundsException;
+import com.virtualwallet.exceptions.LimitReachedException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.exceptions.UnusedWalletBalanceException;
+import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.model_mappers.CardMapper;
@@ -129,6 +131,10 @@ public class WalletServiceImpl implements WalletService {
         return new ArrayList<>(walletRepository.getById(wallet_id).getCardTransactions());
     }
 
+    @Override
+    public List<CardToWalletTransaction> getAllCardTransactionsWithFilter(User user, CardTransactionModelFilterOptions transactionFilter) {
+        return new ArrayList<>(cardTransactionService.getAllCardTransactionsWithFilter(user, transactionFilter));
+    }
     @Override
     public WalletToWalletTransaction getTransactionById(User user, int wallet_id, int transaction_id) {
         // todo currently the method should be able to fetch the transaction by just having its id
@@ -278,6 +284,9 @@ public class WalletServiceImpl implements WalletService {
     if (wallet.getWalletTypeId() == 1 || wallet.getCreatedBy()!=user.getId()) {
         throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
     }
+    if (walletRepository.getWalletUsers(wallet_id).size()>=5){
+        throw new LimitReachedException(ACCOUNTS_LIMIT_REACHED);
+    }
         UserWallets userWallets = new UserWallets(userService.verifyUserExistence(user_id), wallet);
     walletRepository.addUserToWallet(userWallets);
     }
@@ -296,10 +305,11 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public List<User> getWalletUsers(User user, int wallet_id){
         Wallet wallet = getWalletById(user, wallet_id);
-        if (wallet.getCreatedBy()!=user.getId()) {
-            throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
+        if (walletRepository.getWalletUsers(wallet_id)
+                .stream().anyMatch(user1 -> user1.getId() == user.getId())) {
+            return walletRepository.getWalletUsers(wallet_id);
         }
-        return walletRepository.getWalletUsers(wallet_id);
+        throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
     }
 
     private String sendTransferRequest(Card card) {

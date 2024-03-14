@@ -1,5 +1,6 @@
 package com.virtualwallet.services.contracts;
 
+import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.models.*;
@@ -24,6 +25,8 @@ public interface WalletService {
     List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter(WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id);
 
     List<CardToWalletTransaction> getAllCardTransactions(User user, int card_id);
+
+    List<CardToWalletTransaction> getAllCardTransactionsWithFilter(User user, CardTransactionModelFilterOptions transactionFilter);
 
     WalletToWalletTransaction getTransactionById(User user, int wallet_id, int transaction_id);
 
