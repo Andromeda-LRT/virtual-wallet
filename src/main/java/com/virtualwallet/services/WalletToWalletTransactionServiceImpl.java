@@ -34,14 +34,15 @@ public class WalletToWalletTransactionServiceImpl implements WalletTransactionSe
 
     @Override
     public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter
-            (User user, WalletTransactionModelFilterOptions transactionFilter, Wallet wallet) {
+            (User user, WalletTransactionModelFilterOptions transactionFilter) {
 
-        return walletTransactionRepository.getAllWalletTransactionsWithFilter(user, transactionFilter, wallet);
+        return walletTransactionRepository.getAllWalletTransactionsWithFilter(user, transactionFilter);
     }
 
     @Override
-    public List<WalletToWalletTransaction> getUserWalletTransactions(Wallet wallet) {
-        return walletTransactionRepository.getUserWalletTransactions(wallet);
+    public List<WalletToWalletTransaction> getUserWalletTransactions(User user, WalletTransactionModelFilterOptions transaction,
+                                                                     int wallet_id) {
+        return walletTransactionRepository.getUserWalletTransactions(user, transaction, wallet_id);
     }
 
     @Override

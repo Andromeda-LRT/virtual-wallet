@@ -125,16 +125,16 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public List<WalletToWalletTransaction> getAllWalletTransactions(User user, int wallet_id) {
+    public List<WalletToWalletTransaction> getUserWalletTransactions(WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id) {
         Wallet wallet = verifyWallet(wallet_id, user);
-        return walletTransactionService.getUserWalletTransactions(wallet);
+        return walletTransactionService.getUserWalletTransactions(user, transactionFilter, wallet_id);
     }
 
     @Override
     public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter
             (WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id) {
         Wallet wallet = verifyWallet(wallet_id, user);
-        return walletTransactionService.getAllWalletTransactionsWithFilter(user, transactionFilter, wallet);
+        return walletTransactionService.getAllWalletTransactionsWithFilter(user, transactionFilter);
     }
 
     @Override
@@ -146,6 +146,11 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public List<CardToWalletTransaction> getAllCardTransactionsWithFilter(User user, CardTransactionModelFilterOptions transactionFilter) {
         return new ArrayList<>(cardTransactionService.getAllCardTransactionsWithFilter(user, transactionFilter));
+    }
+
+    @Override
+    public List<CardToWalletTransaction> getUserCardTransactions(int cardId, User user, CardTransactionModelFilterOptions transactionFilter) {
+        return new ArrayList<>(cardTransactionService.getUserCardTransactions(cardId, user, transactionFilter));
     }
     @Override
     public WalletToWalletTransaction getTransactionById(User user, int wallet_id, int transaction_id) {

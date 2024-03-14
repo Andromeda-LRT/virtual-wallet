@@ -11,9 +11,9 @@ public interface WalletToWalletTransactionRepository {
     List<WalletToWalletTransaction> getAll();
 
     List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter
-            (User user, WalletTransactionModelFilterOptions transactionFilter, Wallet wallet);
+            (User user, WalletTransactionModelFilterOptions transactionFilter);
 
-    List<WalletToWalletTransaction> getUserWalletTransactions(Wallet wallet);
+    List<WalletToWalletTransaction> getUserWalletTransactions(User user, WalletTransactionModelFilterOptions transactionFilter, int wallet_id);
 
     WalletToWalletTransaction getById(int walletTransactionId);
 

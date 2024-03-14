@@ -156,7 +156,7 @@ public class WalletController {
 
             User user = authHelper.tryGetUser(headers);
             List<WalletToWalletTransaction> walletToWalletTransactionList =
-                    walletService.getAllWalletTransactionsWithFilter(transactionModelFilterOptions, user, wallet_id);
+                    walletService.getUserWalletTransactions(transactionModelFilterOptions, user, wallet_id);
 //            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
             return ResponseEntity.status(HttpStatus.OK).body(transactionResponseMapper.convertWalletTransactionsToDto(walletToWalletTransactionList));
         } catch (UnauthorizedOperationException e) {
@@ -168,8 +168,9 @@ public class WalletController {
     }
 
     @SecurityRequirement(name = AUTHORIZATION)
-    @GetMapping("/card_transactions")
+    @GetMapping("/card_transactions/{card_id}")
     public ResponseEntity<?> getUserCardsTransactionHistory(@RequestHeader HttpHeaders headers,
+                                                            @PathVariable int card_id,
                                                          @RequestParam(required = false)
                                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                          LocalDateTime startDate,
@@ -187,7 +188,7 @@ public class WalletController {
 
             User user = authHelper.tryGetUser(headers);
             List<CardToWalletTransaction> cardToWalletTransactionList =
-                    walletService.getAllCardTransactionsWithFilter(user, transactionModelFilterOptions);
+                    walletService.getUserCardTransactions(card_id, user, transactionModelFilterOptions);
             return ResponseEntity.status(HttpStatus.OK).body(transactionResponseMapper.convertCardTransactionsToDto(cardToWalletTransactionList));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
