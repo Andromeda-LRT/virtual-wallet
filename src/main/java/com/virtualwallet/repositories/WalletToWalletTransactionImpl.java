@@ -5,6 +5,7 @@ import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.exceptions.EntityNotFoundException;
+import com.virtualwallet.repositories.contracts.WalletRepository;
 import com.virtualwallet.repositories.contracts.WalletToWalletTransactionRepository;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -22,9 +23,12 @@ import static com.virtualwallet.model_helpers.ModelConstantHelper.VALID_NUMBER;
 @Repository
 public class WalletToWalletTransactionImpl extends AbstractCrudRepository<WalletToWalletTransaction> implements WalletToWalletTransactionRepository {
 
+    private final WalletRepository walletRepository;
+
     @Autowired
-    public WalletToWalletTransactionImpl(SessionFactory sessionFactory) {
+    public WalletToWalletTransactionImpl(SessionFactory sessionFactory, WalletRepository repository) {
         super(WalletToWalletTransaction.class, sessionFactory);
+        this.walletRepository = repository;
     }
 
     @Override
@@ -37,7 +41,7 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
 
             params.put("walletId", wallet.getWalletId());
 
-            transactionFilter.getStartDate().ifPresent(startDate  -> {
+            transactionFilter.getStartDate().ifPresent(startDate -> {
                 filters.add("time >= :startDate");
                 params.put("startDate", startDate);
             });
@@ -49,14 +53,16 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
 
             transactionFilter.getRecipient().ifPresent(value -> {
                 if (!value.isBlank()) {
-                    try {
-                        int recipientWalletId = Integer.parseInt(value);
-                        filters.add("recipientWalletId = :recipientWalletId");
-                        params.put("recipientWalletId", recipientWalletId);
+                    Wallet wallet1;
+                    int id;
+                    try{
+                        wallet1 = walletRepository.getByStringField("iban", value);
+                        id = wallet1.getWalletId();
+                    }catch (EntityNotFoundException e){
+                        id = -1;
                     }
-                    catch (NumberFormatException e) {
-                        throw new IllegalArgumentException(VALID_NUMBER);
-                    }
+                    filters.add("recipientWalletId = :recipient");
+                    params.put("recipient", id);
                 }
             });
 
@@ -70,14 +76,10 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
             transactionFilter.getDirection().ifPresent(value -> {
                 if (!value.isBlank()) {
 
-                    try {
-                        int transactionTypeId = Integer.parseInt(value);
-                        filters.add("transactionTypeId = :direction");
-                        params.put("direction", transactionTypeId);
-                    }
-                    catch (NumberFormatException e) {
-                        throw new IllegalArgumentException(VALID_NUMBER);
-                    }
+                    int transactionTypeId = "Outgoing".equalsIgnoreCase(value) ? 2 : ("Incoming".equalsIgnoreCase(value) ? 1 : 0);
+                    filters.add("transactionTypeId = :direction");
+                    params.put("direction", transactionTypeId);
+
                 }
             });
 
@@ -99,11 +101,11 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
 
     @Override
     public List<WalletToWalletTransaction> getUserWalletTransactions(Wallet wallet) {
-        try(Session session = sessionFactory.openSession()){
+        try (Session session = sessionFactory.openSession()) {
             Query<WalletToWalletTransaction> query = session.createQuery("From WalletToWalletTransaction where walletId = :walletId", WalletToWalletTransaction.class);
             query.setParameter("walletId", wallet.getWalletId());
             List<WalletToWalletTransaction> result = query.list();
-            if (result.isEmpty()){
+            if (result.isEmpty()) {
                 throw new EntityNotFoundException("Wallet", "id", String.valueOf(wallet.getWalletId()), "transactions");
             }
             return result;
