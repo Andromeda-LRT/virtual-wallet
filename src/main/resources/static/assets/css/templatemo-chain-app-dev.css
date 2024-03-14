@@ -978,7 +978,7 @@ Services Style
 
 .services:after {
   content: '';
-  background-image: url(../images/services-left-dec.png);
+  /*background-image: url(../images/services-left-dec.png);*/
   background-repeat: no-repeat;
   position: absolute;
   left: 0;
