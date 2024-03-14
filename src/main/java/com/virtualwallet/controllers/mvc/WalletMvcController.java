@@ -27,7 +27,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -85,8 +84,10 @@ public class WalletMvcController {
             return "redirect:/auth/login";
         }
         //todo do we want walletResponseDto?
-        List<Wallet> wallets = walletService.getAllWallets(user);
-        model.addAttribute("wallets", wallets);
+        List<Wallet> personalWallets = walletService.getAllPersonalWallets(user);
+        List<Wallet> joinWallets = walletService.getAllJoinWallets(user);
+        model.addAttribute("personalWallets", personalWallets);
+        model.addAttribute("joinWallets", joinWallets);
         model.addAttribute("userId", user.getId());
         return "WalletsView";
     }
@@ -248,7 +249,7 @@ public class WalletMvcController {
             List<WalletToWalletTransaction> walletTransactions =
                     walletService.getAllWalletTransactionsWithFilter(transactionFilter, user, wallet_id);
             List<TransactionResponseDto> outputTransactions = transactionResponseMapper
-                    .convertToDto(walletTransactions, wallet_id);
+                    .convertWalletTransactionsToDto(walletTransactions);
             model.addAttribute("walletTransactions", outputTransactions);
             model.addAttribute("walletFilterOptions", transactionFilter);
             return "WalletTransactionsview";
@@ -263,7 +264,7 @@ public class WalletMvcController {
         }
     }
 
-    @GetMapping("{wallet_id}/transfers")
+    @GetMapping("/{wallet_id}/transfers")
     public String showCardToWalletTransactionsPage(@PathVariable int wallet_id,
                                                    Model model,
                                                    @ModelAttribute("cardFilterOptions")

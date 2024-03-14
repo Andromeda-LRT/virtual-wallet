@@ -10,6 +10,11 @@ import java.util.List;
 public interface WalletService {
 
     List<Wallet> getAllWallets(User user);
+
+    List<Wallet> getAllPersonalWallets(User user);
+
+    List<Wallet> getAllJoinWallets(User user);
+
     List<User> getRecipient(UserModelFilterOptions userFilter);
 
     Wallet getWalletById(User user, int wallet_id);
