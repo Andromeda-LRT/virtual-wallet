@@ -28,6 +28,12 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - uses: actions/checkout@v2
+    - name: Set Executable Permission for Gradlew
+      run: chmod +x gradlew
+    - name: Run Gradle build
+      run: ./gradlew -Dorg.gradle.configureondemand=false -Dorg.gradle.dependency.verification=off -Dorg.gradle.unsafe.isolated-projects=false :ForceDependencyResolutionPlugin_resolveAllDependencies
+
     # Configure Gradle for optimal use in GiHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     
