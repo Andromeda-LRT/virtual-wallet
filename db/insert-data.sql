@@ -71,3 +71,4 @@ INSERT INTO card_transactions(amount, time, transaction_type_id, user_id, wallet
 VALUES ('3000', '2024-01-25 20:50:00', 1, 6, 6, 4, 2),
        ('4000', '2024-01-24 20:50:00', 1, 6, 6, 5, 2),
        ('5000', '2024-01-23 20:50:00', 2, 6, 6, 6, 2);
+
