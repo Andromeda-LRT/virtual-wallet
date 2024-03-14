@@ -13,7 +13,7 @@ public interface CardToWalletTransactionRepository {
     List<CardToWalletTransaction> getAllCardTransactionsWithFilter
             (User user, CardTransactionModelFilterOptions transactionFilter);
 
-    List<CardToWalletTransaction> getAllUserCardTransactions(int cardId);
+    List<CardToWalletTransaction> getAllUserCardTransactions(int cardId, User user, CardTransactionModelFilterOptions transactionFilter);
 
     CardToWalletTransaction get(int cardTransactionId);
 

@@ -53,22 +53,6 @@ public class CardToWalletTransactionImpl extends AbstractCrudRepository<CardToWa
                 params.put("endDate", endDate);
             });
 
-//            transactionFilter.getRecipient().ifPresent(value -> {
-//                if (!value.isBlank()) {
-//                    User user1;
-//                    int id;
-//                    try {
-//                        user1 = userRepository.getByStringField("username", value);
-//                       id = user1.getId();
-//                    }catch (EntityNotFoundException e){
-//                        id = -1;
-//                    }
-//
-//                    filters.add("userId = :recipient");
-//                    params.put("recipient", id);
-//                }
-//            });
-
             transactionFilter.getRecipient().ifPresent(value -> {
                 if (!value.isBlank()) {
                     Wallet wallet1;
@@ -103,11 +87,11 @@ public class CardToWalletTransactionImpl extends AbstractCrudRepository<CardToWa
 
             StringBuilder queryString = new StringBuilder();
 
-            queryString.append("From CardToWalletTransaction where userId = :userId ");
+            queryString.append("From CardToWalletTransaction ");
 
             if (!filters.isEmpty()) {
 
-                queryString.append(" and ").append(String.join(" and ", filters));
+                queryString.append(" where ").append(String.join(" and ", filters));
             }
             queryString.append(generateOrderBy(transactionFilter));
 
@@ -118,15 +102,65 @@ public class CardToWalletTransactionImpl extends AbstractCrudRepository<CardToWa
     }
 
     @Override
-    public List<CardToWalletTransaction> getAllUserCardTransactions(int cardId) {
+    public List<CardToWalletTransaction> getAllUserCardTransactions(int cardId, User user, CardTransactionModelFilterOptions transactionFilter) {
         try(Session session = sessionFactory.openSession()){
-            Query<CardToWalletTransaction> query = session.createQuery("From CardToWalletTransaction where cardId = :cardId", CardToWalletTransaction.class);
-            query.setParameter("cardId", cardId);
-            List<CardToWalletTransaction> result = query.list();
-            if (result.isEmpty()){
-                throw new EntityNotFoundException("Card", "id", String.valueOf(cardId), "transactions");
+
+            List<String> filters = new ArrayList<>();
+            Map<String, Object> params = new HashMap<>();
+
+            params.put("userId", user.getId());
+            params.put("cardId", cardId);
+
+            transactionFilter.getStartDate().ifPresent(startDate -> {
+                filters.add("time >= :startDate");
+                params.put("startDate", startDate);
+            });
+
+            transactionFilter.getEndDate().ifPresent(endDate -> {
+                filters.add("time <= :endDate");
+                params.put("endDate", endDate);
+            });
+
+            transactionFilter.getRecipient().ifPresent(value -> {
+                if (!value.isBlank()) {
+                    User user1;
+                    int id;
+                    try {
+                        user1 = userRepository.getByStringField("username", value);
+                        id = user1.getId();
+                    }catch (EntityNotFoundException e){
+                        id = -1;
+                    }
+
+                    filters.add("userId = :recipient");
+                    params.put("recipient", id);
+                }
+            });
+
+            transactionFilter.getDirection().ifPresent(value -> {
+                if (!value.isBlank()) {
+
+                    int transactionTypeId = "Outgoing".equalsIgnoreCase(value) ? 2 : ("Incoming".equalsIgnoreCase(value) ? 1 : 0);
+                    filters.add("transactionTypeId = :direction");
+                    params.put("direction", transactionTypeId);
+
+                }
+            });
+
+            StringBuilder queryString = new StringBuilder();
+
+            queryString.append("From CardToWalletTransaction where cardId = :cardId ");
+
+            if (!filters.isEmpty()) {
+
+                queryString.append(" and ").append(String.join(" and ", filters));
             }
-            return result;
+            queryString.append(generateOrderBy(transactionFilter));
+
+            Query<CardToWalletTransaction> query = session.createQuery(queryString.toString(), CardToWalletTransaction.class);
+            query.setProperties(params);
+            return query.list();
+
         }
     }
 

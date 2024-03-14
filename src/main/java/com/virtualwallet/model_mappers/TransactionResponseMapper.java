@@ -51,18 +51,17 @@ public class TransactionResponseMapper {
         return dto;
     }
 
-    public TransactionResponseDto convertToDto(WalletToWalletTransaction walletToWalletTransaction, int id) {
-        TransactionResponseDto dto = new TransactionResponseDto();
-        dto.setTransactionType(walletToWalletTransaction.getTransactionTypeId() == 1 ? "Incoming" : "Outgoing");
-        dto.setTransactionId(walletToWalletTransaction.getTransactionId());
-        dto.setTransactionId(id);
-        dto.setAmount(walletToWalletTransaction.getAmount());
-        dto.setSender(walletToWalletTransaction.getSender().getUsername());
-        dto.setRecipient(walletRepository.getById(walletToWalletTransaction.getRecipientWalletId()).getIban());
-        dto.setTime(walletToWalletTransaction.getTime());
-        dto.setStatus(walletToWalletTransaction.getStatus().getName());
-        return dto;
-    }
+//    public TransactionResponseDto convertToDto(WalletToWalletTransaction walletToWalletTransaction) {
+//        TransactionResponseDto dto = new TransactionResponseDto();
+//        dto.setTransactionType(walletToWalletTransaction.getTransactionTypeId() == 1 ? "Incoming" : "Outgoing");
+//        dto.setTransactionId(walletToWalletTransaction.getTransactionId());
+//        dto.setAmount(walletToWalletTransaction.getAmount());
+//        dto.setSender(walletToWalletTransaction.getSender().getUsername());
+//        dto.setRecipient(walletRepository.getById(walletToWalletTransaction.getRecipientWalletId()).getIban());
+//        dto.setTime(walletToWalletTransaction.getTime());
+//        dto.setStatus(walletToWalletTransaction.getStatus().getName());
+//        return dto;
+//    }
 
     public List<TransactionResponseDto> convertWalletTransactionsToDto(List<WalletToWalletTransaction> walletToWalletTransactions) {
         List<TransactionResponseDto> transactionResponseDtos = new ArrayList<>();
