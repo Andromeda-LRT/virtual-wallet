@@ -1,7 +1,9 @@
 package com.virtualwallet.model_mappers;
 
+import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.models.response_model_dto.TransactionResponseDto;
+import com.virtualwallet.repositories.contracts.CardRepository;
 import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.repositories.contracts.WalletRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,44 +16,64 @@ import java.util.List;
 public class TransactionResponseMapper {
 
     private final UserRepository userRepository;
+    private final CardRepository cardRepository;
     private final WalletRepository walletRepository;
 
     @Autowired
-    public TransactionResponseMapper(UserRepository userRepository,
+    public TransactionResponseMapper(UserRepository userRepository, CardRepository cardRepository,
                                      WalletRepository walletRepository) {
         this.userRepository = userRepository;
+        this.cardRepository = cardRepository;
         this.walletRepository = walletRepository;
     }
 
     public TransactionResponseDto convertToDto(WalletToWalletTransaction walletToWalletTransaction) {
         TransactionResponseDto dto = new TransactionResponseDto();
-        dto.setTransactionTypeId(walletToWalletTransaction.getTransactionTypeId());
+        dto.setTransactionType(walletToWalletTransaction.getTransactionTypeId() == 1 ? "Incoming" : "Outgoing");
         dto.setTransactionId(walletToWalletTransaction.getTransactionId());
         dto.setAmount(walletToWalletTransaction.getAmount());
-        dto.setUserName(walletToWalletTransaction.getSender().getUsername());
-        //TODO add username for recipient
-        dto.setWalletIban(walletRepository.getById(walletToWalletTransaction.getWalletId()).getIban());
+        dto.setSender(walletToWalletTransaction.getSender().getUsername());
+        dto.setRecipient(walletRepository.getById(walletToWalletTransaction.getRecipientWalletId()).getIban());
         dto.setTime(walletToWalletTransaction.getTime());
+        return dto;
+    }
+
+    public TransactionResponseDto convertToDto(CardToWalletTransaction cardToWalletTransaction) {
+        TransactionResponseDto dto = new TransactionResponseDto();
+        dto.setTransactionType(cardToWalletTransaction.getTransactionTypeId() == 1 ? "Incoming" : "Outgoing");
+        dto.setTransactionId(cardToWalletTransaction.getTransactionId());
+        dto.setAmount(cardToWalletTransaction.getAmount());
+        dto.setSender("**".concat(cardRepository.getById(cardToWalletTransaction.getCardId()).getNumber().substring(12, 16)));
+        dto.setRecipient(userRepository.getById(cardToWalletTransaction.getUserId()).getUsername());
+        dto.setTime(cardToWalletTransaction.getTime());
         return dto;
     }
 
     public TransactionResponseDto convertToDto(WalletToWalletTransaction walletToWalletTransaction, int id) {
         TransactionResponseDto dto = new TransactionResponseDto();
-
+        dto.setTransactionType(walletToWalletTransaction.getTransactionTypeId() == 1 ? "Incoming" : "Outgoing");
         dto.setTransactionId(walletToWalletTransaction.getTransactionId());
         dto.setTransactionId(id);
         dto.setAmount(walletToWalletTransaction.getAmount());
-        dto.setUserName(walletToWalletTransaction.getSender().getUsername());
-        dto.setWalletIban(walletRepository.getById(walletToWalletTransaction.getWalletId()).getIban());
+        dto.setSender(walletToWalletTransaction.getSender().getUsername());
+        dto.setRecipient(walletRepository.getById(walletToWalletTransaction.getRecipientWalletId()).getIban());
         dto.setTime(walletToWalletTransaction.getTime());
         return dto;
 
     }
 
-    public List<TransactionResponseDto> convertToDto(List<WalletToWalletTransaction> walletToWalletTransactions, int id ) {
+    public List<TransactionResponseDto> convertToDto(List<WalletToWalletTransaction> walletToWalletTransactions, int id) {
         List<TransactionResponseDto> transactionResponseDtos = new ArrayList<>();
         for (WalletToWalletTransaction walletToWalletTransaction : walletToWalletTransactions) {
             transactionResponseDtos.add(convertToDto(walletToWalletTransaction, id));
+        }
+        return transactionResponseDtos;
+    }
+
+    public List<TransactionResponseDto> convertToDto(List<CardToWalletTransaction> cardToWalletTransactions) {
+        List<TransactionResponseDto> transactionResponseDtos = new ArrayList<>();
+        for (CardToWalletTransaction cardToWalletTransaction : cardToWalletTransactions) {
+            transactionResponseDtos.add(convertToDto(cardToWalletTransaction));
         }
         return transactionResponseDtos;
     }

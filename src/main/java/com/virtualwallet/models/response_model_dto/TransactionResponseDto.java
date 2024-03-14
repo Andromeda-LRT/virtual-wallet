@@ -5,9 +5,9 @@ import java.time.LocalDateTime;
 public class TransactionResponseDto {
     private int transactionId;
     private double amount;
-    private int transactionTypeId;
-    private String userName;
-    private String walletIban;
+    private String transactionType;
+    private String sender;
+    private String recipient;
     private LocalDateTime time;
 
     public TransactionResponseDto() {
@@ -15,16 +15,17 @@ public class TransactionResponseDto {
 
     public TransactionResponseDto(int transactionId,
                                   double amount,
-                                  int transactionTypeId,
+                                  String transactionType,
                                   String userName,
                                   String walletIban,
                                   LocalDateTime time) {
         this.transactionId = transactionId;
         this.amount = amount;
-        this.transactionTypeId = transactionTypeId;
-        this.userName = userName;
-        this.walletIban = walletIban;
+        this.transactionType = transactionType;
+        this.sender = userName;
+        this.recipient = walletIban;
         this.time = time;
+
     }
 
     public int getTransactionId() {
@@ -44,28 +45,28 @@ public class TransactionResponseDto {
         this.amount = amount;
     }
 
-    public int getTransactionTypeId() {
-        return transactionTypeId;
+    public String getTransactionType() {
+        return transactionType;
     }
 
-    public void setTransactionTypeId(int transactionTypeId) {
-        this.transactionTypeId = transactionTypeId;
+    public void setTransactionType(String transactionType) {
+        this.transactionType = transactionType;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getSender() {
+        return sender;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setSender(String sender) {
+        this.sender = sender;
     }
 
-    public String getWalletIban() {
-        return walletIban;
+    public String getRecipient() {
+        return recipient;
     }
 
-    public void setWalletIban(String walletIban) {
-        this.walletIban = walletIban;
+    public void setRecipient(String recipient) {
+        this.recipient = recipient;
     }
 
     public LocalDateTime getTime() {
@@ -75,4 +76,5 @@ public class TransactionResponseDto {
     public void setTime(LocalDateTime time) {
         this.time = time;
     }
+
 }
