@@ -28,20 +28,22 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - uses: actions/checkout@v2
+
     - name: Set Executable Permission for Gradlew
       run: chmod +x gradlew
-    - name: Run Gradle build
-      run: ./gradlew -Dorg.gradle.configureondemand=false -Dorg.gradle.dependency.verification=off -Dorg.gradle.unsafe.isolated-projects=false :ForceDependencyResolutionPlugin_resolveAllDependencies
 
-    # Configure Gradle for optimal use in GiHub Actions, including caching of downloaded dependencies.
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3.1.0
+      
+    - name: Run Gradle build
+      run: ./gradlew build -Dorg.gradle.configureondemand=false -Dorg.gradle.dependency.verification=off -Dorg.gradle.unsafe.isolated-projects=false
+
+    # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     
-    - name: Grant execute permission for gradlew
-      run: chmod +x ./gradlew
+    # - name: Grant execute permission for gradlew
+    #   run: chmod +x ./gradlew
       
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
@@ -58,7 +60,7 @@ jobs:
     #   run: gradle build
 
   dependency-submission:
-
+    needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -74,4 +76,4 @@ jobs:
     # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
     # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
     - name: Generate and submit dependency graph
-      uses: gradle/actions/dependency-submission@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
+      uses: gradle/actions/dependency-submission@v3.1.0
