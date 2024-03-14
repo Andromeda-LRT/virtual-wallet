@@ -61,6 +61,18 @@ public class WalletServiceImpl implements WalletService {
         return walletRepository.getAllWallets(user);
     }
 
+
+    @Override
+    public List<Wallet> getAllPersonalWallets(User user) {
+       return getAllWallets(user).stream().filter(wallet -> wallet.getWalletTypeId() == 1).toList();
+    }
+
+    @Override
+    public List<Wallet> getAllJoinWallets(User user) {
+        return getAllWallets(user).stream().filter(wallet -> wallet.getWalletTypeId() == 2).toList();
+    }
+
+
     @Override
     public List<User> getRecipient(UserModelFilterOptions userFilter) {
         return userService.getRecipient(userFilter);

@@ -158,7 +158,7 @@ public class WalletController {
             List<WalletToWalletTransaction> walletToWalletTransactionList =
                     walletService.getAllWalletTransactionsWithFilter(transactionModelFilterOptions, user, wallet_id);
 //            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
-            return ResponseEntity.status(HttpStatus.OK).body(transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id));
+            return ResponseEntity.status(HttpStatus.OK).body(transactionResponseMapper.convertWalletTransactionsToDto(walletToWalletTransactionList));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -188,7 +188,7 @@ public class WalletController {
             User user = authHelper.tryGetUser(headers);
             List<CardToWalletTransaction> cardToWalletTransactionList =
                     walletService.getAllCardTransactionsWithFilter(user, transactionModelFilterOptions);
-            return ResponseEntity.status(HttpStatus.OK).body(transactionResponseMapper.convertToDto(cardToWalletTransactionList));
+            return ResponseEntity.status(HttpStatus.OK).body(transactionResponseMapper.convertCardTransactionsToDto(cardToWalletTransactionList));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (IllegalArgumentException e) {

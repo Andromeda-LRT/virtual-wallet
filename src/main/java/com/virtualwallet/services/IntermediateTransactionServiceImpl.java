@@ -40,18 +40,18 @@ public class IntermediateTransactionServiceImpl implements IntermediateTransacti
     public List<WalletToWalletTransaction> getAllWithFilter
             (User user, WalletTransactionModelFilterOptions transactionFilter) {
         checkIfAdmin(user);
-        throw new UnsupportedOperationException();
+       throw new UnsupportedOperationException();
         //todo remove uncommented code once filter is implemented
-       // return walletTransactionService.getAllWalletTransactions(transactionFilter);
+//      return walletTransactionService.getAllWalletTransactionsWithFilter(transactionFilter);
     }
 
     @Override
     public List<CardToWalletTransaction> getAllCardTransactionsWithFilter
             (User user, CardTransactionModelFilterOptions cardTransactionFilter) {
         checkIfAdmin(user);
-        throw new UnsupportedOperationException();
+        //throw new UnsupportedOperationException();
         //todo remove uncommented code once filter is implemented
-       // return cardTransactionService.getAllCardTransactionsWithFilter(user, cardTransactionFilter);
+        return cardTransactionService.getAllCardTransactionsWithFilter(user, cardTransactionFilter);
     }
 
 

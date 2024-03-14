@@ -35,6 +35,7 @@ public class TransactionResponseMapper {
         dto.setSender(walletToWalletTransaction.getSender().getUsername());
         dto.setRecipient(walletRepository.getById(walletToWalletTransaction.getRecipientWalletId()).getIban());
         dto.setTime(walletToWalletTransaction.getTime());
+        dto.setStatus(walletToWalletTransaction.getStatus().getName());
         return dto;
     }
 
@@ -44,8 +45,9 @@ public class TransactionResponseMapper {
         dto.setTransactionId(cardToWalletTransaction.getTransactionId());
         dto.setAmount(cardToWalletTransaction.getAmount());
         dto.setSender("**".concat(cardRepository.getById(cardToWalletTransaction.getCardId()).getNumber().substring(12, 16)));
-        dto.setRecipient(userRepository.getById(cardToWalletTransaction.getUserId()).getUsername());
+        dto.setRecipient(walletRepository.getById(cardToWalletTransaction.getWalletId()).getIban());
         dto.setTime(cardToWalletTransaction.getTime());
+        dto.setStatus(cardToWalletTransaction.getStatus().getName());
         return dto;
     }
 
@@ -58,19 +60,19 @@ public class TransactionResponseMapper {
         dto.setSender(walletToWalletTransaction.getSender().getUsername());
         dto.setRecipient(walletRepository.getById(walletToWalletTransaction.getRecipientWalletId()).getIban());
         dto.setTime(walletToWalletTransaction.getTime());
+        dto.setStatus(walletToWalletTransaction.getStatus().getName());
         return dto;
-
     }
 
-    public List<TransactionResponseDto> convertToDto(List<WalletToWalletTransaction> walletToWalletTransactions, int id) {
+    public List<TransactionResponseDto> convertWalletTransactionsToDto(List<WalletToWalletTransaction> walletToWalletTransactions) {
         List<TransactionResponseDto> transactionResponseDtos = new ArrayList<>();
         for (WalletToWalletTransaction walletToWalletTransaction : walletToWalletTransactions) {
-            transactionResponseDtos.add(convertToDto(walletToWalletTransaction, id));
+            transactionResponseDtos.add(convertToDto(walletToWalletTransaction));
         }
         return transactionResponseDtos;
     }
 
-    public List<TransactionResponseDto> convertToDto(List<CardToWalletTransaction> cardToWalletTransactions) {
+    public List<TransactionResponseDto> convertCardTransactionsToDto(List<CardToWalletTransaction> cardToWalletTransactions) {
         List<TransactionResponseDto> transactionResponseDtos = new ArrayList<>();
         for (CardToWalletTransaction cardToWalletTransaction : cardToWalletTransactions) {
             transactionResponseDtos.add(convertToDto(cardToWalletTransaction));
