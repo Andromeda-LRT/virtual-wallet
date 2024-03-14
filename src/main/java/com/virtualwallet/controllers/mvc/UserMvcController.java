@@ -1,9 +1,6 @@
 package com.virtualwallet.controllers.mvc;
 
-import com.virtualwallet.exceptions.AuthenticationFailureException;
-import com.virtualwallet.exceptions.EntityNotFoundException;
-import com.virtualwallet.exceptions.ExpiredCardException;
-import com.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.virtualwallet.exceptions.*;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_mappers.CardMapper;
 import com.virtualwallet.model_mappers.UserMapper;
@@ -21,7 +18,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -31,7 +31,7 @@ public class UserMvcController {
     private final CardService cardService;
     private final AuthenticationHelper authenticationHelper;
     private final UserMapper userMapper;
-    
+
 
     @Autowired
     public UserMvcController(UserService userService,
@@ -73,10 +73,10 @@ public class UserMvcController {
 
     @PostMapping("/{id}")
     public String updateUserProfile(@PathVariable int id,
-                                               @ModelAttribute("user") UserDto userDto,
-                                               BindingResult bindingResult,
-                                               Model model,
-                                               HttpSession session) {
+                                    @ModelAttribute("user") UserDto userDto,
+                                    BindingResult bindingResult,
+                                    Model model,
+                                    HttpSession session) {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
@@ -107,6 +107,32 @@ public class UserMvcController {
         }
     }
 
+    @PostMapping("/{id}/picture")
+    public String updateUserProfilePicture(@RequestParam("fileImage") MultipartFile multipartFile,
+                                           HttpSession session,
+                                           Model model,
+                                           BindingResult errors) throws IOException {
+
+        User loggedUser;
+        try {
+            loggedUser = authenticationHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+        try {
+            userService.updateProfilePicture(loggedUser, multipartFile);
+            model.addAttribute("user", loggedUser);
+            return "redirect:/users/ProfileView";
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("This should never happen," +
+                    " since file being uploaded is taken from file system");
+        } catch (InvalidOperationException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "BadRequestView";
+        }
+    }
+
     @GetMapping("/{id}/delete")
     public String deleteUserProfile(@PathVariable int id, Model model, HttpSession session) {
         try {
@@ -125,5 +151,5 @@ public class UserMvcController {
             return "UnauthorizedView";
         }
     }
-    
+
 }

@@ -6,7 +6,16 @@ import jakarta.validation.constraints.*;
 import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 import static com.virtualwallet.model_helpers.ModelConstantHelper.EMPTY_ERROR_MESSAGE;
 
-public class RegisterDto extends LoginDto {
+public class RegisterDto {
+
+    @NotEmpty(message = "Username can't be empty.")
+    @Pattern(regexp = "^[a-zA-Z0-9]{2,20}$",
+            message = USERNAME_ERROR_MESSAGE)
+    private String username;
+    @NotEmpty(message = "Password can't be empty.")
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,20}$",
+            message = PASSWORD_ERROR_MESSAGE)
+    private String password;
 
     @Schema(name = "firstName", example = "Ivan", required = true)
     @NotBlank(message = EMPTY_ERROR_MESSAGE)
@@ -30,6 +39,22 @@ public class RegisterDto extends LoginDto {
     String phoneNumber;
 
     public RegisterDto() {
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getFirstName() {

@@ -14,8 +14,12 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.virtualwallet.model_helpers.ModelConstantHelper.DEFAULT_PROFILE_IMAGE;
+import static com.virtualwallet.model_helpers.ModelConstantHelper.USER_ROLE_ID;
+
 @Component
 public class UserMapper {
+
     private final UserService userService;
 
     private final RoleService roleService;
@@ -63,7 +67,7 @@ public class UserMapper {
         user.setLastName(userDto.getLastName());
         user.setPhoneNumber(userDto.getPhoneNumber());
         user.setEmail(userDto.getEmail());
-        user.setRole(roleService.getRole(1));
+        user.setRole(roleService.getRole(USER_ROLE_ID));
     }
 
     private void toDtoObj(User user, RegisterDto registerDto) {
@@ -73,6 +77,8 @@ public class UserMapper {
         user.setLastName(registerDto.getLastName());
         user.setPhoneNumber(registerDto.getPhoneNumber());
         user.setEmail(registerDto.getEmail());
+        user.setRole(roleService.getRole(USER_ROLE_ID));
+        user.setProfilePicture(DEFAULT_PROFILE_IMAGE);
     }
 
     public List<UserDto> toDto(List<User> users) {

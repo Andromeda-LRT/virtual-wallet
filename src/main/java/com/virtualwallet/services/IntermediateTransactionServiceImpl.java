@@ -3,10 +3,13 @@ package com.virtualwallet.services;
 import com.virtualwallet.exceptions.InsufficientFundsException;
 import com.virtualwallet.exceptions.InvalidOperationException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
+import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.WalletToWalletTransaction;
+import com.virtualwallet.services.contracts.CardTransactionService;
 import com.virtualwallet.services.contracts.IntermediateTransactionService;
 import com.virtualwallet.services.contracts.WalletService;
 import com.virtualwallet.services.contracts.WalletTransactionService;
@@ -21,12 +24,15 @@ import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 public class IntermediateTransactionServiceImpl implements IntermediateTransactionService {
 
     private final WalletService walletService;
+    private final CardTransactionService cardTransactionService;
     private final WalletTransactionService walletTransactionService;
 
     @Autowired
     public IntermediateTransactionServiceImpl(WalletService walletService,
+                                              CardTransactionService cardTransactionService,
                                               WalletTransactionService walletTransactionService) {
         this.walletService = walletService;
+        this.cardTransactionService = cardTransactionService;
         this.walletTransactionService = walletTransactionService;
     }
 
@@ -35,7 +41,17 @@ public class IntermediateTransactionServiceImpl implements IntermediateTransacti
             (User user, WalletTransactionModelFilterOptions transactionFilter) {
         checkIfAdmin(user);
         throw new UnsupportedOperationException();
-        //return walletTransactionService.getAllWalletTransactions(transactionFilter);
+        //todo remove uncommented code once filter is implemented
+       // return walletTransactionService.getAllWalletTransactions(transactionFilter);
+    }
+
+    @Override
+    public List<CardToWalletTransaction> getAllCardTransactionsWithFilter
+            (User user, CardTransactionModelFilterOptions cardTransactionFilter) {
+        checkIfAdmin(user);
+        throw new UnsupportedOperationException();
+        //todo remove uncommented code once filter is implemented
+       // return cardTransactionService.getAllCardTransactionsWithFilter(user, cardTransactionFilter);
     }
 
 

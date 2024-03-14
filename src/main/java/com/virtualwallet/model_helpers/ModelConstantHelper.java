@@ -6,7 +6,7 @@ public class ModelConstantHelper {
 
     public static final String INVALID_EMAIL_ERROR_MESSAGE = "Please enter a valid email address";
 
-    public static final String USERNAME_ERROR_MESSAGE = "Username must be of between 6 to 16 symbols long" +
+    public static final String USERNAME_ERROR_MESSAGE = "Username must be of between 2 to 20 symbols long" +
             " with no special characters";
     public static final String PASSWORD_ERROR_MESSAGE = "Password must be at least 8 and up to 20 symbols long, " +
             "containing at least 1 uppercase, 1 lowercase, 1 special character and 1 digit ";
@@ -49,6 +49,8 @@ public class ModelConstantHelper {
     public static final int CONFIRMED_TRANSACTION_ID = 1;
     public static final int PENDING_TRANSACTION_ID = 2;
     public static final int DECLINED_TRANSACTION_ID = 3;
+    public static final int USER_ROLE_ID = 1;
+    public static final int ADMIN_ROLE_ID = 2;
     public static final String USER_USERNAME = "username";
     public static final String USER_EMAIL = "email";
     public static final String USER_PHONE_NUMBER = "phoneNumber";
@@ -61,4 +63,13 @@ public class ModelConstantHelper {
 
     public static final String PERMISSIONS_ERROR_GENERAL =
             "You don't have the permissions to perform this operation";
+    public static final String IMGBB_IMG_UPLOAD_ENDPOINT_URL = "https://api.imgbb.com/1/upload";
+    public static final String REQUEST_KEY_IMAGE = "image";
+    public static final String UPLOAD_IMG_API_REQUEST_KEY = "key";
+    public static final String EXPIRATION_QUERY_PARAM_REQUEST_KEY = "expiration";
+    public static final int RESPONSE_STATUS_OK = 200;
+
+    public static final String DEFAULT_PROFILE_IMAGE = "https://img.freepik.com/free-vector/user-circles-set_78370-4704." +
+            "jpg?t=st=1710328051~exp=1710331651~hmac" +
+            "=a5557b44bd4d12b7016d8ab8cb91c28b4952259e577fd680212da0a18b196430&w=1060";
 }
