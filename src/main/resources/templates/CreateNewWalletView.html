@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
+
+    <title>Add Wallet</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css"
+          th:href="@{/vendor/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet">
+
+    <!--
+
+    TemplateMo 570 Chain App Dev
+
+    https://templatemo.com/tm-570-chain-app-dev
+
+    -->
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/assets/css/templatemo-chain-app-dev.css"
+          th:href="@{/assets/css/templatemo-chain-app-dev.css}">
+    <link rel="stylesheet" href="../static/assets/css/animated.css" th:href="@{/assets/css/animated.css}">
+    <link rel="stylesheet" href="../static/assets/css/owl.css" th:href="@{/assets/css/owl.css}">
+
+
+    <style>
+
+        .form-heading {
+            margin-bottom: 20px;
+        }
+        /* Стилове за формата и нейните елементи */
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 15px 26px rgba(0, 0, 0, 0.5);
+        }
+        .form-heading {
+            margin-bottom: 20px;
+        }
+
+
+        .select-large {
+            font-size: 1.05rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .select-large option {
+            padding: 0.25rem 0.5rem;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+
+        .btn + .btn {
+            margin-top: 10px;
+        }
+        .custom-select-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .custom-select-wrapper:after {
+            content: "\25BC";
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #333;
+        }
+
+        .custom-select {
+            -webkit-appearance: none; /* Removes default chrome and safari style */
+            -moz-appearance: none; /* Removes default style Firefox */
+            appearance: none; /* Remove default arrow in IE */
+            /* Add custom styles for your select */
+            padding-right: 30px; /* Make space for the custom arrow */
+        }
+
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/VirtualWalletFragments :: header}"></div>
+<!--header-->
+<br>
+
+<div class="the-clients">
+    <div class="container">
+
+        <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="form-container">
+                <h2 class="form-heading text-center">Add New Wallet</h2>
+                <form id="addWalletForm">
+                    <div class="form-group">
+                        <label for="walletName">Wallet Name</label>
+                        <input type="text" class="form-control" id="walletName" required>
+                    </div>
+<!--                    <div class="form-group">-->
+<!--                        <label for="walletType">Wallet Type</label>-->
+<!--                        <select class="form-control select-large"-->
+<!--                                id="walletType" required>-->
+<!--                            <option value="1">Personal</option>-->
+<!--                            <option value="2">Shared</option>-->
+<!--                        </select>-->
+
+<!--                    </div>-->
+                    <div class="form-group">
+                        <label for="walletType">Wallet Type</label>
+                        <div class="custom-select-wrapper">
+                            <select class="form-control select-large custom-select" id="walletType" required>
+                                <option value="1">Personal</option>
+                                <option value="2">Shared</option>
+                            </select>
+                        </div>
+                    </div>
+
+
+                    <button type="submit" class="btn btn-primary btn-block"
+                            style="background-color: green;border-color: green; font-weight: bold;">
+                        <i class="bi bi-plus-lg"></i>Add Wallet</button>
+                    <button onclick="window.history.back();"
+                            class="btn btn-primary btn-block" style="background-color: red; border-color: red;font-weight: bold;">
+                        <i class="bi bi-x-lg"></i> Cancel
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
