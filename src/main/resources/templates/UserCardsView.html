@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Cards</title>
+
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css"
+          th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" href="../static/assets/css/templatemo-chain-app-dev.css"
+          th:href="@{/assets/css/templatemo-chain-app-dev.css}">
+    <link rel="stylesheet" href="../static/assets/css/animated.css" th:href="@{/assets/css/animated.css}">
+    <link rel="stylesheet" href="../static/assets/css/owl.css" th:href="@{/assets/css/owl.css}">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <style>
+
+        .service-item.first-service {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .service-item.first-service:hover h4 {
+            color: white !important;
+            font-size: 3vh;
+        }
+        .service-item.first-service h4 {
+            color: #4b8ef1 !important;
+            font-size: 3vh;
+        }
+
+        .order-card {
+            color: #fff;
+        }
+
+        .bg-c-blue {
+            background: linear-gradient(45deg,#4099ff,#73b4ff);
+        }
+
+        .card {
+            border-radius: 5px;
+            border: none;
+            width: max-content;
+            margin-bottom: 30px;
+            margin-right: 10px;
+            -webkit-transition: all 0.3s ease-in-out;
+            transition: all 0.3s ease-in-out;
+        }
+        .card:last-child {
+            margin-right: 0;
+        }
+
+        .card .card-block {
+            padding: 25px;
+        }
+
+        .order-card i {
+            font-size: 26px;
+        }
+
+        a:hover {
+            color: #FAFAFA;
+            text-decoration:none;
+        }
+
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/VirtualWalletFragments :: header}"></div>
+
+<br/>
+<div class="container" style="margin-top: 110px; margin-bottom: 0; padding-bottom: 0; text-align: center;">
+    <a href="#" th:href="@{/cards/addition}" class="btn btn-primary"
+       style="display: inline-block; width: auto; padding: 10px 20px; margin: 0 auto; font-size: 3.5vh;">
+        <i class="fa fa-plus"></i> Add New Cards
+    </a>
+</div>
+
+
+<div class="services section" style="margin-top: 10px; padding-top: 0;">
+    <div class="container">
+        <div class="row">
+            <h3 style="font-weight: bold">Registered Cards</h3>
+            <hr>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-3" th:if="${cards.isEmpty()}">
+            <div class="service-item first-service" style="margin-top: 30px; margin-left: auto; margin-right: auto;">
+                <h4>No Cards</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="container" th:unless="${cards.isEmpty()}">
+    <div class="row">
+        <div class="col-md-4 col-xl-3" th:each="card : ${cards}">
+            <div class="card bg-c-blue order-card" >
+                <div class="card-block" >
+                    <h4 class="m-b-20" style="text-align: left">Card Number</h4>
+                    <div ><i class="fa fa-credit-card"></i>
+                    <span th:text="${card.getNumber()}" style="font-size: 25px"></span></div>
+                    <div>Expiration Date</div>
+                    <div th:text="${#temporals.format(card.getExpirationDate(), 'MM/yyyy')}">Sep, 2021></div>
+                    <br/>
+                    <div class="text-button">
+                        <a href="#" th:href="@{/cards/__${card.getId()}__}" class="order-card">
+                            Go to Card
+                            <i class="fa fa-arrow-right order-card"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
+</body>
+</html>

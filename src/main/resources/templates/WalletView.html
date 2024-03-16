@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+
+    <title>Wallet</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css"
+          th:href="@{/vendor/bootstrap/css/bootstrap.min.css}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.0/css/boxicons.min.css"
+          integrity="sha512-pVCM5+SN2+qwj36KonHToF2p1oIvoU3bsqxphdOIWMYmgr4ZqD3t5DjKvvetKhXGc/ZG5REYTT6ltKfExEei/Q=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
+          integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous"/>
+    <!--
+    TemplateMo 570 Chain App Dev
+    https://templatemo.com/tm-570-chain-app-dev
+    -->
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <link rel="stylesheet" href="../static/assets/css/templatemo-chain-app-dev.css"
+          th:href="@{/assets/css/templatemo-chain-app-dev.css}">
+    <link rel="stylesheet" href="../static/assets/css/animated.css" th:href="@{/assets/css/animated.css}">
+    <link rel="stylesheet" href="../static/assets/css/owl.css" th:href="@{/assets/css/owl.css}">
+    <style>
+
+        .black-button a {
+            color: white;
+            background-color: black;
+            margin-right: 12px;
+            margin-bottom: 8px;
+            padding: 10px 40px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 16px;
+            text-decoration: none;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .black-button a:hover {
+            transform: scale(1.1);
+            background-color: #333;
+        }
+
+        .card {
+            padding: 20px;
+            width: 600px;
+        }
+
+        .card-body {
+            padding: 10px;
+        }
+
+        .balance-container,
+        .wallet-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .balance-label {
+            font-size: 30px;
+            font-weight: bold;
+            margin: 0;
+            color: #4b8ef1;
+        }
+
+        .wallet-fields {
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;
+            color: #4b8ef1;
+        }
+
+        .wallet-users {
+            color: #4b8ef1;
+            font-weight: bold;
+            font-size: 26px;
+            text-align: center;
+        }
+
+        .wallet-values {
+            color: #1a1e21;
+            font-size: 22px;
+        }
+
+        .services {
+            padding-top: 30px;
+        }
+
+
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/VirtualWalletFragments :: header}"></div>
+<br/>
+
+
+<div class="the-clients">
+    <div class="container">
+        <div class="section-heading  justify-content-between align-items-start" style="margin-bottom: 0;">
+            <!-- Left Placeholder for alignment -->
+            <div class="flex-grow-1 d-flex justify-content-start">
+                <a th:href="@{/wallets}" class="btn btn-primary back-button">
+                    <i class="bi bi-arrow-left"></i> Return To Wallets
+                </a>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
+
+
+<div id="services" class="services section">
+
+    <div class="container" style="display: grid; justify-content: center">
+        <!--        <div class="row justify-content-center">-->
+        <div class="col-xl-3 col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="balance-container">
+                        <p th:label="#{wallet.model.balance}" class="balance-label">Balance:</p>
+                        <p style="text-align: center; font-size: 30px;">
+                            <i class="fas fa-dollar-sign" style="color: #1a1e21"></i>
+                            <span th:text="${wallet.balance}" style="color: #1a1e21">Wallet Balance</span>
+
+                    </div>
+                    <div class="mt-3 pt-1 wallet-container">
+                        <p th:label="#{wallet.model.name}" class="wallet-fields">Name:</p>
+                        <p th:text="${wallet.name}" class="wallet-values">Wallet Name</p>
+                    </div>
+                    <div class="wallet-container">
+                        <p th:label="#{wallet.model.iban}" class="wallet-fields">Iban:</p>
+                        <p th:text="${wallet.iban}" class="wallet-values">Wallet Iban</p>
+                    </div>
+                    <div class="wallet-container">
+                        <p th:label="#{wallet.model.type}" class="wallet-fields">Type:</p>
+                        <p th:text="${wallet.type}" class="wallet-values">>Wallet Type:</p>
+                    </div>
+                    <div th:if="${wallet.getType().equals('Joined')}">
+                        <div class="mt-3 pt-1 wallet-users" th:label="#{wallet.model.users}">
+                            Wallet Users
+                        </div>
+                        <div class="wallet-container" th:unless="${wallet.getWalletUsers().isEmpty()}"
+                             th:each="user : ${wallet.getWalletUsers()}">
+                            <p th:text="${user.username}" class="wallet-values"></p>
+                            <p th:if="${isWalletAdmin} AND ${user.getId()} != ${walletAdminId} ">
+                                <a href="#" th:href="@{__${requestURI}__/users/{id}(id=${user.getId()})}">
+                                    <i class="fas fa-trash" style="font-size: 22px"> </i>
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--            </div>-->
+        </div>
+    </div>
+    <br/>
+    <div class="container">
+        <div class="row">
+            <!--            <div class="col-lg-12 text-center">-->
+            <!--            </div>-->
+            <div class="col-lg-12 d-flex justify-content-center">
+                <div class="black-button" style="">
+                    <a href="#" th:href="@{__${requestURI}__/delete}">Delete</a>
+                </div>
+                <div class="black-button">
+                    <a href="#" th:href="@{__${requestURI}__/update}">Update</a>
+                </div>
+                <div class="black-button">
+                    <a href="#" th:href="@{__${requestURI}__/transactions}">View
+                        Transactions</a>
+                </div>
+            </div>
+            <div class="col-lg-12 d-flex justify-content-center">
+                <div class="black-button">
+                    <a href="#" th:href="@{__${requestURI}__/transfers}">View Transfers</a>
+                </div>
+                <div class="black-button">
+                    <a href="#" th:href="@{__${requestURI}__/transactions/new}">Create
+                        Transaction</a>
+                </div>
+                <div class="black-button">
+                    <a href="#" th:href="@{__${requestURI}__/transfer}">Transfer Money to
+                        Wallet</a>
+                </div>
+                <div class="black-button" th:if="${wallet.getType().equals('Joined')}">
+                    <a href="#" th:href="@{__${requestURI}__/users}">Add User To Wallet</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
+</body>
+</html>
