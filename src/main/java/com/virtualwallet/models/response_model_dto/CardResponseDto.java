@@ -3,6 +3,7 @@ package com.virtualwallet.models.response_model_dto;
 import java.time.LocalDateTime;
 
 public class CardResponseDto {
+    private int id;
     private String number;
     private LocalDateTime expirationDate;
     private String cardHolder;
@@ -18,6 +19,14 @@ public class CardResponseDto {
         this.cardHolder = cardHolder;
         this.checkNumber = checkNumber;
         this.cardType = cardType;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getNumber() {
