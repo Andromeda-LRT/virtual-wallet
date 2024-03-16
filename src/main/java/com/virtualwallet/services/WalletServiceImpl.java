@@ -24,6 +24,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
@@ -33,7 +34,7 @@ public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
     private final CardService cardService;
-    private final WebClient webClient;
+    private final WebClient dummyApiWebClient;
     private final UserService userService;
     private final CardMapper cardMapper;
     private final WalletTransactionService walletTransactionService;
@@ -42,14 +43,14 @@ public class WalletServiceImpl implements WalletService {
     @Autowired
     public WalletServiceImpl(WalletRepository walletRepository,
                              CardService cardService,
-                             WebClient webClient,
+                             WebClient dummyApiWebClient,
                              UserService userService,
                              CardMapper cardMapper,
                              WalletTransactionService walletTransactionService,
                              CardTransactionService cardTransactionService) {
         this.walletRepository = walletRepository;
         this.cardService = cardService;
-        this.webClient = webClient;
+        this.dummyApiWebClient = dummyApiWebClient;
         this.userService = userService;
         this.cardMapper = cardMapper;
         this.walletTransactionService = walletTransactionService;
@@ -330,7 +331,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     private String sendTransferRequest(Card card) {
-        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = webClient.method(HttpMethod.POST);
+        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = dummyApiWebClient.method(HttpMethod.POST);
         WebClient.RequestBodySpec bodySpec = uriSpec.uri(URI.create(DUMMY_API_COMPLETE_URL));
         CardForAddingMoneyToWalletDto cardDto = cardMapper.toDummyApiDto(card);
         WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(cardDto);
