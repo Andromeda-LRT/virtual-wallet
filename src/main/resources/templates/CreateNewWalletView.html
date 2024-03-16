@@ -110,26 +110,19 @@
         <div class="col-md-6 offset-md-3">
             <div class="form-container">
                 <h2 class="form-heading text-center">Add New Wallet</h2>
-                <form id="addWalletForm">
+                <form id="addWalletForm" action="#" th:action="@{/wallets/new}" th:object="${newWallet}" method="post">
                     <div class="form-group">
                         <label for="walletName">Wallet Name</label>
                         <input type="text" class="form-control" id="walletName" required>
                     </div>
-<!--                    <div class="form-group">-->
-<!--                        <label for="walletType">Wallet Type</label>-->
-<!--                        <select class="form-control select-large"-->
-<!--                                id="walletType" required>-->
-<!--                            <option value="1">Personal</option>-->
-<!--                            <option value="2">Shared</option>-->
-<!--                        </select>-->
-
-<!--                    </div>-->
+<!--Todo add types when service and repo are ready - LYUBIMA-->
                     <div class="form-group">
                         <label for="walletType">Wallet Type</label>
                         <div class="custom-select-wrapper">
-                            <select class="form-control select-large custom-select" id="walletType" required>
-                                <option value="1">Personal</option>
-                                <option value="2">Shared</option>
+                            <select th:field="*{walletTypeId}" class="form-control select-large custom-select" id="walletType" required>
+<!--                                <option value="">Please select wallet type...</option>-->
+                                <option th:value="1">Personal</option>
+                                <option th:value="2">Shared</option>
                             </select>
                         </div>
                     </div>

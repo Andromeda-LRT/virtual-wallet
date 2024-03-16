@@ -155,7 +155,6 @@
         .fa {
             font-size: 20px;
         }
-
         .table thead.custom-thead {
             background-color: #4b8ef1 !important;
             color: white;
@@ -175,7 +174,7 @@
             background: #f7f7f7;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             display: flex;
             align-items: center;
             flex-wrap: wrap;
@@ -210,8 +209,8 @@
             border-radius: 0.25rem;
             cursor: pointer;
             color: #fff;
-            background-color: #4b8ef1;
-            border-color: #4b8ef1;
+            background-color: #007bff;
+            border-color: #007bff;
         }
 
         @media (max-width: 768px) {
@@ -226,17 +225,35 @@
             }
         }
 
+        .btn-make-admin, .btn-remove-admin {
+            color: black;
+            background-color: white;
+            border: 1px solid black;
+        }
+
+
+        .btn-make-admin:hover {
+            color: white;
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-remove-admin:hover {
+            color: white;
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+
+        .btn-edit:hover, .btn-delete:hover, .btn-block:hover, .btn-unblock:hover {
+            opacity: 0.8;
+        }
 
         #pagination {
-            /*display: flex;*/
-            /*justify-content: center;*/
-            /*align-items: center;*/
-            /*margin-top: 20px;*/
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
         }
 
         #pagination a {
@@ -268,7 +285,6 @@
             flex-direction: column;
             justify-content: space-between;
         }
-
         /* Back Button Custom Styling */
         .back-button {
             width: auto;
@@ -276,7 +292,7 @@
             display: inline-flex; /* Aligns the icon and text */
             align-items: center; /* Centers items vertically */
             justify-content: center; /* Centers items horizontally */
-            background-color: #4b8ef1; /* Primary button color */
+            background-color: #007bff; /* Primary button color */
             color: white; /* Text color */
             border: none; /* Removes the border */
             padding: 10px 20px; /* Padding inside the button */
@@ -286,7 +302,7 @@
         }
 
         .back-button:hover {
-            background-color: #4b8ef1; /* Darker shade on hover */
+            background-color: #0056b3; /* Darker shade on hover */
             transform: translateY(-2px); /* Slight lift on hover */
             text-decoration: none; /* Removes underline from icons or text if any */
             color: white; /* Keeps text color white on hover */
@@ -295,29 +311,12 @@
         .back-button i {
             margin-right: 5px; /* Space between icon and text */
         }
-
-        /*table*/
-
-        .card {
-            box-shadow: 0 20px 27px 0 rgb(0 0 0 / 5%);
+        .card-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
         }
-
-        .table-nowrap .table td,
-        .table-nowrap .table th {
-            white-space: nowrap;
-        }
-
-        .table > :not(caption) > * > * {
-            padding: 0.75rem 1.25rem;
-            border-bottom-width: 1px;
-        }
-
-        table th {
-            font-weight: 600;
-            background-color: #4b8ef1 !important;
-            color: white;
-        }
-
 
     </style>
 </head>
@@ -331,9 +330,9 @@
         <div class="section-heading  justify-content-between align-items-start" style="margin-bottom: 0;">
             <!-- Left Placeholder for alignment -->
             <div class="flex-grow-1 d-flex justify-content-start">
-                <button onclick="window.history.back();" class="btn btn-primary back-button">
+                <a th:href="@{/admin}" class="btn btn-primary back-button">
                     <i class="bi bi-arrow-left"></i> Back To Dashboard
-                </button>
+                </a>
             </div>
             <h4 class="text-center flex-grow-1 m-0"><em>Card Transactions</em></h4>
             <div class="flex-grow-1"></div>
@@ -345,10 +344,10 @@
 <!-- Filter Options -->
 <section class="section-padding">
     <div class="container">
-        <div class="row">
-            <div class="post-filter">
+        <div class="row" style="padding-bottom: 0; margin-bottom: 0;">
+            <div class="col-12">
                 <div style="margin-left: 10px;">
-                    <label class="form-label">Filter Options:</label>
+<!--                    <label class="form-label">Filter Options:</label>-->
                 </div>
                 <form action="#" th:action="@{/admin/cards/transfers}" method="get" th:object="${cardTransactionFilter}"
                       class="d-flex flex-row align-items-center gap-2">
@@ -392,9 +391,9 @@
     <div class="row">
         <div class="col-12 mb-3 mb-lg-5">
             <div class="position-relative card table-nowrap table-card">
-                <div class="card-header align-items-center">
+                <div class="card-header d-flex justify-content-center align-items-center">
                     <h5 class="mb-0">Transaction History</h5>
-<!--                    <p class="mb-0 small text-muted">1 Pending</p>-->
+                    <!-- <p class="mb-0 small text-muted">1 Pending</p> -->
                 </div>
                 <div class="table-responsive">
                     <table class="table mb-0">
@@ -408,7 +407,6 @@
                         </thead>
                         <tbody id="cardsContainer" th:each="cardTrans : ${cardTransfersList}">
                         <tr class="align-middle">
-<!--                            <td th:text="${cardTrans.getTime()}">13 Sep, 2021</td>-->
                             <td th:text="${#temporals.format(cardTrans.getTime(), 'dd MMM yyyy')}">13 Sep, 2021</td>
                             <td>
                                 <div class="d-flex align-items-center justify-content-center" th:switch="${cardTrans.getTransactionType()}">
