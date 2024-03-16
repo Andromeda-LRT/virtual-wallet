@@ -40,7 +40,9 @@
 
         .form-heading {
             margin-bottom: 20px;
+            color: #4b8ef1;
         }
+
         /* Стилове за формата и нейните елементи */
         .form-container {
             background: #fff;
@@ -48,10 +50,6 @@
             border-radius: 8px;
             box-shadow: 0 15px 26px rgba(0, 0, 0, 0.5);
         }
-        .form-heading {
-            margin-bottom: 20px;
-        }
-
 
         .select-large {
             font-size: 1.05rem;
@@ -72,6 +70,7 @@
         .btn + .btn {
             margin-top: 10px;
         }
+
         .custom-select-wrapper {
             position: relative;
             display: inline-block;
@@ -89,11 +88,18 @@
         }
 
         .custom-select {
-            -webkit-appearance: none; /* Removes default chrome and safari style */
-            -moz-appearance: none; /* Removes default style Firefox */
-            appearance: none; /* Remove default arrow in IE */
-            /* Add custom styles for your select */
-            padding-right: 30px; /* Make space for the custom arrow */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 30px;
+        }
+
+        .form-group {
+            margin-top: 6px;
+        }
+
+        .form-group.second {
+            margin-top: 10px;
         }
 
     </style>
@@ -107,39 +113,51 @@
     <div class="container">
 
         <div class="row">
-        <div class="col-md-6 offset-md-3">
-            <div class="form-container">
-                <h2 class="form-heading text-center">Add New Wallet</h2>
-                <form id="addWalletForm" action="#" th:action="@{/wallets/new}" th:object="${newWallet}" method="post">
-                    <div class="form-group">
-                        <label for="walletName">Wallet Name</label>
-                        <input type="text" class="form-control" id="walletName" required>
-                    </div>
-<!--Todo add types when service and repo are ready - LYUBIMA-->
-                    <div class="form-group">
-                        <label for="walletType">Wallet Type</label>
-                        <div class="custom-select-wrapper">
-                            <select th:field="*{walletTypeId}" class="form-control select-large custom-select" id="walletType" required>
-<!--                                <option value="">Please select wallet type...</option>-->
-                                <option th:value="1">Personal</option>
-                                <option th:value="2">Shared</option>
-                            </select>
+            <div class="col-md-6 offset-md-3">
+                <div class="form-container">
+                    <h2 class="form-heading text-center">Add New Wallet</h2>
+                    <form id="addWalletForm" action="#" th:action="@{/wallets/new}" th:object="${newWallet}"
+                          method="post">
+                        <div class="form-group">
+                            <label for="walletName">Wallet Name</label>
+                            <input type="text" class="form-control"
+                                   id="walletName"
+                                   th:field="*{name}"
+                                   required>
                         </div>
-                    </div>
+                        <div class="form-group second">
+                            <label for="walletType">Wallet Type</label>
+                            <div class="custom-select-wrapper">
+                                <select th:field="*{walletTypeId}" class="form-control select-large custom-select"
+                                        id="walletType" required>
+                                    <!--                                <option value="">Please select wallet type...</option>-->
+                                    <option th:each="type : ${walletTypes}"
+                                            th:value="${type.getId()}"
+                                            th:text="${type.getType()}">
+                                        Wallet Type
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
 
-
-                    <button type="submit" class="btn btn-primary btn-block"
-                            style="background-color: green;border-color: green; font-weight: bold;">
-                        <i class="bi bi-plus-lg"></i>Add Wallet</button>
-                    <button onclick="window.history.back();"
-                            class="btn btn-primary btn-block" style="background-color: red; border-color: red;font-weight: bold;">
-                        <i class="bi bi-x-lg"></i> Cancel
+                        <button type="submit" class="btn btn-primary btn-block"
+                                style="background-color: #4b8ef1;border-color: #4b8ef1; font-weight: bold;">
+                            <i class="bi bi-plus-lg"></i>Add Wallet
+                        </button>
+                        <!--                    <button th:href="@{/wallets}" href="#"-->
+                        <!--                            class="btn btn-primary btn-block" style="background-color: black; border-color: black;font-weight: bold;">-->
+                        <!--&lt;!&ndash;                        <i class="bi bi-x-lg"></i> &ndash;&gt;-->
+                        <!--                        Cancel-->
+                        <!--                    </button>-->
+                    </form>
+                    <button type="button" class="btn btn-primary btn-block" onclick="window.location.href='/wallets'"
+                            style="background-color: black; border-color: black;font-weight: bold;">
+                        Cancel
                     </button>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
