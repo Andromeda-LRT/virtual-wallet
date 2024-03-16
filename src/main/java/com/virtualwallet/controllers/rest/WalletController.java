@@ -171,17 +171,17 @@ public class WalletController {
     @GetMapping("/card_transactions/{card_id}")
     public ResponseEntity<?> getUserCardsTransactionHistory(@RequestHeader HttpHeaders headers,
                                                             @PathVariable int card_id,
-                                                         @RequestParam(required = false)
-                                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                         LocalDateTime startDate,
-                                                         @RequestParam(required = false)
-                                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                         LocalDateTime endDate,
-                                                         @RequestParam(required = false) String cardLastFourDigits,
-                                                         @RequestParam(required = false) String recipient,
-                                                         @RequestParam(required = false) String direction,
-                                                         @RequestParam(required = false) String sortBy,
-                                                         @RequestParam(required = false) String sortOrder) {
+                                                            @RequestParam(required = false)
+                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                            LocalDateTime startDate,
+                                                            @RequestParam(required = false)
+                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                            LocalDateTime endDate,
+                                                            @RequestParam(required = false) String cardLastFourDigits,
+                                                            @RequestParam(required = false) String recipient,
+                                                            @RequestParam(required = false) String direction,
+                                                            @RequestParam(required = false) String sortBy,
+                                                            @RequestParam(required = false) String sortOrder) {
         try {
             CardTransactionModelFilterOptions transactionModelFilterOptions = new CardTransactionModelFilterOptions(
                     startDate, endDate, cardLastFourDigits, recipient, direction, sortBy, sortOrder);
@@ -352,7 +352,7 @@ public class WalletController {
     @PostMapping("/{wallet_id}/addUserToWallet/{user_id}")
     public ResponseEntity<?> addUserToWallet(@RequestHeader HttpHeaders headers,
                                              @PathVariable int wallet_id,
-                                             @PathVariable int user_id){
+                                             @PathVariable int user_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.addUserToWallet(user, wallet_id, user_id);
@@ -361,7 +361,7 @@ public class WalletController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }catch (LimitReachedException e) {
+        } catch (LimitReachedException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
@@ -369,8 +369,8 @@ public class WalletController {
     @SecurityRequirement(name = AUTHORIZATION)
     @DeleteMapping("/{wallet_id}/removeUserFromWallet/{user_id}")
     public ResponseEntity<?> removeUserFromWallet(@RequestHeader HttpHeaders headers,
-                                             @PathVariable int wallet_id,
-                                             @PathVariable int user_id){
+                                                  @PathVariable int wallet_id,
+                                                  @PathVariable int user_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.removeUserFromWallet(user, wallet_id, user_id);
@@ -385,7 +385,7 @@ public class WalletController {
     @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{wallet_id}/users")
     public List<User> getWalletUsers(@RequestHeader HttpHeaders headers,
-                                                  @PathVariable int wallet_id){
+                                     @PathVariable int wallet_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             return walletService.getWalletUsers(user, wallet_id);
