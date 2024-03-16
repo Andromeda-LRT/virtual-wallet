@@ -226,6 +226,13 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public void isUserBlocked(User user) {
+        if(user.isBlocked()){
+            throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);
+        }
+    }
+
     private void populateFormData(MultiValueMap<String, String> formData, String encodedFile) {
         formData.add(UPLOAD_IMG_API_REQUEST_KEY, key);
         // formData.add(EXPIRATION_QUERY_PARAM_REQUEST_KEY, "600");

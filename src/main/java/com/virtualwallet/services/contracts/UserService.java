@@ -44,4 +44,5 @@ public interface UserService {
 
     void updateProfilePicture(User user, MultipartFile multipartFile) throws IOException;
 
+    void isUserBlocked(User user);
 }
