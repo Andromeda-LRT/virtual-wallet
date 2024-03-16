@@ -14,6 +14,7 @@ public class CardResponseMapper {
 
     public CardResponseDto toResponseDto(Card card) {
         CardResponseDto cardResponseDto = new CardResponseDto();
+        cardResponseDto.setId(card.getId());
         cardResponseDto.setNumber(card.getNumber());
         cardResponseDto.setCardHolder(card.getCardHolder());
         cardResponseDto.setExpirationDate(card.getExpirationDate());

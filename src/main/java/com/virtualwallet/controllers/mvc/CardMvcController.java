@@ -6,9 +6,11 @@ import com.virtualwallet.exceptions.ExpiredCardException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_mappers.CardMapper;
+import com.virtualwallet.model_mappers.CardResponseMapper;
 import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.input_model_dto.CardDto;
+import com.virtualwallet.models.response_model_dto.CardResponseDto;
 import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
@@ -27,13 +29,23 @@ import java.util.List;
 public class CardMvcController {
     private final CardService cardService;
     private final CardMapper cardMapper;
+    private final CardResponseMapper cardResponseMapper;
     private final AuthenticationHelper authenticationHelper;
 
     @Autowired
-    public CardMvcController(CardService cardService, CardMapper cardMapper, AuthenticationHelper authenticationHelper) {
+    public CardMvcController(CardService cardService,
+                             CardMapper cardMapper,
+                             CardResponseMapper cardResponseMapper,
+                             AuthenticationHelper authenticationHelper) {
         this.cardService = cardService;
         this.cardMapper = cardMapper;
+        this.cardResponseMapper = cardResponseMapper;
         this.authenticationHelper = authenticationHelper;
+    }
+
+    @ModelAttribute("isAuthenticated")
+    public boolean populateIsAuthenticated(HttpSession session) {
+        return session.getAttribute("currentUser") != null;
     }
 
     @GetMapping
@@ -41,7 +53,8 @@ public class CardMvcController {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             List<Card> cards = cardService.getAllUserCards(loggedUser);
-            model.addAttribute("cards", cards);
+            List<CardResponseDto> cardResponseDtos = cardResponseMapper.toResponseDtoList(cards);
+            model.addAttribute("cards", cardResponseDtos);
             return "UserCardsView";
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
