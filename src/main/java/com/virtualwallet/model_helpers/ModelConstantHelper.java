@@ -74,4 +74,11 @@ public class ModelConstantHelper {
     public static final String DEFAULT_PROFILE_IMAGE = "https://img.freepik.com/free-vector/user-circles-set_78370-4704." +
             "jpg?t=st=1710328051~exp=1710331651~hmac" +
             "=a5557b44bd4d12b7016d8ab8cb91c28b4952259e577fd680212da0a18b196430&w=1060";
+    public static final String HIDDEN_CARD_DIGITS = "****";
+    public static final int CARD_LAST_4_DIGIT_START_INDEX = 12;
+    public static final String WALLET_TYPE_1 = "Personal";
+    public static final String WALLET_TYPE_2 = "Joined";
+    public static final String EMPTY = "";
+    public static final int WALLET_TYPE_ID_1 = 1;
+    public static final int WALLET_TYPE_ID_2 = 2;
 }
