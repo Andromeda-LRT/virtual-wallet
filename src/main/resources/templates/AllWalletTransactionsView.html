@@ -352,23 +352,23 @@
                 <form action="#" th:action="@{/admin/wallets/transactions}" method="get" th:object="${walletTransactionFilter}" class="d-flex flex-row align-items-center gap-2">
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="Username" th:field="*{startDate}" />
+                        <input class="form-control" type="text" placeholder="Start date" th:field="*{startDate}" />
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="Email" th:field="*{endDate}" />
+                        <input class="form-control" type="text" placeholder="End date" th:field="*{endDate}" />
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="First Name" th:field="*{sender}" />
+                        <input class="form-control" type="text" placeholder="Sender" th:field="*{sender}" />
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="First Name" th:field="*{recipient}" />
+                        <input class="form-control" type="text" placeholder="Recipient" th:field="*{recipient}" />
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="First Name" th:field="*{direction}" />
+                        <input class="form-control" type="text" placeholder="Direction" th:field="*{direction}" />
                     </div>
                     <select class="form-select" th:field="*{sortBy}">
                         <option value="">Sort By</option>
