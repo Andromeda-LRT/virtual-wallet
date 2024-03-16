@@ -319,9 +319,9 @@
         <div class="section-heading  justify-content-between align-items-start" style="margin-bottom: 0;">
             <!-- Left Placeholder for alignment -->
             <div class="flex-grow-1 d-flex justify-content-start">
-                <button onclick="window.history.back();" class="btn btn-primary back-button">
+                <a th:href="@{/admin}" class="btn btn-primary back-button">
                     <i class="bi bi-arrow-left"></i> Back To Dashboard
-                </button>
+                </a>
             </div>
             <h4 class="text-center flex-grow-1 m-0"><em>Users</em></h4>
             <div class="flex-grow-1"></div>
@@ -336,10 +336,10 @@
 <!-- Filter Options -->
 <section class="section-padding" >
     <div class="container">
-        <div class="row">
-            <div class="post-filter">
+        <div class="row" style="padding-bottom: 0; margin-bottom: 0;">
+            <div class="col-12">
                 <div style="margin-left: 10px;">
-                    <label class="form-label">Filter Options:</label>
+<!--                    <label class="form-label">Filter Options:</label>-->
                 </div>
                 <form action="#" th:action="@{/admin/users}" method="get" th:object="${userFilterOptions}" class="d-flex flex-row align-items-center gap-2">
                     <div class="input-group">
@@ -375,7 +375,7 @@
     </div>
 </section>
 
-<div class="container mt-5">
+<div class="container">
     <table class="table table-bordered table-hover table-rounded">
         <thead class="custom-thead">
         <tr>

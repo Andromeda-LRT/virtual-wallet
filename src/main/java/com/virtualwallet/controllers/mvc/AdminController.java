@@ -10,6 +10,7 @@ import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.model_mappers.TransactionResponseMapper;
 import com.virtualwallet.model_mappers.UserMapper;
+import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.models.mvc_input_model_dto.TransactionModelFilterDto;
@@ -253,10 +254,10 @@ public class AdminController {
                     cardFilterDto);
 //            List<CardToWalletTransaction> cardTransactionList =
 //                    middleTransactionService.getAllCardTransactionsWithFilter(user, cardFilter);
-            List<TransactionResponseDto> cardTransactionList = transactionResponseMapper.convertCardTransactionsToDto(
+            List<TransactionResponseDto> cardTransactionResponseList = transactionResponseMapper.convertCardTransactionsToDto(
                     middleTransactionService.getAllCardTransactionsWithFilter(user, cardFilter)
             );
-            model.addAttribute("cardTransfersList", cardTransactionList);
+            model.addAttribute("cardTransfersList", cardTransactionResponseList);
             model.addAttribute("cardTransactionFilter", cardFilterDto);
             return "AllCardTransfersView";
         } catch (UnauthorizedOperationException e) {
@@ -283,11 +284,11 @@ public class AdminController {
         }
         try {
             WalletTransactionModelFilterOptions walletFilter = populateWalletTransactionFilterOptions(walletFilterDto);
-            List<WalletToWalletTransaction> walletTransactions =
-                    middleTransactionService.getAllWithFilter(user, walletFilter);
+//            List<WalletToWalletTransaction> walletTransactions =
+//                    middleTransactionService.getAllWithFilter(user, walletFilter);
 
             List<TransactionResponseDto> walletTransactionList = transactionResponseMapper.convertWalletTransactionsToDto(
-                    walletTransactions
+                    middleTransactionService.getAllWithFilter(user, walletFilter)
             );
             model.addAttribute("walletTransactionList", walletTransactionList);
             return "AllWalletTransactionsView";
