@@ -4,6 +4,7 @@ import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.mvc_input_model_dto.RegisterDto;
 import com.virtualwallet.models.input_model_dto.UserDto;
+import com.virtualwallet.models.mvc_input_model_dto.WalletUserDto;
 import com.virtualwallet.models.response_model_dto.RecipientResponseDto;
 import com.virtualwallet.models.response_model_dto.WalletIbanResponseDto;
 import com.virtualwallet.services.contracts.RoleService;
@@ -107,5 +108,14 @@ public class UserMapper {
             recipientList.add(recipient);
         }
         return recipientList;
+    }
+
+    public List<WalletUserDto> toWalletUserDto(List<User> users) {
+        List<WalletUserDto> walletUserList = new ArrayList<>();
+        for (User user : users) {
+            WalletUserDto walletUser = new WalletUserDto(user.getUsername());
+            walletUserList.add(walletUser);
+        }
+        return walletUserList;
     }
 }
