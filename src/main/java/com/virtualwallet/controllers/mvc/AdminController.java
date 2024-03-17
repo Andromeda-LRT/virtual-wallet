@@ -124,7 +124,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/users/{id}/block")
+    @PostMapping("/users/{id}/block")
     public String blockUser(@PathVariable int id, Model model, HttpSession session) {
         User loggedUser;
         try {
@@ -139,7 +139,7 @@ public class AdminController {
 
         try {
             userService.blockUser(id, loggedUser);
-            return "redirect:/admins/users";
+            return "redirect:/admin/users";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -151,7 +151,7 @@ public class AdminController {
         }
     }
 
-    @GetMapping("/users/{id}/unblock")
+    @PostMapping("/users/{id}/unblock")
     public String unblockUser(@PathVariable int id, Model model, HttpSession session) {
         User loggedUser;
         try {
@@ -166,7 +166,7 @@ public class AdminController {
 
         try {
             userService.unblockUser(id, loggedUser);
-            return "redirect:/admins/users";
+            return "redirect:/admin/users";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -316,7 +316,7 @@ public class AdminController {
 
         try {
             middleTransactionService.approveTransaction(user, transactionId);
-            return "redirect:/admins/WalletTransactionsView";
+            return "redirect:/admin/wallets/transactions";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -348,7 +348,7 @@ public class AdminController {
 
         try {
             middleTransactionService.cancelTransaction(user, transactionId);
-            return "redirect:/admins/WalletTransactionsView";
+            return "redirect:/admin/wallets/transactions";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
