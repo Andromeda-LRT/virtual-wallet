@@ -2,7 +2,7 @@ package com.virtualwallet.model_mappers;
 
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.input_model_dto.UpdateUserDto;
-import com.virtualwallet.models.input_model_dto.UpdateUserPasswordDto;
+import com.virtualwallet.models.mvc_input_model_dto.UpdateUserPasswordDto;
 import com.virtualwallet.services.contracts.UserService;
 import org.springframework.stereotype.Component;
 
