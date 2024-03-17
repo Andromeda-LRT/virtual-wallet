@@ -139,19 +139,13 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public List<CardToWalletTransaction> getAllCardTransactions(User user, int wallet_id) {
-        verifyWallet(wallet_id, user);
-        return new ArrayList<>(walletRepository.getById(wallet_id).getCardTransactions());
-    }
-
-    @Override
     public List<CardToWalletTransaction> getAllCardTransactionsWithFilter(User user, CardTransactionModelFilterOptions transactionFilter) {
         return new ArrayList<>(cardTransactionService.getAllCardTransactionsWithFilter(user, transactionFilter));
     }
 
     @Override
-    public List<CardToWalletTransaction> getUserCardTransactions(int cardId, User user, CardTransactionModelFilterOptions transactionFilter) {
-        return new ArrayList<>(cardTransactionService.getUserCardTransactions(cardId, user, transactionFilter));
+    public List<CardToWalletTransaction> getUserCardTransactions(int walletId, User user, CardTransactionModelFilterOptions transactionFilter) {
+        return new ArrayList<>(cardTransactionService.getUserCardTransactions(walletId, user, transactionFilter));
     }
 
     @Override
