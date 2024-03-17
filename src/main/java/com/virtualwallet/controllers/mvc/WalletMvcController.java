@@ -369,13 +369,18 @@ public class WalletMvcController {
         }
 
         try {
+            userService.isUserBlocked(user);
             WalletToWalletTransaction walletTransaction = transactionMapper.fromDto(transactionDto, user, wallet_id);
             walletService.walletToWalletTransaction(user, walletTransaction.getWalletId(), walletTransaction);
             return "redirect:/wallets/" + wallet_id + "/transactions";
-        } catch (InsufficientFundsException e) {
+        } catch (InsufficientFundsException | UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "UnauthorizedView";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "NotFoundView";
         }
     }
 
