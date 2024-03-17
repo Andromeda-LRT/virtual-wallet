@@ -127,7 +127,6 @@
             text-align: center;
         }
 
-
         .btn-edit {
             background-color: orange;
             border-color: orange;
@@ -143,14 +142,12 @@
             border-color: #28a745;
         }
 
-        .btn-delete {
-            background-color: red;
-            border-color: red;
-        }
+
 
         .fa {
             font-size: 20px;
         }
+
         .table thead.custom-thead {
             background-color: #4b8ef1 !important;
             color: white;
@@ -166,16 +163,6 @@
             padding: 20px 0;
         }
 
-        .post-filter {
-            background: #f7f7f7;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
 
         .input-group {
             display: flex;
@@ -281,6 +268,7 @@
             flex-direction: column;
             justify-content: space-between;
         }
+
         /* Back Button Custom Styling */
         .back-button {
             width: auto;
@@ -307,6 +295,18 @@
         .back-button i {
             margin-right: 5px; /* Space between icon and text */
         }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .button-section {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+
     </style>
 </head>
 <body>
@@ -331,28 +331,27 @@
 </div>
 
 
-
-
 <!-- Filter Options -->
-<section class="section-padding" >
+<section class="section-padding">
     <div class="container">
         <div class="row" style="padding-bottom: 0; margin-bottom: 0;">
             <div class="col-12">
                 <div style="margin-left: 10px;">
-<!--                    <label class="form-label">Filter Options:</label>-->
+                    <!--                    <label class="form-label">Filter Options:</label>-->
                 </div>
-                <form action="#" th:action="@{/admin/users}" method="get" th:object="${userFilterOptions}" class="d-flex flex-row align-items-center gap-2">
+                <form action="#" th:action="@{/admin/users}" method="get" th:object="${userFilterOptions}"
+                      class="d-flex flex-row align-items-center gap-2">
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="Username" th:field="*{username}" />
+                        <input class="form-control" type="text" placeholder="Username" th:field="*{username}"/>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="Email" th:field="*{email}" />
+                        <input class="form-control" type="text" placeholder="Email" th:field="*{email}"/>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="First Name" th:field="*{phoneNumber}" />
+                        <input class="form-control" type="text" placeholder="First Name" th:field="*{phoneNumber}"/>
                     </div>
 
                     <select class="form-select" th:field="*{sortBy}">
@@ -367,7 +366,8 @@
                         <option value="desc">Descending</option>
                     </select>
                     <button type="submit" value="Search" style="background-color: #4b8ef1; border-color: #4b8ef1;"
-                            class="btn btn-primary search">Search</button>
+                            class="btn btn-primary search">Search
+                    </button>
                 </form>
             </div>
             <br/>
@@ -392,7 +392,7 @@
         <tbody id="usersContainer">
         <!-- Example row -->
         <tr th:each="user : ${users}">
-          <td th:text="${user.getId()}">1</td>
+            <td th:text="${user.getId()}">1</td>
             <td th:text="${user.getUsername()}">john_doe</td>
             <td th:text="${user.getFirstName()}">John</td>
             <td th:text="${user.getLastName()}">Doe</td>
@@ -400,14 +400,51 @@
             <td th:text="${user.getPhoneNumber()}">123-456-7890</td>
             <td th:unless="${user.isArchived()}">Active</td>
             <td th:if="${user.isArchived()}">Deactivated</td>
+<!--            <td class="action-buttons">-->
+<!--                <div class="button-container">-->
+<!--                    <form action="#" th:action="@{/users/__${user.getId()}__}" method="get">-->
+<!--                        <button class="btn btn-edit btn-sm"><i class="fa fa-edit"></i></button>-->
+<!--                    </form>-->
+<!--                    <form action="#" th:action="@{/admin/users/__${user.getId()}__/block}" method="post">-->
+<!--                        <button class="btn btn-block btn-sm" th:unless="${user.isBlocked()}"><i class="fas fa-lock"></i></button>-->
+<!--                    </form>-->
+<!--                    <form action="#" th:action="@{/admin/users/__${user.getId()}__/unblock}" method="post">-->
+<!--                        <button class="btn btn-unblock btn-sm" th:if="${user.isBlocked()}"><i class="fas fa-unlock"></i></button>-->
+<!--                    </form>-->
+<!--                    <form action="#" th:action="@{/admin/users/__${user.getId()}__/admin-approval}" method="post">-->
+<!--                        <button class="btn btn-make-admin btn-sm" th:unless="${user.getRole().getId().equals(2)}"><i class="fas fa-user-shield"></i></button>-->
+<!--                    </form>-->
+<!--                    <form action="#" th:action="@{/admin/users/__${user.getId()}__/admin-cancellation}" method="post">-->
+<!--                        <button class="btn btn-remove-admin btn-sm" th:if="${user.getRole().getId().equals(2)}"><i class="fas fa-user-minus"></i></button>-->
+<!--                    </form>-->
+<!--                </div>-->
+<!--            </td>-->
             <td class="action-buttons">
-                <button class="btn btn-edit btn-sm"><i class="fa fa-edit"></i></button>
-                <button class="btn btn-block btn-sm" th:unless="${user.isBlocked()}"><i class="fas fa-lock"></i></button>
-                <button class="btn btn-unblock btn-sm" th:if="${user.isBlocked()}"><i class="fas fa-unlock"></i></button>
-<!--                <button class="btn btn-delete btn-sm"><i class="fa fa-trash"></i></button>-->
-                <button class="btn btn-make-admin btn-sm" th:unless="${user.getRole().getId().equals(2)}"><i class="fas fa-user-shield"></i></button>
-                <button class="btn btn-remove-admin btn-sm" th:if="${user.getRole().getId().equals(2)}"><i class="fas fa-user-minus"></i></button>
+                <div class="button-container">
+                    <div class="button-section">
+                        <form action="#" th:action="@{/users/__${user.getId()}__}" method="get">
+                            <button class="btn btn-edit btn-sm"><i class="fa fa-edit"></i></button>
+                        </form>
+                    </div>
+                    <div class="button-section">
+                        <form action="#" th:action="@{/admin/users/__${user.getId()}__/block}" method="post">
+                            <button class="btn btn-block btn-sm" th:unless="${user.isBlocked()}"><i class="fas fa-lock"></i></button>
+                        </form>
+                        <form action="#" th:action="@{/admin/users/__${user.getId()}__/unblock}" method="post">
+                            <button class="btn btn-unblock btn-sm" th:if="${user.isBlocked()}"><i class="fas fa-unlock"></i></button>
+                        </form>
+                    </div>
+                    <div class="button-section">
+                        <form action="#" th:action="@{/admin/users/__${user.getId()}__/admin-approval}" method="post">
+                            <button class="btn btn-make-admin btn-sm" th:unless="${user.getRole().getId().equals(2)}"><i class="fas fa-user-shield"></i></button>
+                        </form>
+                        <form action="#" th:action="@{/admin/users/__${user.getId()}__/admin-cancellation}" method="post">
+                            <button class="btn btn-remove-admin btn-sm" th:if="${user.getRole().getId().equals(2)}"><i class="fas fa-user-minus"></i></button>
+                        </form>
+                    </div>
+                </div>
             </td>
+
         </tr>
         <!-- Repeat rows for more users -->
         </tbody>
