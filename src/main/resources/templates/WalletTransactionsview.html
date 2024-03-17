@@ -370,7 +370,7 @@
                             <td colspan="5" class="text-center">No transactions yet.</td>
                         </tr>
                         <tr th:each="walletTrans : ${walletTransactions}" class="align-middle">
-                            <td th:text="${#temporals.format(walletTrans.time, 'dd MMM yyyy')}">13 Sep 2021</td>
+                            <td th:text="${#temporals.format(walletTrans.getTime(), 'dd MMM yyyy HH:mm')}">13 Sep, 2021 14:30</td>
                             <td>
                                 <div class="d-flex align-items-center justify-content-center"
                                      th:switch="${walletTrans.transactionType}">
