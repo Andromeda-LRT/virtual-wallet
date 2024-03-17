@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
+
+    <title>E-Wallet Home</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet">
+
+    <!--
+
+    TemplateMo 570 Chain App Dev
+
+    https://templatemo.com/tm-570-chain-app-dev
+
+    -->
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/assets/css/templatemo-chain-app-dev.css"
+          th:href="@{/assets/css/templatemo-chain-app-dev.css}">
+    <link rel="stylesheet" href="../static/assets/css/animated.css" th:href="@{/assets/css/animated.css}">
+    <link rel="stylesheet" href="../static/assets/css/owl.css" th:href="@{/assets/css/owl.css}">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional Bootstrap JavaScript and Popper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+
+    <!--    Ted table style-->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+
+
+    <style>
+        .action-buttons .btn {
+            margin-right: 5px;
+        }
+    </style>
+
+    <style>
+        .black-button a {
+            color: white;
+            background-color: black;
+            padding: 10px 40px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 2.5vh;
+            text-decoration: none;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .black-button a:hover {
+            transform: scale(1.1);
+            background-color: #333;
+        }
+
+        .gradient-button-copy a {
+            color: white !important;
+            background-color: black !important;
+            padding: 10px 40px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 2.5vh;
+            text-decoration: none;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .gradient-button a:hover {
+            transform: scale(1.1);
+            background-color: #333;
+        }
+
+        .box-item p {
+            color: #7a7a7a !important;
+        }
+
+        .table-rounded {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f2f2f2;
+        }
+
+        .table thead.custom-thead {
+            background-color: #4b8ef1 !important;
+            color: white;
+            align-content: center;
+        }
+
+        .table th {
+            text-align: center;
+        }
+
+        .table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .my-custom-table td {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+
+        .btn {
+            color: white;
+            border-radius: 50%;
+            padding: 0;
+            font-size: 16px;
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+
+        .btn-edit {
+            background-color: orange;
+            border-color: orange;
+        }
+
+        .btn-block {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-unblock {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-delete {
+            background-color: red;
+            border-color: red;
+        }
+
+        .fa {
+            font-size: 20px;
+        }
+        .table thead.custom-thead {
+            background-color: #4b8ef1 !important;
+            color: white;
+            align-content: center;
+        }
+
+        .table thead.custom-thead th {
+            font-size: 20px;
+            padding: 15px 0;
+        }
+
+        .section-padding {
+            padding: 20px 0;
+        }
+
+        .post-filter {
+            background: #f7f7f7;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-group-text {
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            display: flex;
+            align-items: center;
+            padding: 0.375rem 0.75rem;
+        }
+
+        .form-control, .form-select {
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            margin-left: -1px;
+        }
+
+        .btn.search {
+            padding: 0.5rem 2.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        @media (max-width: 768px) {
+            .post-filter {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn.search {
+                width: 100%;
+                padding: 10px;
+            }
+        }
+
+        .btn-make-admin, .btn-remove-admin {
+            color: black;
+            background-color: white;
+            border: 1px solid black;
+        }
+
+
+        .btn-make-admin:hover {
+            color: white;
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-remove-admin:hover {
+            color: white;
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+
+        .btn-edit:hover, .btn-delete:hover, .btn-block:hover, .btn-unblock:hover {
+            opacity: 0.8;
+        }
+
+        #pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #pagination a {
+            margin: 0 8px; /* Increased margin */
+            padding: 8px 15px; /* Increased padding */
+            background-color: #f0f0f0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            border: 1px solid #dcdcdc;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 18px; /* Increased font size */
+        }
+
+        #pagination a:hover, #pagination a.current-page {
+            background-color: #007bff;
+            color: #ffffff;
+            border-color: #007bff;
+        }
+
+
+        #pagination a.prev, #pagination a.next {
+            font-weight: bold;
+        }
+
+        .container.mt-5 {
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        /* Back Button Custom Styling */
+        .back-button {
+            width: auto;
+            font-weight: bold; /* Makes the text bold */
+            display: inline-flex; /* Aligns the icon and text */
+            align-items: center; /* Centers items vertically */
+            justify-content: center; /* Centers items horizontally */
+            background-color: #007bff; /* Primary button color */
+            color: white; /* Text color */
+            border: none; /* Removes the border */
+            padding: 10px 20px; /* Padding inside the button */
+            border-radius: 5px; /* Rounded corners */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+            transition: background-color 0.2s, transform 0.2s; /* Smooth transition for hover effects */
+        }
+
+        .back-button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
+            text-decoration: none; /* Removes underline from icons or text if any */
+            color: white; /* Keeps text color white on hover */
+        }
+
+        .back-button i {
+            margin-right: 5px; /* Space between icon and text */
+        }
+        .card-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+<!--header-->
+<div th:replace="~{fragments/VirtualWalletFragments :: header}"></div>
+<!--header-->
+<br>
+<div class="the-clients">
+    <div class="container">
+        <div class="section-heading  justify-content-between align-items-start" style="margin-bottom: 0;">
+            <!-- Left Placeholder for alignment -->
+            <div class="flex-grow-1 d-flex justify-content-start">
+                <a th:href="@{/admin}" class="btn btn-primary back-button">
+                    <i class="bi bi-arrow-left"></i> Back To Dashboard
+                </a>
+            </div>
+            <h4 class="text-center flex-grow-1 m-0"><em>Card Transactions</em></h4>
+            <div class="flex-grow-1"></div>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<!-- Filter Options -->
+<section class="section-padding">
+    <div class="container">
+        <div class="row" style="padding-bottom: 0; margin-bottom: 0;">
+            <div class="col-12">
+                <div style="margin-left: 10px;">
+<!--                    <label class="form-label">Filter Options:</label>-->
+                </div>
+                <form action="#" th:action="@{/admin/cards/transfers}" method="get" th:object="${cardTransactionFilter}"
+                      class="d-flex flex-row align-items-center gap-2">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
+                        <input class="form-control" type="text" placeholder="Start Date" th:field="*{startDate}"/>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
+                        <input class="form-control" type="text" placeholder="End Date" th:field="*{endDate}"/>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
+                        <input class="form-control" type="text" placeholder="Direction" th:field="*{direction}"/>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
+                        <input class="form-control" type="text" placeholder="Recipient" th:field="*{recipient}"/>
+                    </div>
+                    <select class="form-select" th:field="*{sortBy}">
+                        <option value="">Sort By</option>
+                        <option value="amount">Amount</option>
+                    </select>
+                    <select class="form-select" th:field="*{sortOrder}">
+                        <option value="">Sort Order</option>
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                    <button type="submit" value="Search" style="background-color: #4b8ef1; border-color: #4b8ef1;"
+                            class="btn btn-primary search">Search
+                    </button>
+                </form>
+            </div>
+            <br/>
+        </div>
+    </div>
+</section>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 mb-3 mb-lg-5">
+            <div class="position-relative card table-nowrap table-card">
+                <div class="card-header d-flex justify-content-center align-items-center">
+                    <h5 class="mb-0">Transaction History</h5>
+                    <!-- <p class="mb-0 small text-muted">1 Pending</p> -->
+                </div>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead class="small text-uppercase bg-body text-muted">
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Recipient</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="cardsContainer" th:each="cardTrans : ${cardTransfersList}">
+                        <tr class="align-middle">
+                            <td th:text="${#temporals.format(cardTrans.getTime(), 'dd MMM yyyy')}">13 Sep, 2021</td>
+                            <td>
+                                <div class="d-flex align-items-center justify-content-center" th:switch="${cardTrans.getTransactionType()}">
+                                    <span th:text="${cardTrans.getAmount()}">$145</span>
+                                    <span th:case="'Incoming'"><i class="fa fa-arrow-up" style="color: green;" aria-hidden="true"></i></span>
+                                 <span th:case="'Outgoing'"><i class="fa fa-arrow-down" style="color: #bb2124;" aria-hidden="true"></i></span>
+                                </div>
+                            </td>
+                            <td th:text="${cardTrans.getRecipient()}">Iban</td>
+                            <td th:switch="${cardTrans.getStatus()}">
+<!--                                <span class="badge fs-6 fw-normal bg-tint-success text-success">Completed</span>-->
+                                <!-- Adjusted span to look more like a button -->
+                                <button th:case="'Confirmed'" type="button" class="btn btn-success rounded" style="color: white; border-color: #22BB33; background-color: #22BB33; width: 100px; height: 30px;">Confirmed</button>
+                                <button th:case="'Pending'" type="button" class="btn btn-success rounded" style="color: white; border-color: #f0ad4e; background-color: #f0ad4e; width: 100px; height: 30px;">Pending</button>
+                                <button th:case="'Declined'" type="button" class="btn btn-success rounded" style="color: white; border-color: #bb2124; background-color: #bb2124; width: 100px; height: 30px;">Declined</button>
+                            </td>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-end">
+<!--                    <a href="#!" class="btn btn-gray">View All Transactions</a>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div id="pagination"></div>
+
+<div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/VirtualWalletFragments :: scripts}"></div>
+
+<script>
+    const usersPerPage = 10;
+    let currentPage = 1;
+
+    function paginateUsers(pageNumber) {
+        const users = document.querySelectorAll('#cardsContainer tr');
+        const totalPages = Math.ceil(users.length / usersPerPage);
+
+        // Hide all users
+        users.forEach(user => {
+            user.style.display = 'none';
+        });
+
+        // Calculate and show users for the current page
+        const start = (pageNumber - 1) * usersPerPage;
+        const end = start + usersPerPage;
+        for (let i = start; i < end && i < users.length; i++) {
+            users[i].style.display = '';
+        }
+
+        // Update the pagination
+        updatePagination(totalPages, pageNumber);
+    }
+
+    function updatePagination(totalPages, currentPage) {
+        const paginationContainer = document.getElementById('pagination');
+        let paginationHTML = '';
+
+        // Previous button
+        if (currentPage > 1) {
+            paginationHTML += `<a href="#" onclick="paginateUsers(${currentPage - 1}); return false;">Previous</a> `;
+        }
+
+        let startPage = 1;
+        let endPage = totalPages;
+
+        if (totalPages > 10) {
+            if (currentPage <= 6) {
+                endPage = 10;
+            } else if (currentPage + 4 >= totalPages) {
+                startPage = totalPages - 9;
+            } else {
+                startPage = currentPage - 5;
+                endPage = currentPage + 4;
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHTML += `<a href="#" ${currentPage === i ? 'class="current-page"' : ''} onclick="paginateUsers(${i}); return false;">${i}</a> `;
+        }
+
+        // Next button
+        if (currentPage < totalPages) {
+            paginationHTML += `<a href="#" onclick="paginateUsers(${currentPage + 1}); return false;">Next</a>`;
+        }
+
+        paginationContainer.innerHTML = paginationHTML;
+    }
+
+    window.onload = () => paginateUsers(currentPage);
+</script>
+
+</body>
+</html>

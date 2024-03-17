@@ -44,7 +44,7 @@ public class CardRepositoryImpl extends AbstractCrudRepository<Card> implements 
             return result;
         }
     }
-
+    //todo would likely remove below method
     @Override
     public void addCardToUser(int userId, int cardId) {
         try (Session session = sessionFactory.openSession()) {
@@ -60,7 +60,7 @@ public class CardRepositoryImpl extends AbstractCrudRepository<Card> implements 
             session.getTransaction().commit();
         }
     }
-    //todo test out once we have values inside DB.
+    //todo would likely remove below method
 
     @Override
     public void removeCardFromUser(int userId, int cardId) {
@@ -79,12 +79,7 @@ public class CardRepositoryImpl extends AbstractCrudRepository<Card> implements 
 
     //todo test out once we have values inside DB.
 
-    /**
-     *
-     * @param user
-     * @param cardId
-     * @return
-     */
+
     @Override
     public Card getUserCard(User user, int cardId) {
         try (Session session = sessionFactory.openSession()) {

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
+
+    <title>Wallets</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet">
+
+    <!--
+
+    TemplateMo 570 Chain App Dev
+
+    https://templatemo.com/tm-570-chain-app-dev
+
+    -->
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/assets/css/templatemo-chain-app-dev.css"
+          th:href="@{/assets/css/templatemo-chain-app-dev.css}">
+    <link rel="stylesheet" href="../static/assets/css/animated.css" th:href="@{/assets/css/animated.css}">
+    <link rel="stylesheet" href="../static/assets/css/owl.css" th:href="@{/assets/css/owl.css}">
+
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        html{
+            padding: 0;
+            margin: 0;
+        }
+
+        .service-item.first-service {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .service-item.first-service:hover .bi-wallet2,
+        .service-item.first-service:hover p,
+        .service-item.first-service:hover .text-button a {
+            color: white !important;
+            font-size: larger;
+        }
+
+        .service-item.first-service:hover h4 {
+            color: white !important;
+            font-size: 3vh;
+        }
+
+        .service-item.first-service h4 {
+            color: #4b8ef1 !important;
+            font-size: 3vh;
+        }
+
+        .service-item.first-service .text-button a {
+            font-size: larger;
+        }
+
+
+        .service-item.first-service:hover .text-button a {
+            text-decoration: none;
+        }
+
+
+        header {
+            position: relative; /* или 'absolute', зависимо от нуждата */
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000; /* Гарантира, че хедърът е винаги най-отгоре */
+        }
+    </style>
+
+</head>
+<body>
+<!--header-->
+<div th:replace="~{fragments/VirtualWalletFragments :: header}" ></div>
+<!--header-->
+<div class="container" style="margin-top: 110px; margin-bottom: 0; padding-bottom: 0; text-align: center;">
+    <a href="#" th:href="@{/wallets/new}" class="btn btn-primary" style="display: inline-block; width: auto; padding: 10px 20px; margin: 0 auto; font-size: 3.5vh;">
+        <i class="fa fa-plus"></i> Create New Wallet
+    </a>
+</div>
+
+<!--Add Wallet Section-->
+<div class="services section" style="margin-top: 10px; padding-top: 0;">
+    <div class="container">
+        <div class="row">
+            <h3>Personal Wallets</h3>
+            <hr>
+        </div>
+    </div>
+</div>
+<!--Add Wallet Section-->
+
+<!--Show Personal Wallets Section-->
+
+<div class="container">
+    <div class="row">
+        <!--Add Personal Wallets Section-->
+        <div class="col-lg-3" th:if="${personalWallets.isEmpty()}">
+            <div class="service-item first-service" style="margin-top: 30px;">
+                <h4 class="wallet-details">No Wallets</h4>
+            </div>
+        </div>
+
+        <div class="col-lg-3" th:each="wallet : ${personalWallets}">
+            <div class="service-item first-service" style="margin-top: 30px;">
+                <i class="bi bi-wallet2"
+                   style="color: #967015; margin-left: 0px; margin-bottom: 30px; background-repeat: no-repeat; font-size: 50px; transition: all .3s;"></i>
+                <h4 th:text="${wallet.getName()}" class="wallet-details">Wallet Name</h4>
+                <p th:text="${'Balance: ' + #numbers.formatDecimal(wallet.getBalance(), 1, 'COMMA', 2, 'POINT')}"
+                   class="wallet-details"
+                   style="font-size: 2vh;color: #168118;">
+                    Wallet Balance
+                </p>
+                <p th:text="${wallet.getIban()}" class="wallet-iban"
+                   style="font-size: 1.8vh;">Wallet Iban</p>
+                <div class="text-button">
+                    <a href="#" th:href="@{/wallets/__${wallet.getWalletId()}__}"
+                       class="wallet-details">
+                        Go To Wallet
+                        <i class="fa fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Show Personal Wallets Section-->
+
+
+<!--Show Join Wallets Section-->
+<div class="services section" style="margin-top: 0px; padding-top: 30px;">
+    <div class="container">
+        <div class="row">
+            <h3>Join Wallets</h3>
+            <hr>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+
+        <div class="col-lg-3" th:if="${personalWallets.isEmpty()}">
+            <div class="service-item first-service" style="margin-top: 30px;">
+                <h4 class="wallet-details">No Wallets</h4>
+            </div>
+        </div>
+
+        <div class="col-lg-3" th:each="walletJoin : ${joinWallets}">
+            <div class="service-item first-service" style="margin-top: 30px;">
+                <i class="bi bi-wallet2"
+                   style="color: #967015; margin-left: 0px; margin-bottom: 30px; background-repeat: no-repeat; font-size: 50px; transition: all .3s;"></i>
+                <h4 th:text="${walletJoin.getName()}" class="wallet-details">Wallet Name</h4>
+                <p th:text="${'Balance: ' + #numbers.formatDecimal(walletJoin.getBalance(), 1, 'COMMA', 2, 'POINT')}"
+                   class="wallet-details"
+                   style="font-size: 2vh;color: #168118;">
+                    Wallet Balance
+                </p>
+                <p th:text="${walletJoin.getIban()}" class="wallet-iban"
+                   style="font-size: 1.8vh;">Wallet Iban</p>
+                <div class="text-button">
+                    <a href="#" th:href="@{/wallets/__${walletJoin.getWalletId()}__}"
+                       class="wallet-details">
+                        Go To Wallet
+                        <i class="fa fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Add Join Wallets Section-->
+<!--Show Join Wallets Section-->
+
+<!--Divider-->
+<br>
+<br>
+<br>
+<br>
+<div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/VirtualWalletFragments :: scripts}"></div>
+
+</body>
+</html>

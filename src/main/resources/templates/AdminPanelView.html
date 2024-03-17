@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
+
+    <title>E-Wallet Home</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet">
+
+    <!--
+
+    TemplateMo 570 Chain App Dev
+
+    https://templatemo.com/tm-570-chain-app-dev
+
+    -->
+
+    <!-- Additional CSS Files -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/assets/css/templatemo-chain-app-dev.css"
+          th:href="@{/assets/css/templatemo-chain-app-dev.css}">
+    <link rel="stylesheet" href="../static/assets/css/animated.css" th:href="@{/assets/css/animated.css}">
+    <link rel="stylesheet" href="../static/assets/css/owl.css" th:href="@{/assets/css/owl.css}">
+
+
+    <style>
+        .black-button a {
+            color: white;
+            background-color: black;
+            padding: 10px 40px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 2.5vh;
+            text-decoration: none;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .black-button a:hover {
+            transform: scale(1.1);
+            background-color: #333;
+        }
+
+        .d-flex {
+            display: flex;
+        }
+
+        .align-items-center {
+            align-items: center;
+        }
+
+        .gradient-button-copy a {
+            color: white !important;
+            background-color: black !important;
+            padding: 10px 40px;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 2.5vh;
+            text-decoration: none;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .gradient-button a:hover {
+            transform: scale(1.1);
+            background-color: #333;
+        }
+
+        .box-item p {
+            color: #7a7a7a !important;
+        }
+    </style>
+</head>
+<body>
+<!--header-->
+<div th:replace="~{fragments/VirtualWalletFragments :: header}"></div>
+<!--header-->
+<br>
+<!--Admin part-->
+<div id="clients" class="the-clients">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 offset-lg-2">
+                <div class="section-heading" style="margin-bottom: 0;">
+                    <h4>Welcome To Admin Pannel<br><em th:text="${admin.getUsername()}"></em></h4>
+                    <img src="../static/assets/images/heading-line-dec.png" alt="">
+                    <!--                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eismod tempor incididunt ut labore et dolore magna.</p>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Admin part-->
+<!--Users and Transactions-->
+<div class="users">
+    <div class="container">
+        <div class="row justify-content-center"> <!-- Add justify-content-center to center the columns horizontally -->
+            <div class="col-lg-3">
+                <div class="service-item first-service" style="margin-top: 30px;">
+                    <!--                    <i class="bi bi-wallet2"-->
+                    <!--                       style="color: #967015; margin-left: 0px; margin-bottom: 30px; background-repeat: no-repeat; font-size: 50px; transition: all .3s;"></i>-->
+                    <img src="../static/assets/images/users.png"
+                         th:src="@{/assets/images/users.png}">
+                    <h4 class="wallet-details">Users</h4>
+                    <!--                    <p class="wallet-details"-->
+                    <!--                       style="font-size: 2vh;color: #168118;">-->
+                    <!--                        Wallet Balance-->
+                    <!--                    </p>-->
+                    <div class="text-button">
+                        <a href="#" th:href="@{/admin/users}"
+                           class="wallet-details">
+                            See All Users
+                            <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="service-item first-service" style="margin-top: 30px;">
+                    <img src="../static/assets/images/wallet-trans.png"
+                         th:src="@{/assets/images/wallet-trans.png}">
+                    <h4 class="wallet-details">Wallet Transactions</h4>
+                    <!--                    <p class="wallet-details"-->
+                    <!--                       style="font-size: 2vh;color: #168118;">-->
+                    <!--                        Wallet Balance-->
+                    <!--                    </p>-->
+                    <div class="text-button">
+                        <a href="#" th:href="@{/admin/wallets/transactions}"
+                           class="wallet-details">
+                            See All Transactions
+                            <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="service-item first-service" style="margin-top: 30px;">
+                    <img src="../static/assets/images/card-trans.png"
+                         th:src="@{/assets/images/card-trans.png}">
+                    <h4 class="wallet-details">Card Transactions</h4>
+                    <!--                    <p class="wallet-details"-->
+                    <!--                       style="font-size: 2vh;color: #168118;">-->
+                    <!--                        Wallet Balance-->
+                    <!--                    </p>-->
+                    <div class="text-button">
+                        <a href="#" th:href="@{/admin/cards/transfers}"
+                           class="wallet-details">
+                            See All Transactions
+                            <i class="fa fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Users-->
+
+<div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/VirtualWalletFragments :: scripts}"></div>
+</body>
+</html>
