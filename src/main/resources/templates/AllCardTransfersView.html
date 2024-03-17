@@ -132,17 +132,8 @@
         }
 
 
-        .btn-edit {
-            background-color: orange;
-            border-color: orange;
-        }
 
-        .btn-block {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-
-        .btn-unblock {
+        .btn-primary {
             background-color: #28a745;
             border-color: #28a745;
         }
@@ -155,6 +146,7 @@
         .fa {
             font-size: 20px;
         }
+
         .table thead.custom-thead {
             background-color: #4b8ef1 !important;
             color: white;
@@ -174,7 +166,7 @@
             background: #f7f7f7;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
             align-items: center;
             flex-wrap: wrap;
@@ -225,27 +217,7 @@
             }
         }
 
-        .btn-make-admin, .btn-remove-admin {
-            color: black;
-            background-color: white;
-            border: 1px solid black;
-        }
-
-
-        .btn-make-admin:hover {
-            color: white;
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-
-        .btn-remove-admin:hover {
-            color: white;
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-
-
-        .btn-edit:hover, .btn-delete:hover, .btn-block:hover, .btn-unblock:hover {
+        .btn-delete:hover {
             opacity: 0.8;
         }
 
@@ -285,6 +257,7 @@
             flex-direction: column;
             justify-content: space-between;
         }
+
         /* Back Button Custom Styling */
         .back-button {
             width: auto;
@@ -311,6 +284,7 @@
         .back-button i {
             margin-right: 5px; /* Space between icon and text */
         }
+
         .card-header {
             display: flex;
             justify-content: center;
@@ -347,7 +321,7 @@
         <div class="row" style="padding-bottom: 0; margin-bottom: 0;">
             <div class="col-12">
                 <div style="margin-left: 10px;">
-<!--                    <label class="form-label">Filter Options:</label>-->
+                    <!--                    <label class="form-label">Filter Options:</label>-->
                 </div>
                 <form action="#" th:action="@{/admin/cards/transfers}" method="get" th:object="${cardTransactionFilter}"
                       class="d-flex flex-row align-items-center gap-2">
@@ -392,7 +366,7 @@
         <div class="col-12 mb-3 mb-lg-5">
             <div class="position-relative card table-nowrap table-card">
                 <div class="card-header d-flex justify-content-center align-items-center">
-                    <h5 class="mb-0">Transaction History</h5>
+                    <h5 class="mb-0">Transfer History</h5>
                     <!-- <p class="mb-0 small text-muted">1 Pending</p> -->
                 </div>
                 <div class="table-responsive">
@@ -407,29 +381,40 @@
                         </thead>
                         <tbody id="cardsContainer" th:each="cardTrans : ${cardTransfersList}">
                         <tr class="align-middle">
-                            <td th:text="${#temporals.format(cardTrans.getTime(), 'dd MMM yyyy')}">13 Sep, 2021</td>
+                            <td th:text="${#temporals.format(cardTrans.getTime(), 'dd MMM yyyy HH:mm')}">13 Sep, 2021 14:30</td>
                             <td>
-                                <div class="d-flex align-items-center justify-content-center" th:switch="${cardTrans.getTransactionType()}">
+                                <div class="d-flex align-items-center justify-content-center"
+                                     th:switch="${cardTrans.getTransactionType()}">
                                     <span th:text="${cardTrans.getAmount()}">$145</span>
-                                    <span th:case="'Incoming'"><i class="fa fa-arrow-up" style="color: green;" aria-hidden="true"></i></span>
-                                 <span th:case="'Outgoing'"><i class="fa fa-arrow-down" style="color: #bb2124;" aria-hidden="true"></i></span>
+                                    <span th:case="'Incoming'"><i class="fa fa-arrow-up" style="color: green;"
+                                                                  aria-hidden="true"></i></span>
+                                    <span th:case="'Outgoing'"><i class="fa fa-arrow-down" style="color: #bb2124;"
+                                                                  aria-hidden="true"></i></span>
                                 </div>
                             </td>
                             <td th:text="${cardTrans.getRecipient()}">Iban</td>
                             <td th:switch="${cardTrans.getStatus()}">
-<!--                                <span class="badge fs-6 fw-normal bg-tint-success text-success">Completed</span>-->
+                                <!--                                <span class="badge fs-6 fw-normal bg-tint-success text-success">Completed</span>-->
                                 <!-- Adjusted span to look more like a button -->
-                                <button th:case="'Confirmed'" type="button" class="btn btn-success rounded" style="color: white; border-color: #22BB33; background-color: #22BB33; width: 100px; height: 30px;">Confirmed</button>
-                                <button th:case="'Pending'" type="button" class="btn btn-success rounded" style="color: white; border-color: #f0ad4e; background-color: #f0ad4e; width: 100px; height: 30px;">Pending</button>
-                                <button th:case="'Declined'" type="button" class="btn btn-success rounded" style="color: white; border-color: #bb2124; background-color: #bb2124; width: 100px; height: 30px;">Declined</button>
-                            </td>
+                                <button th:case="'Confirmed'" type="button" class="btn btn-success rounded"
+                                        style="color: white; border-color: #22BB33; background-color: #22BB33; width: 100px; height: 30px;">
+                                    Confirmed
+                                </button>
+                                <button th:case="'Pending'" type="button" class="btn btn-success rounded"
+                                        style="color: white; border-color: #f0ad4e; background-color: #f0ad4e; width: 100px; height: 30px;">
+                                    Pending
+                                </button>
+                                <button th:case="'Declined'" type="button" class="btn btn-success rounded"
+                                        style="color: white; border-color: #bb2124; background-color: #bb2124; width: 100px; height: 30px;">
+                                    Declined
+                                </button>
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
                 <div class="card-footer text-end">
-<!--                    <a href="#!" class="btn btn-gray">View All Transactions</a>-->
+                    <!--                    <a href="#!" class="btn btn-gray">View All Transactions</a>-->
                 </div>
             </div>
         </div>

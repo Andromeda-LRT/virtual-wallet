@@ -13,14 +13,16 @@ public class RegisterDto {
             message = USERNAME_ERROR_MESSAGE)
     private String username;
     @NotEmpty(message = "Password can't be empty.")
+   // @Size(min = 8, max = 65, message = "Password must be at least 8 characters long.")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,20}$",
             message = PASSWORD_ERROR_MESSAGE)
     private String password;
 
+    @Size(min = 3, max = 50, message = "Invalid length for first name.")
     @Schema(name = "firstName", example = "Ivan", required = true)
     @NotBlank(message = EMPTY_ERROR_MESSAGE)
     String firstName;
-
+    @Size(min = 3, max = 50, message = "Invalid length for last name.")
     @Schema(name = "lastName", example = "Ivanov", required = true)
     @NotBlank(message = EMPTY_ERROR_MESSAGE)
     String lastName;
@@ -31,6 +33,7 @@ public class RegisterDto {
             message = INVALID_EMAIL_ERROR_MESSAGE,
             regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$"
     )
+    @Size(min = 8, max = 50, message = "Email must be at least 8 charactes long.")
     @NotBlank(message = "Email can't be empty.")
     private String email;
 

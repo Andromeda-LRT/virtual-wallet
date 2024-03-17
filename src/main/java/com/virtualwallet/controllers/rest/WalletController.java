@@ -101,6 +101,10 @@ public class WalletController {
             return ResponseEntity.status(HttpStatus.CREATED).body(wallet);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (UnauthorizedOperationException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        } catch (LimitReachedException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
 
@@ -233,6 +237,7 @@ public class WalletController {
                                                @RequestBody @Valid TransactionDto transactionDto) {
         try {
             User user = authHelper.tryGetUser(headers);
+            userService.isUserBlocked(user);
             WalletToWalletTransaction walletToWalletTransaction = transactionMapper.fromDto(transactionDto, user, wallet_id);
             walletService.walletToWalletTransaction(user, wallet_id, walletToWalletTransaction);
             return ResponseEntity.status(HttpStatus.CREATED)
@@ -240,6 +245,8 @@ public class WalletController {
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (InsufficientFundsException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }

@@ -109,11 +109,6 @@ public Card createCard(User createdBy, Card card) {
     }
 
     @Override
-    public void verifyCardExistence(int cardId) {
-        cardRepository.getByStringField("id", String.valueOf(cardId));
-    }
-
-    @Override
     public void authorizeCardAccess(int card_id, User user) {
         StringBuilder cardHolderFullName = new StringBuilder();
         cardHolderFullName.append(user.getFirstName()).append(" ").append(user.getLastName());

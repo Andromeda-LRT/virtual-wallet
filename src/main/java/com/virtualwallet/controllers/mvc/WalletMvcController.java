@@ -1,9 +1,6 @@
 package com.virtualwallet.controllers.mvc;
 
-import com.virtualwallet.exceptions.AuthenticationFailureException;
-import com.virtualwallet.exceptions.EntityNotFoundException;
-import com.virtualwallet.exceptions.InsufficientFundsException;
-import com.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.virtualwallet.exceptions.*;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
@@ -23,9 +20,12 @@ import com.virtualwallet.models.input_model_dto.WalletDto;
 import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.services.contracts.WalletService;
+import com.virtualwallet.services.contracts.WalletTypeService;
+import com.virtualwallet.utils.UtilHelpers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Limit;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +33,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static com.virtualwallet.model_helpers.ModelConstantHelper.UNAUTHORIZED_OPERATION_ERROR_MESSAGE;
 
 @Controller
 @RequestMapping("/wallets")
@@ -42,6 +44,7 @@ public class WalletMvcController {
     private final UserService userService;
     private final UserMapper userMapper;
     private final CardService cardService;
+    private final WalletTypeService walletTypeService;
     private final WalletMapper walletMapper;
     private final TransactionResponseMapper transactionResponseMapper;
     private final TransactionMapper transactionMapper;
@@ -50,7 +53,7 @@ public class WalletMvcController {
                                WalletService walletService,
                                UserService userService,
                                UserMapper userMapper,
-                               CardService cardService,
+                               CardService cardService, WalletTypeService walletTypeService,
                                WalletMapper walletMapper,
                                TransactionResponseMapper transactionResponseMapper,
                                TransactionMapper transactionMapper) {
@@ -59,6 +62,7 @@ public class WalletMvcController {
         this.userService = userService;
         this.userMapper = userMapper;
         this.cardService = cardService;
+        this.walletTypeService = walletTypeService;
         this.walletMapper = walletMapper;
         this.transactionResponseMapper = transactionResponseMapper;
         this.transactionMapper = transactionMapper;
@@ -129,6 +133,7 @@ public class WalletMvcController {
             return "redirect:/auth/login";
         }
         model.addAttribute("newWallet", new WalletDto());
+        model.addAttribute("walletTypes", walletTypeService.getAllWalletTypes());
         return "CreateNewWalletView";
     }
 
@@ -151,11 +156,16 @@ public class WalletMvcController {
         try {
             Wallet wallet = walletMapper.fromDto(walletDto);
             walletService.createWallet(user, wallet);
+            model.addAttribute("walletTypes", walletTypeService.getAllWalletTypes());
             return "redirect:/wallets";
         } catch (UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "UnauthorizedView";
+        }   catch (LimitReachedException e){
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "BadRequestView";
         }
     }
 
@@ -229,7 +239,6 @@ public class WalletMvcController {
             return "UnauthorizedView";
         }
     }
-
     @GetMapping("/{wallet_id}/transactions")
     public String showWalletTransactionPage(@PathVariable int wallet_id,
                                             Model model,
@@ -247,11 +256,12 @@ public class WalletMvcController {
             WalletTransactionModelFilterOptions transactionFilter =
                     populateWalletTransactionFilterOptions(transactionFilterDto);
             List<WalletToWalletTransaction> walletTransactions =
-                    walletService.getAllWalletTransactionsWithFilter(transactionFilter, user, wallet_id);
+                    walletService.getUserWalletTransactions(transactionFilter, user, wallet_id);
             List<TransactionResponseDto> outputTransactions = transactionResponseMapper
                     .convertWalletTransactionsToDto(walletTransactions);
             model.addAttribute("walletTransactions", outputTransactions);
-            model.addAttribute("walletFilterOptions", transactionFilter);
+            model.addAttribute("walletId", wallet_id);
+            model.addAttribute("walletFilterOptions", transactionFilterDto);
             return "WalletTransactionsview";
         } catch (UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
@@ -264,6 +274,7 @@ public class WalletMvcController {
         }
     }
 
+    // TODO -> Card to wallet - LYUBIMA
     @GetMapping("/{wallet_id}/transfers")
     public String showCardToWalletTransactionsPage(@PathVariable int wallet_id,
                                                    Model model,
@@ -281,14 +292,15 @@ public class WalletMvcController {
         try {
             CardTransactionModelFilterOptions transactionFilter =
                     populateCardTransactionFilterOptions(transactionFilterDto);
-            //todo getAllCardTransaction should work with filterOttions
-//            List<CardToWalletTransaction> cardTransactions =
-//                    walletService.getAllCardTransactions(transactionFilter, user, wallet_id);
-            //todo transactionMapper to return CardTransactionResponseDto
-//            List<CardTransactionResponseDto> outputTransactions = transactionResponseMapper
-//                    .convertToDto(walletTransactions, wallet_id);
-            //model.addAttribute("cardTransactions", outputTransactions);
-            model.addAttribute("cardFilterOptions", transactionFilter);
+
+            List<CardToWalletTransaction> cardTransactions =
+                    walletService.getUserCardTransactions(wallet_id, user, transactionFilter);
+
+            List<TransactionResponseDto> outputTransactions = transactionResponseMapper
+                    .convertCardTransactionsToDto(cardTransactions);
+            model.addAttribute("walletId", wallet_id);
+            model.addAttribute("cardTransactions", outputTransactions);
+            model.addAttribute("cardFilterOptions", transactionFilterDto);
             return "CardTransactionsview";
         } catch (UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
@@ -316,6 +328,8 @@ public class WalletMvcController {
         }
 
         try {
+           userService.isUserBlocked(user);
+
             UserModelFilterOptions userFilter = populateUserFilterOptions(userFilterDto);
             List<User> userList = walletService.getRecipient(userFilter);
             List<RecipientResponseDto> recipientList = userMapper.toRecipientDto(userList);
@@ -355,16 +369,20 @@ public class WalletMvcController {
         }
 
         try {
+            userService.isUserBlocked(user);
             WalletToWalletTransaction walletTransaction = transactionMapper.fromDto(transactionDto, user, wallet_id);
             walletService.walletToWalletTransaction(user, walletTransaction.getWalletId(), walletTransaction);
-            return "redirect:/wallets/" + wallet_id + "transactions";
-        } catch (InsufficientFundsException e) {
+            return "redirect:/wallets/" + wallet_id + "/transactions";
+        } catch (InsufficientFundsException | UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "UnauthorizedView";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "NotFoundView";
         }
     }
-
 
     @GetMapping("/{wallet_id}/transfer")
     public String showCreateTransactionWithCardPage(HttpSession session,
