@@ -91,13 +91,14 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet createWallet(User user, Wallet wallet) {
+        restrictUserPersonalWallets(user, wallet);
+        checkIfWalletNameExistsInUserList(wallet.getName(), user);
         wallet.setCreatedBy(user.getId());
         walletRepository.create(wallet);
         user.getWallets().add(wallet);
         userService.update(user, user);
         return wallet;
     }
-
     @Override
     public Wallet updateWallet(User user, Wallet wallet) {
         verifyWallet(wallet.getWalletId(), user);
@@ -333,5 +334,14 @@ public class WalletServiceImpl implements WalletService {
         WebClient.ResponseSpec responseSpec = populateResponseSpec(headersSpec);
         Mono<String> response = headersSpec.retrieve().bodyToMono(String.class);
         return response.block();
+    }
+    
+    private boolean checkIfWalletNameExistsInUserList(String walletName, User user) {
+        return user.getWallets().stream().anyMatch(wallet -> wallet.getName().equals(walletName));
+    }
+    private void restrictUserPersonalWallets(User user, Wallet wallet) {
+        if (user.getWallets().size() == 4 && wallet.getWalletTypeId() == 1) {
+            throw new LimitReachedException(ACCOUNTS_LIMIT_REACHED);
+        }
     }
 }
