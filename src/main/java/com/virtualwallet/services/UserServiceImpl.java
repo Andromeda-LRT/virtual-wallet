@@ -4,6 +4,7 @@ import com.virtualwallet.exceptions.*;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
+import com.virtualwallet.models.input_model_dto.UpdateUserPasswordDto;
 import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.utils.PasswordEncoderUtil;
@@ -11,6 +12,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -89,6 +91,7 @@ public class UserServiceImpl implements UserService {
     public User update(User userToUpdate, User loggedUser) {
         verifyUserAccess(loggedUser, userToUpdate.getId());
         duplicateCheck(userToUpdate);
+        userToUpdate.setPassword(PasswordEncoderUtil.encodePassword(userToUpdate.getPassword()));
         repository.update(userToUpdate);
         return userToUpdate;
     }
@@ -224,6 +227,16 @@ public class UserServiceImpl implements UserService {
         } catch (WebClientResponseException.BadRequest e) {
             throw new InvalidOperationException("File could not be processed");
         }
+    }
+
+    @Override
+    public boolean confirmIfPasswordsMatch(int id, UpdateUserPasswordDto passwordDto) {
+        User userWhosePasswordMayBeChanged = repository.getById(id);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+//        passwordDto.setCurrentPassword(encoder.encode(passwordDto.getCurrentPassword()));
+
+        return  encoder.matches(passwordDto.getCurrentPassword(), userWhosePasswordMayBeChanged.getPassword());
     }
 
     private void populateFormData(MultiValueMap<String, String> formData, String encodedFile) {
