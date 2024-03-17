@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>.dropdown img.rounded-circle {
+        margin-bottom: -5px; /* Reduce the bottom margin of the profile image */
+    }
+
+    .nav li.scroll-to-section a {
+        margin-top: -5px; /* Reduce the top margin of the nav links */
+    }</style>
 </head>
 <body>
 <!--HEADER-->
@@ -45,8 +52,10 @@
                         <div th:if="${isAuthenticated}" class="dropdown text-end">
                             <a href="#" class="d-block link-body-emphasis text-decoration-none dropdown-toggle"
                                data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="https://github.com/mdo.png" alt="mdo" style="width: auto; height: 30px"
-                                     class="rounded-circle">
+                                <img th:if="${session.userPicture != null}" th:src="${session.userPicture}" alt="mdo" style="width: 40px; height: 40px" class="rounded-circle">
+                                <img th:unless="${session.userPicture != null}" src="../assets/images/profile1.png" alt="mdo" style="width: 40px; height: 40px" class="rounded-circle">
+<!--                                <img src="https://github.com/mdo.png" alt="mdo" style="width: auto; height: 30px"-->
+<!--                                     class="rounded-circle">-->
                             </a>
                             <ul class="dropdown-menu text-small">
                                 <li><a th:href="@{/users/userProfile}" class="dropdown-item" href="#">Profile</a></li>
