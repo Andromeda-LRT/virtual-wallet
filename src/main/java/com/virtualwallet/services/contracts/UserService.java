@@ -2,6 +2,7 @@ package com.virtualwallet.services.contracts;
 
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.models.User;
+import com.virtualwallet.models.input_model_dto.UpdateUserPasswordDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -44,4 +45,5 @@ public interface UserService {
 
     void updateProfilePicture(User user, MultipartFile multipartFile) throws IOException;
 
+    boolean confirmIfPasswordsMatch(int id, UpdateUserPasswordDto passwordDto);
 }
