@@ -12,6 +12,7 @@ import com.virtualwallet.models.*;
 import com.virtualwallet.models.input_model_dto.CardForAddingMoneyToWalletDto;
 import com.virtualwallet.repositories.contracts.WalletRepository;
 import com.virtualwallet.services.contracts.*;
+import com.virtualwallet.utils.UtilHelpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -97,13 +98,14 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet createWallet(User user, Wallet wallet) {
+        restrictUserPersonalWallets(user, wallet);
+        checkIfWalletNameExistsInUserList(wallet.getName(), user);
         wallet.setCreatedBy(user.getId());
         walletRepository.create(wallet);
         user.getWallets().add(wallet);
         userService.update(user, user);
         return wallet;
     }
-
     @Override
     public Wallet updateWallet(User user, Wallet wallet) {
         verifyWallet(wallet.getWalletId(), user);
@@ -140,7 +142,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter
             (WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id) {
-        Wallet wallet = verifyWallet(wallet_id, user);
+        verifyWallet(wallet_id, user);
         return walletTransactionService.getAllWalletTransactionsWithFilter(user, transactionFilter);
     }
 
@@ -163,6 +165,9 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public void walletToWalletTransaction(User user, int senderWalletId, WalletToWalletTransaction transaction) {
+        userService.isUserBlocked(user);
+
+        Wallet senderWallet = verifyWallet(senderWalletId, user);
         Wallet senderWallet = getWalletById(user, senderWalletId);
         Wallet recipientWallet = walletRepository.getById(transaction.getRecipientWalletId());
         // if wallet balance is less than transaction amount, throw exception
@@ -247,7 +252,10 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public void checkWalletBalance(Wallet wallet, double amount) {
         if (wallet.getBalance() <= amount) {
-            throw new InsufficientFundsException("wallet", wallet.getIban(), wallet.getBalance(), amount);
+            throw new InsufficientFundsException(
+                    "wallet", wallet.getIban(),
+                    wallet.getBalance(), amount
+            );
         }
     }
 
@@ -376,4 +384,13 @@ public class WalletServiceImpl implements WalletService {
         return response.block();
     }
 
+
+    private boolean checkIfWalletNameExistsInUserList(String walletName, User user) {
+        return user.getWallets().stream().anyMatch(wallet -> wallet.getName().equals(walletName));
+    }
+    private void restrictUserPersonalWallets(User user, Wallet wallet) {
+        if (user.getWallets().size() == 4 && wallet.getWalletTypeId() == 1) {
+            throw new LimitReachedException(ACCOUNTS_LIMIT_REACHED);
+        }
+    }
 }

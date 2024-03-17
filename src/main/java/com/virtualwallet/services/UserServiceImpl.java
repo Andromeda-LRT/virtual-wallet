@@ -4,7 +4,7 @@ import com.virtualwallet.exceptions.*;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
-import com.virtualwallet.models.input_model_dto.UpdateUserPasswordDto;
+import com.virtualwallet.models.mvc_input_model_dto.UpdateUserPasswordDto;
 import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.utils.PasswordEncoderUtil;
@@ -237,6 +237,13 @@ public class UserServiceImpl implements UserService {
 //        passwordDto.setCurrentPassword(encoder.encode(passwordDto.getCurrentPassword()));
 
         return  encoder.matches(passwordDto.getCurrentPassword(), userWhosePasswordMayBeChanged.getPassword());
+    }
+
+    @Override
+    public void isUserBlocked(User user) {
+        if(user.isBlocked()){
+            throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);
+        }
     }
 
     private void populateFormData(MultiValueMap<String, String> formData, String encodedFile) {

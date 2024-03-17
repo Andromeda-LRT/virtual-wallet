@@ -1,6 +1,8 @@
 package com.virtualwallet.models.mvc_input_model_dto;
 
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 public class LoginDto extends WalletUserDto{
 

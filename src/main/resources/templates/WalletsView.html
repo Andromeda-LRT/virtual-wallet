@@ -89,10 +89,11 @@
 </head>
 <body>
 <!--header-->
-<div th:replace="~{fragments/VirtualWalletFragments :: header}" ></div>
+<div th:replace="~{fragments/VirtualWalletFragments :: header}"></div>
 <!--header-->
 <div class="container" style="margin-top: 110px; margin-bottom: 0; padding-bottom: 0; text-align: center;">
-    <a href="#" th:href="@{/wallets/new}" class="btn btn-primary" style="display: inline-block; width: auto; padding: 10px 20px; margin: 0 auto; font-size: 3.5vh;">
+    <a href="#" th:href="@{/wallets/new}" class="btn btn-primary"
+       style="display: inline-block; width: auto; padding: 10px 20px; margin: 0 auto; font-size: 3.5vh;">
         <i class="fa fa-plus"></i> Create New Wallet
     </a>
 </div>
@@ -119,29 +120,30 @@
             </div>
         </div>
 
-        <div class="col-lg-3" th:each="wallet : ${personalWallets}">
-            <div class="service-item first-service" style="margin-top: 30px;">
-                <i class="bi bi-wallet2"
-                   style="color: #967015; margin-left: 0px; margin-bottom: 30px; background-repeat: no-repeat; font-size: 50px; transition: all .3s;"></i>
-                <h4 th:text="${wallet.getName()}" class="wallet-details">Wallet Name</h4>
-                <p th:text="${'Balance: ' + #numbers.formatDecimal(wallet.getBalance(), 1, 'COMMA', 2, 'POINT')}"
-                   class="wallet-details"
-                   style="font-size: 2vh;color: #168118;">
-                    Wallet Balance
-                </p>
-                <p th:text="${wallet.getIban()}" class="wallet-iban"
-                   style="font-size: 1.8vh;">Wallet Iban</p>
-                <div class="text-button">
-                    <a href="#" th:href="@{/wallets/__${wallet.getWalletId()}__}"
-                       class="wallet-details">
-                        Go To Wallet
-                        <i class="fa fa-arrow-right"></i>
-                    </a>
+                <div class="col-lg-3" th:each="wallet : ${personalWallets}">
+                    <div class="service-item first-service" style="margin-top: 30px;">
+                        <i class="bi bi-wallet2"
+                           style="color: #967015; margin-left: 0px; margin-bottom: 30px; background-repeat: no-repeat; font-size: 50px; transition: all .3s;"></i>
+                        <h4 th:text="${wallet.getName()}" class="wallet-details">Wallet Name</h4>
+                        <p th:text="${'Balance: ' + #numbers.formatDecimal(wallet.getBalance(), 1, 'COMMA', 2, 'POINT')}"
+                           class="wallet-details"
+                           style="font-size: 2vh;color: #168118;">
+                            Wallet Balance
+                        </p>
+                        <p th:text="${wallet.getIban()}" class="wallet-iban"
+                           style="font-size: 1.8vh;">Wallet Iban</p>
+                        <div class="text-button">
+                            <a href="#" th:href="@{/wallets/__${wallet.getWalletId()}__}"
+                               class="wallet-details">
+                                Go To Wallet
+                                <i class="fa fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
     </div>
 </div>
+
 <!--Show Personal Wallets Section-->
 
 

@@ -40,8 +40,12 @@
     <!-- Optional Bootstrap JavaScript and Popper.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 
-    <style>
 
+    <!--    Ted table style-->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"/>
+
+
+    <style>
         .action-buttons .btn {
             margin-right: 5px;
         }
@@ -84,10 +88,7 @@
             color: #7a7a7a !important;
         }
 
-        .table-rounded {
-            border-radius: 8px;
-            overflow: hidden;
-        }
+
 
         .table-hover tbody tr:hover {
             background-color: #f2f2f2;
@@ -127,21 +128,6 @@
             text-align: center;
         }
 
-        .btn-edit {
-            background-color: orange;
-            border-color: orange;
-        }
-
-        .btn-block {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-
-        .btn-unblock {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-
 
 
         .fa {
@@ -163,6 +149,16 @@
             padding: 20px 0;
         }
 
+        .post-filter {
+            background: #f7f7f7;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
 
         .input-group {
             display: flex;
@@ -206,30 +202,6 @@
                 width: 100%;
                 padding: 10px;
             }
-        }
-
-        .btn-make-admin, .btn-remove-admin {
-            color: black;
-            background-color: white;
-            border: 1px solid black;
-        }
-
-
-        .btn-make-admin:hover {
-            color: white;
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-
-        .btn-remove-admin:hover {
-            color: white;
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-
-
-        .btn-edit:hover, .btn-delete:hover, .btn-block:hover, .btn-unblock:hover {
-            opacity: 0.8;
         }
 
         #pagination {
@@ -296,16 +268,12 @@
             margin-right: 5px; /* Space between icon and text */
         }
 
-        .button-container {
+        .card-header {
             display: flex;
-            justify-content: space-between;
-        }
-
-        .button-section {
-            flex-grow: 1;
+            justify-content: center;
+            align-items: center;
             text-align: center;
         }
-
 
     </style>
 </head>
@@ -319,17 +287,16 @@
         <div class="section-heading  justify-content-between align-items-start" style="margin-bottom: 0;">
             <!-- Left Placeholder for alignment -->
             <div class="flex-grow-1 d-flex justify-content-start">
-                <a th:href="@{/admin}" class="btn btn-primary back-button">
-                    <i class="bi bi-arrow-left"></i> Back To Dashboard
+                <a th:href="@{/wallets/__${walletId}__}" class="btn btn-primary back-button">
+                    <i class="bi bi-arrow-left"></i> Back To Wallet
                 </a>
             </div>
-            <h4 class="text-center flex-grow-1 m-0"><em>Users</em></h4>
+            <h4 class="text-center flex-grow-1 m-0"><em>Wallet Transactions</em></h4>
             <div class="flex-grow-1"></div>
         </div>
         <hr>
     </div>
 </div>
-
 
 <!-- Filter Options -->
 <section class="section-padding">
@@ -339,26 +306,31 @@
                 <div style="margin-left: 10px;">
                     <!--                    <label class="form-label">Filter Options:</label>-->
                 </div>
-                <form action="#" th:action="@{/admin/users}" method="get" th:object="${userFilterOptions}"
-                      class="d-flex flex-row align-items-center gap-2">
+                <form action="#" th:action="@{/wallets/__${wallet_id}__/transactions}" method="get"
+                      th:object="${walletFilterOptions}" class="d-flex flex-row align-items-center gap-2">
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="Username" th:field="*{username}"/>
+                        <input class="form-control" type="text" placeholder="Start date" th:field="*{startDate}"/>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="Email" th:field="*{email}"/>
+                        <input class="form-control" type="text" placeholder="End date" th:field="*{endDate}"/>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="First Name" th:field="*{phoneNumber}"/>
+                        <input class="form-control" type="text" placeholder="Sender" th:field="*{sender}"/>
                     </div>
-
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
+                        <input class="form-control" type="text" placeholder="Recipient" th:field="*{recipient}"/>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
+                        <input class="form-control" type="text" placeholder="Direction" th:field="*{direction}"/>
+                    </div>
                     <select class="form-select" th:field="*{sortBy}">
                         <option value="">Sort By</option>
-                        <option value="username">Username</option>
-                        <option value="email">Email</option>
-                        <option value="phoneNumber">PhoneNumber</option>
+                        <option value="amount">Amount</option>
                     </select>
                     <select class="form-select" th:field="*{sortOrder}">
                         <option value="">Sort Order</option>
@@ -376,80 +348,66 @@
 </section>
 
 <div class="container">
-    <table class="table table-bordered table-hover table-rounded">
-        <thead class="custom-thead">
-        <tr>
-            <th>ID</th>
-            <th>Username</th>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Status</th>
-            <th>Manage</th>
-        </tr>
-        </thead>
-        <tbody id="usersContainer">
-        <!-- Example row -->
-        <tr th:each="user : ${users}">
-            <td th:text="${user.getId()}">1</td>
-            <td th:text="${user.getUsername()}">john_doe</td>
-            <td th:text="${user.getFirstName()}">John</td>
-            <td th:text="${user.getLastName()}">Doe</td>
-            <td th:text="${user.getEmail()}">john.doe@example.com</td>
-            <td th:text="${user.getPhoneNumber()}">123-456-7890</td>
-            <td th:unless="${user.isArchived()}">Active</td>
-            <td th:if="${user.isArchived()}">Deactivated</td>
-<!--            <td class="action-buttons">-->
-<!--                <div class="button-container">-->
-<!--                    <form action="#" th:action="@{/users/__${user.getId()}__}" method="get">-->
-<!--                        <button class="btn btn-edit btn-sm"><i class="fa fa-edit"></i></button>-->
-<!--                    </form>-->
-<!--                    <form action="#" th:action="@{/admin/users/__${user.getId()}__/block}" method="post">-->
-<!--                        <button class="btn btn-block btn-sm" th:unless="${user.isBlocked()}"><i class="fas fa-lock"></i></button>-->
-<!--                    </form>-->
-<!--                    <form action="#" th:action="@{/admin/users/__${user.getId()}__/unblock}" method="post">-->
-<!--                        <button class="btn btn-unblock btn-sm" th:if="${user.isBlocked()}"><i class="fas fa-unlock"></i></button>-->
-<!--                    </form>-->
-<!--                    <form action="#" th:action="@{/admin/users/__${user.getId()}__/admin-approval}" method="post">-->
-<!--                        <button class="btn btn-make-admin btn-sm" th:unless="${user.getRole().getId().equals(2)}"><i class="fas fa-user-shield"></i></button>-->
-<!--                    </form>-->
-<!--                    <form action="#" th:action="@{/admin/users/__${user.getId()}__/admin-cancellation}" method="post">-->
-<!--                        <button class="btn btn-remove-admin btn-sm" th:if="${user.getRole().getId().equals(2)}"><i class="fas fa-user-minus"></i></button>-->
-<!--                    </form>-->
-<!--                </div>-->
-<!--            </td>-->
-            <td class="action-buttons">
-                <div class="button-container">
-                    <div class="button-section">
-                        <form action="#" th:action="@{/users/__${user.getId()}__}" method="get">
-                            <button class="btn btn-edit btn-sm"><i class="fa fa-edit"></i></button>
-                        </form>
-                    </div>
-                    <div class="button-section">
-                        <form action="#" th:action="@{/admin/users/__${user.getId()}__/block}" method="post">
-                            <button class="btn btn-block btn-sm" th:unless="${user.isBlocked()}"><i class="fas fa-lock"></i></button>
-                        </form>
-                        <form action="#" th:action="@{/admin/users/__${user.getId()}__/unblock}" method="post">
-                            <button class="btn btn-unblock btn-sm" th:if="${user.isBlocked()}"><i class="fas fa-unlock"></i></button>
-                        </form>
-                    </div>
-                    <div class="button-section">
-                        <form action="#" th:action="@{/admin/users/__${user.getId()}__/admin-approval}" method="post">
-                            <button class="btn btn-make-admin btn-sm" th:unless="${user.getRole().getId().equals(2)}"><i class="fas fa-user-shield"></i></button>
-                        </form>
-                        <form action="#" th:action="@{/admin/users/__${user.getId()}__/admin-cancellation}" method="post">
-                            <button class="btn btn-remove-admin btn-sm" th:if="${user.getRole().getId().equals(2)}"><i class="fas fa-user-minus"></i></button>
-                        </form>
-                    </div>
+    <div class="row">
+        <div class="col-12 mb-3 mb-lg-5">
+            <div class="position-relative card table-nowrap table-card">
+                <div class="card-header d-flex justify-content-center align-items-center">
+                    <h5 class="mb-0">Transaction History</h5>
                 </div>
-            </td>
-
-        </tr>
-        <!-- Repeat rows for more users -->
-        </tbody>
-    </table>
+                <div class="table-responsive">
+                    <table class="table mb-0">
+                        <thead class="small text-uppercase bg-body text-muted">
+                        <tr>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Sender</th>
+                            <th>Recipient</th>
+                            <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody id="walletsContainer">
+                        <tr th:if="${walletTransactions.isEmpty()}" class="align-middle">
+                            <td colspan="5" class="text-center">No transactions yet.</td>
+                        </tr>
+                        <tr th:each="walletTrans : ${walletTransactions}" class="align-middle">
+                            <td th:text="${#temporals.format(walletTrans.getTime(), 'dd MMM yyyy HH:mm')}">13 Sep, 2021 14:30</td>
+                            <td>
+                                <div class="d-flex align-items-center justify-content-center"
+                                     th:switch="${walletTrans.transactionType}">
+                                    <span th:text="${walletTrans.amount}">$145</span>
+                                    <span th:case="'Incoming'"><i class="fa fa-arrow-up" style="color: green;"
+                                                                  aria-hidden="true"></i></span>
+                                    <span th:case="'Outgoing'"><i class="fa fa-arrow-down" style="color: #bb2124;"
+                                                                  aria-hidden="true"></i></span>
+                                </div>
+                            </td>
+                            <td th:text="${walletTrans.sender}">Sender</td>
+                            <td th:text="${walletTrans.recipient}">Recipient</td>
+                            <td th:switch="${walletTrans.status}">
+                                <button th:case="'Confirmed'" type="button"
+                                        class="btn btn-success rounded"
+                                        style="color: white; border-color: #22BB33; background-color: #22BB33; width: 100px; height: 30px;">
+                                    Confirmed
+                                </button>
+                                <button th:case="'Pending'" type="button" class="btn btn-warning rounded"
+                                        style="color: white; border-color: #f0ad4e; background-color: #f0ad4e; width: 100px; height: 30px;">
+                                    Pending
+                                </button>
+                                <button th:case="'Declined'" type="button"
+                                        class="btn btn-danger rounded"
+                                        style="color: white; border-color: #bb2124; background-color: #bb2124; width: 100px; height: 30px;">
+                                    Declined
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 <div id="pagination"></div>
 
 <div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
@@ -462,7 +420,7 @@
     let currentPage = 1;
 
     function paginateUsers(pageNumber) {
-        const users = document.querySelectorAll('#usersContainer tr');
+        const users = document.querySelectorAll('#walletsContainer tr');
         const totalPages = Math.ceil(users.length / usersPerPage);
 
         // Hide all users

@@ -132,20 +132,6 @@
         }
 
 
-        .btn-edit {
-            background-color: orange;
-            border-color: orange;
-        }
-
-        .btn-block {
-            background-color: #6c757d;
-            border-color: #6c757d;
-        }
-
-        .btn-unblock {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
 
         .btn-delete {
             background-color: red;
@@ -155,6 +141,7 @@
         .fa {
             font-size: 20px;
         }
+
         .table thead.custom-thead {
             background-color: #4b8ef1 !important;
             color: white;
@@ -170,16 +157,6 @@
             padding: 20px 0;
         }
 
-        .post-filter {
-            background: #f7f7f7;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
 
         .input-group {
             display: flex;
@@ -225,30 +202,6 @@
             }
         }
 
-        .btn-make-admin, .btn-remove-admin {
-            color: black;
-            background-color: white;
-            border: 1px solid black;
-        }
-
-
-        .btn-make-admin:hover {
-            color: white;
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-
-        .btn-remove-admin:hover {
-            color: white;
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-
-
-        .btn-edit:hover, .btn-delete:hover, .btn-block:hover, .btn-unblock:hover {
-            opacity: 0.8;
-        }
-
         #pagination {
             display: flex;
             justify-content: center;
@@ -285,6 +238,7 @@
             flex-direction: column;
             justify-content: space-between;
         }
+
         /* Back Button Custom Styling */
         .back-button {
             width: auto;
@@ -311,6 +265,7 @@
         .back-button i {
             margin-right: 5px; /* Space between icon and text */
         }
+
         .card-header {
             display: flex;
             justify-content: center;
@@ -349,26 +304,27 @@
                 <div style="margin-left: 10px;">
                     <!--                    <label class="form-label">Filter Options:</label>-->
                 </div>
-                <form action="#" th:action="@{/admin/wallets/transactions}" method="get" th:object="${walletTransactionFilter}" class="d-flex flex-row align-items-center gap-2">
+                <form action="#" th:action="@{/admin/wallets/transactions}" method="get"
+                      th:object="${walletTransactionFilter}" class="d-flex flex-row align-items-center gap-2">
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="Username" th:field="*{startDate}" />
+                        <input class="form-control" type="text" placeholder="Start date" th:field="*{startDate}"/>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="Email" th:field="*{endDate}" />
+                        <input class="form-control" type="text" placeholder="End date" th:field="*{endDate}"/>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="First Name" th:field="*{sender}" />
+                        <input class="form-control" type="text" placeholder="Sender" th:field="*{sender}"/>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="First Name" th:field="*{recipient}" />
+                        <input class="form-control" type="text" placeholder="Recipient" th:field="*{recipient}"/>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="First Name" th:field="*{direction}" />
+                        <input class="form-control" type="text" placeholder="Direction" th:field="*{direction}"/>
                     </div>
                     <select class="form-select" th:field="*{sortBy}">
                         <option value="">Sort By</option>
@@ -380,7 +336,8 @@
                         <option value="desc">Descending</option>
                     </select>
                     <button type="submit" value="Search" style="background-color: #4b8ef1; border-color: #4b8ef1;"
-                            class="btn btn-primary search">Search</button>
+                            class="btn btn-primary search">Search
+                    </button>
                 </form>
             </div>
             <br/>
@@ -406,16 +363,20 @@
                             <th>Sender</th>
                             <th>Recipient</th>
                             <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody id="walletsContainer" th:each="walletTrans : ${walletTransactionList}">
                         <tr class="align-middle">
-                            <td th:text="${#temporals.format(walletTrans.getTime(), 'dd MMM yyyy')}">13 Sep 2021</td>
+                             <td th:text="${#temporals.format(walletTrans.getTime(), 'dd MMM yyyy HH:mm')}">13 Sep, 2021 14:30</td>
                             <td>
-                                <div class="d-flex align-items-center justify-content-center" th:switch="${walletTrans.getTransactionType()}">
+                                <div class="d-flex align-items-center justify-content-center"
+                                     th:switch="${walletTrans.getTransactionType()}">
                                     <span th:text="${walletTrans.getAmount()}">$145</span>
-                                    <span th:case="'Incoming'"><i class="fa fa-arrow-up" style="color: green;" aria-hidden="true"></i></span>
-                                    <span th:case="'Outgoing'"><i class="fa fa-arrow-down" style="color: #bb2124;" aria-hidden="true"></i></span>
+                                    <span th:case="'Incoming'"><i class="fa fa-arrow-up" style="color: green;"
+                                                                  aria-hidden="true"></i></span>
+                                    <span th:case="'Outgoing'"><i class="fa fa-arrow-down" style="color: #bb2124;"
+                                                                  aria-hidden="true"></i></span>
                                 </div>
                             </td>
                             <td th:text="${walletTrans.getSender()}">Sender</td>
@@ -423,10 +384,33 @@
                             <td th:switch="${walletTrans.getStatus()}">
                                 <!--                                <span class="badge fs-6 fw-normal bg-tint-success text-success">Completed</span>-->
                                 <!-- Adjusted span to look more like a button -->
-                                <button th:case="'Confirmed'" type="button" class="btn btn-success rounded" style="color: white; border-color: #22BB33; background-color: #22BB33; width: 100px; height: 30px;">Confirmed</button>
-                                <button th:case="'Pending'" type="button" class="btn btn-success rounded" style="color: white; border-color: #f0ad4e; background-color: #f0ad4e; width: 100px; height: 30px;">Pending</button>
-                                <button th:case="'Declined'" type="button" class="btn btn-success rounded" style="color: white; border-color: #bb2124; background-color: #bb2124; width: 100px; height: 30px;">Declined</button>
+                                <button th:case="'Confirmed'" type="button" class="btn btn-success rounded"
+                                        style="color: white; border-color: #22BB33; background-color: #22BB33; width: 100px; height: 30px;">
+                                    Confirmed
+                                </button>
+                                <button th:case="'Pending'" type="button" class="btn btn-success rounded"
+                                        style="color: white; border-color: #f0ad4e; background-color: #f0ad4e; width: 100px; height: 30px;">
+                                    Pending
+                                </button>
+                                <button th:case="'Declined'" type="button" class="btn btn-success rounded"
+                                        style="color: white; border-color: #bb2124; background-color: #bb2124; width: 100px; height: 30px;">
+                                    Declined
+                                </button>
                             </td>
+                            <td class="action-buttons" th:if="${walletTrans.getStatus().equals('Pending')}">
+                                <form action="#" th:action="@{/admin/transactions/__${walletTrans.getTransactionId()}__/approval}" method="post" style="display: inline-block; margin-right: 10px;">
+                                    <button class="btn btn-primary" style="background-color: green; border-color: green; color: white; font-size: 29px;" title="Approve">
+                                        <i class="bi bi-check"></i>
+                                    </button>
+                                </form>
+                                <form action="#" th:action="@{/admin/transactions/__${walletTrans.getTransactionId()}__/cancellation}" method="post" style="display: inline-block;">
+                                    <button class="btn btn-delete" style="font-size: 29px;" title="Decline">
+                                        <i class="bi bi-x"></i>
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="action-buttons" th:unless="${walletTrans.getStatus().equals('Pending')}">
+                                <i class="bi bi-dash-circle" style="font-size: 29px;"></i>
                             </td>
                         </tr>
                         </tbody>
