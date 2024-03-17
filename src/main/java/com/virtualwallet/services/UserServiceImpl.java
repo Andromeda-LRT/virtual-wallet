@@ -4,7 +4,7 @@ import com.virtualwallet.exceptions.*;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
-import com.virtualwallet.models.input_model_dto.UpdateUserPasswordDto;
+import com.virtualwallet.models.mvc_input_model_dto.UpdateUserPasswordDto;
 import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.utils.PasswordEncoderUtil;
