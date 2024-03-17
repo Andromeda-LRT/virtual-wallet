@@ -5,10 +5,7 @@ import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
-import com.virtualwallet.model_mappers.CardMapper;
-import com.virtualwallet.model_mappers.CardResponseMapper;
-import com.virtualwallet.model_mappers.UpdateUserMapper;
-import com.virtualwallet.model_mappers.UserMapper;
+import com.virtualwallet.model_mappers.*;
 import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.input_model_dto.CardDto;
@@ -40,13 +37,14 @@ public class UserController {
     private final CardResponseMapper cardResponseMapper;
     private final CardMapper cardMapper;
     private final AuthenticationHelper authHelper;
+    private final UserResponseMapper userResponseMapper;
 
     @Autowired
     public UserController(UserService userService,
                           CardService cardService,
                           UserMapper userMapper, UpdateUserMapper updateUserMapper, CardResponseMapper cardResponseMapper,
                           CardMapper cardMapper,
-                          AuthenticationHelper authHelper) {
+                          AuthenticationHelper authHelper, UserResponseMapper userResponseMapper) {
         this.userService = userService;
         this.cardService = cardService;
         this.userMapper = userMapper;
@@ -54,6 +52,7 @@ public class UserController {
         this.cardResponseMapper = cardResponseMapper;
         this.cardMapper = cardMapper;
         this.authHelper = authHelper;
+        this.userResponseMapper = userResponseMapper;
     }
 
 
@@ -69,7 +68,7 @@ public class UserController {
                 username, email, phoneNumber, sortBy, sortOrder);
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            return ResponseEntity.status(HttpStatus.OK).body(userService.getAllWithFilter(loggedUser, userFilter));
+            return ResponseEntity.status(HttpStatus.OK).body(userResponseMapper.convertToDtoList(userService.getAllWithFilter(loggedUser, userFilter)));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
@@ -81,7 +80,7 @@ public class UserController {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             User user = userService.get(id, loggedUser);
-            return ResponseEntity.status(HttpStatus.OK).body(user);
+            return ResponseEntity.status(HttpStatus.OK).body(userResponseMapper.convertToDto(user));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (EntityNotFoundException e) {
@@ -129,7 +128,7 @@ public class UserController {
         try {
             User user = userMapper.fromDto(userDto);
             userService.create(user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(userResponseMapper.convertToDto(user));
         } catch (DuplicateEntityException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
@@ -162,7 +161,7 @@ public class UserController {
             User loggedUser = authHelper.tryGetUser(headers);
             User user = updateUserMapper.fromDto(id, userDto, loggedUser);
             userService.update(user, loggedUser);
-            return ResponseEntity.status(HttpStatus.OK).body(user);
+            return ResponseEntity.status(HttpStatus.OK).body(userResponseMapper.convertToDto(user));
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         } catch (DuplicateEntityException e) {
