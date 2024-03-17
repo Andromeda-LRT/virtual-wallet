@@ -168,9 +168,9 @@ public class WalletController {
     }
 
     @SecurityRequirement(name = AUTHORIZATION)
-    @GetMapping("/card_transactions/{card_id}")
+    @GetMapping("/card_transactions/{wallet_id}")
     public ResponseEntity<?> getUserCardsTransactionHistory(@RequestHeader HttpHeaders headers,
-                                                            @PathVariable int card_id,
+                                                            @PathVariable int wallet_id,
                                                          @RequestParam(required = false)
                                                          @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                          LocalDateTime startDate,
@@ -188,7 +188,7 @@ public class WalletController {
 
             User user = authHelper.tryGetUser(headers);
             List<CardToWalletTransaction> cardToWalletTransactionList =
-                    walletService.getUserCardTransactions(card_id, user, transactionModelFilterOptions);
+                    walletService.getUserCardTransactions(wallet_id, user, transactionModelFilterOptions);
             return ResponseEntity.status(HttpStatus.OK).body(transactionResponseMapper.convertCardTransactionsToDto(cardToWalletTransactionList));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

@@ -38,8 +38,8 @@ public class CardToWalletTransactionServiceImpl implements CardTransactionServic
     }
 
     @Override
-    public List<CardToWalletTransaction> getUserCardTransactions(int cardId, User user, CardTransactionModelFilterOptions transactionFilter) {
-        return cardTransactionRepository.getAllUserCardTransactions(cardId, user, transactionFilter);
+    public List<CardToWalletTransaction> getUserCardTransactions(int walletId, User user, CardTransactionModelFilterOptions transactionFilter) {
+        return cardTransactionRepository.getAllUserCardTransactions(walletId, user, transactionFilter);
     }
 
     @Override

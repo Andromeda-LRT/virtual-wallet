@@ -102,14 +102,14 @@ public class CardToWalletTransactionImpl extends AbstractCrudRepository<CardToWa
     }
 
     @Override
-    public List<CardToWalletTransaction> getAllUserCardTransactions(int cardId, User user, CardTransactionModelFilterOptions transactionFilter) {
+    public List<CardToWalletTransaction> getAllUserCardTransactions(int walletId, User user, CardTransactionModelFilterOptions transactionFilter) {
         try(Session session = sessionFactory.openSession()){
 
             List<String> filters = new ArrayList<>();
             Map<String, Object> params = new HashMap<>();
 
             params.put("userId", user.getId());
-            params.put("cardId", cardId);
+            params.put("walletId", walletId);
 
             transactionFilter.getStartDate().ifPresent(startDate -> {
                 filters.add("time >= :startDate");
@@ -149,7 +149,7 @@ public class CardToWalletTransactionImpl extends AbstractCrudRepository<CardToWa
 
             StringBuilder queryString = new StringBuilder();
 
-            queryString.append("From CardToWalletTransaction where cardId = :cardId ");
+            queryString.append("From CardToWalletTransaction where walletId = :walletId ");
 
             if (!filters.isEmpty()) {
 

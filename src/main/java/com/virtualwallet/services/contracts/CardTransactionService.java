@@ -10,7 +10,7 @@ public interface CardTransactionService {
     List<CardToWalletTransaction> getAllCardTransactions();
     List<CardToWalletTransaction> getAllCardTransactionsWithFilter
             (User user, CardTransactionModelFilterOptions transactionFilter);
-    List<CardToWalletTransaction> getUserCardTransactions(int cardId, User user, CardTransactionModelFilterOptions transactionFilter);
+    List<CardToWalletTransaction> getUserCardTransactions(int walletId, User user, CardTransactionModelFilterOptions transactionFilter);
     CardToWalletTransaction getCardTransactionById(int cardTransactionId);
     void updateCardTransaction(CardToWalletTransaction cardTransaction, User user);
     void approveTransaction(CardToWalletTransaction cardTransaction, User user, Card card, Wallet wallet);

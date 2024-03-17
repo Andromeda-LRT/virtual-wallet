@@ -29,11 +29,10 @@ public interface WalletService {
 
     List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter(WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id);
 
-    List<CardToWalletTransaction> getAllCardTransactions(User user, int card_id);
 
     List<CardToWalletTransaction> getAllCardTransactionsWithFilter(User user, CardTransactionModelFilterOptions transactionFilter);
 
-    List<CardToWalletTransaction> getUserCardTransactions(int cardId, User user, CardTransactionModelFilterOptions transactionFilter);
+    List<CardToWalletTransaction> getUserCardTransactions(int walletId, User user, CardTransactionModelFilterOptions transactionFilter);
 
     WalletToWalletTransaction getTransactionById(User user, int wallet_id, int transaction_id);
 
