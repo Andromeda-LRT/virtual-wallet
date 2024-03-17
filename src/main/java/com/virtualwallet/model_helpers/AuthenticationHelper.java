@@ -4,6 +4,7 @@ import com.virtualwallet.exceptions.AuthenticationFailureException;
 import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.models.User;
+import com.virtualwallet.utils.PasswordEncoderUtil;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,8 @@ public class AuthenticationHelper {
 
             User user = service.getByUsername(username);
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            boolean isPasswordMatch = encoder.matches(password, user.getPassword());
+            String encodedPassword = PasswordEncoderUtil.encodePassword(password);
+            boolean isPasswordMatch = encoder.matches(password, encodedPassword);
             if (!isPasswordMatch) {
                 throw new AuthenticationFailureException(WRONG_USERNAME_OR_PASSWORD);
             }
@@ -81,7 +83,8 @@ public class AuthenticationHelper {
         try {
             User user = service.getByUsername(username);
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            boolean isPasswordMatch = encoder.matches(password, user.getPassword());
+            String encodedPassword = PasswordEncoderUtil.encodePassword(password);
+            boolean isPasswordMatch = encoder.matches(encodedPassword, user.getPassword());
             if (!isPasswordMatch) {
                 throw new AuthenticationFailureException(WRONG_USERNAME_OR_PASSWORD);
             }
