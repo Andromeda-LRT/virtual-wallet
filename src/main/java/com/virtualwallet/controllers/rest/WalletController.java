@@ -168,27 +168,27 @@ public class WalletController {
     }
 
     @SecurityRequirement(name = AUTHORIZATION)
-    @GetMapping("/card_transactions/{card_id}")
+    @GetMapping("/card_transactions/{wallet_id}")
     public ResponseEntity<?> getUserCardsTransactionHistory(@RequestHeader HttpHeaders headers,
-                                                            @PathVariable int card_id,
-                                                            @RequestParam(required = false)
-                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                            LocalDateTime startDate,
-                                                            @RequestParam(required = false)
-                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                            LocalDateTime endDate,
-                                                            @RequestParam(required = false) String cardLastFourDigits,
-                                                            @RequestParam(required = false) String recipient,
-                                                            @RequestParam(required = false) String direction,
-                                                            @RequestParam(required = false) String sortBy,
-                                                            @RequestParam(required = false) String sortOrder) {
+                                                            @PathVariable int wallet_id,
+                                                         @RequestParam(required = false)
+                                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                         LocalDateTime startDate,
+                                                         @RequestParam(required = false)
+                                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                         LocalDateTime endDate,
+                                                         @RequestParam(required = false) String cardLastFourDigits,
+                                                         @RequestParam(required = false) String recipient,
+                                                         @RequestParam(required = false) String direction,
+                                                         @RequestParam(required = false) String sortBy,
+                                                         @RequestParam(required = false) String sortOrder) {
         try {
             CardTransactionModelFilterOptions transactionModelFilterOptions = new CardTransactionModelFilterOptions(
                     startDate, endDate, cardLastFourDigits, recipient, direction, sortBy, sortOrder);
 
             User user = authHelper.tryGetUser(headers);
             List<CardToWalletTransaction> cardToWalletTransactionList =
-                    walletService.getUserCardTransactions(card_id, user, transactionModelFilterOptions);
+                    walletService.getUserCardTransactions(wallet_id, user, transactionModelFilterOptions);
             return ResponseEntity.status(HttpStatus.OK).body(transactionResponseMapper.convertCardTransactionsToDto(cardToWalletTransactionList));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
