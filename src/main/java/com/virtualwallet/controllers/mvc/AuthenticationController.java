@@ -60,6 +60,7 @@ public class AuthenticationController {
         try {
             User user = authenticationHelper.verifyAuthentication(dto.getUsername(), dto.getPassword());
             session.setAttribute("currentUser", dto.getUsername());
+            session.setAttribute("userPicture", user.getProfilePicture());
             session.setAttribute("isAdmin", userService.verifyAdminAccess(user));
             return "redirect:/home";
         } catch (AuthenticationFailureException e) {
@@ -72,6 +73,8 @@ public class AuthenticationController {
     @GetMapping("/logout")
     public String handleLogout(HttpSession session) {
         session.removeAttribute("currentUser");
+        session.removeAttribute("fullUser");
+        session.removeAttribute("isAdmin");
         return "redirect:/home";
     }
 

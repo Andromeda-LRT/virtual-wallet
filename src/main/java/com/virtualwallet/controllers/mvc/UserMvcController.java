@@ -2,16 +2,12 @@ package com.virtualwallet.controllers.mvc;
 
 import com.virtualwallet.exceptions.*;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
-import com.virtualwallet.model_mappers.CardMapper;
 import com.virtualwallet.model_mappers.UpdateUserMapper;
 import com.virtualwallet.model_mappers.UserMapper;
 import com.virtualwallet.model_mappers.UserResponseMapper;
-import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
-import com.virtualwallet.models.input_model_dto.CardDto;
 import com.virtualwallet.models.input_model_dto.UpdateUserDto;
-import com.virtualwallet.models.input_model_dto.UpdateUserPasswordDto;
-import com.virtualwallet.models.input_model_dto.UserDto;
+import com.virtualwallet.models.mvc_input_model_dto.UpdateUserPasswordDto;
 import com.virtualwallet.models.response_model_dto.UserResponseDto;
 import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.UserService;
@@ -19,17 +15,14 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.List;
 
 @Controller
 @RequestMapping("/users")
