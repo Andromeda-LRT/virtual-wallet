@@ -291,7 +291,7 @@
                     <i class="bi bi-arrow-left"></i> Back To Wallet
                 </a>
             </div>
-            <h4 class="text-center flex-grow-1 m-0"><em>Wallet Transactions</em></h4>
+            <h4 class="text-center flex-grow-1 m-0"><em>Card Transfers</em></h4>
             <div class="flex-grow-1"></div>
         </div>
         <hr>
@@ -352,7 +352,7 @@
         <div class="col-12 mb-3 mb-lg-5">
             <div class="position-relative card table-nowrap table-card">
                 <div class="card-header d-flex justify-content-center align-items-center">
-                    <h5 class="mb-0">Transaction History</h5>
+                    <h5 class="mb-0">Transfer History</h5>
                 </div>
                 <div class="table-responsive">
                     <table class="table mb-0">
@@ -366,7 +366,7 @@
                         </tr>
                         </thead>
                         <tbody id="cardTransContainer">
-                        <tr th:if="${cardTransactions}" class="align-middle">
+                        <tr th:if="${cardTransactions.isEmpty()}" class="align-middle">
                             <td colspan="5" class="text-center">No card transfers yet.</td>
                         </tr>
                         <tr th:each="cardTrans : ${cardTransactions}" class="align-middle">

@@ -1,9 +1,6 @@
 package com.virtualwallet.services;
 
-import com.virtualwallet.exceptions.InsufficientFundsException;
-import com.virtualwallet.exceptions.LimitReachedException;
-import com.virtualwallet.exceptions.UnauthorizedOperationException;
-import com.virtualwallet.exceptions.UnusedWalletBalanceException;
+import com.virtualwallet.exceptions.*;
 import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
@@ -387,6 +384,11 @@ public class WalletServiceImpl implements WalletService {
 
     private boolean checkIfWalletNameExistsInUserList(String walletName, User user) {
         return user.getWallets().stream().anyMatch(wallet -> wallet.getName().equals(walletName));
+
+    private void checkIfWalletNameExistsInUserList(String walletName, User user) {
+        if(user.getWallets().stream().anyMatch(wallet -> wallet.getName().equals(walletName))){
+            throw new DuplicateEntityException("Wallet", "wallet name", walletName);
+        }
     }
     private void restrictUserPersonalWallets(User user, Wallet wallet) {
         if (user.getWallets().size() == 4 && wallet.getWalletTypeId() == 1) {

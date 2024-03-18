@@ -132,7 +132,6 @@
         }
 
 
-
         .btn-primary {
             background-color: #28a745;
             border-color: #28a745;
@@ -308,7 +307,7 @@
                     <i class="bi bi-arrow-left"></i> Back To Dashboard
                 </a>
             </div>
-            <h4 class="text-center flex-grow-1 m-0"><em>Card Transactions</em></h4>
+            <h4 class="text-center flex-grow-1 m-0"><em>Card Transfers</em></h4>
             <div class="flex-grow-1"></div>
         </div>
         <hr>
@@ -379,9 +378,14 @@
                             <th>Status</th>
                         </tr>
                         </thead>
-                        <tbody id="cardsContainer" th:each="cardTrans : ${cardTransfersList}">
-                        <tr class="align-middle">
-                            <td th:text="${#temporals.format(cardTrans.getTime(), 'dd MMM yyyy HH:mm')}">13 Sep, 2021 14:30</td>
+                        <tbody id="cardsContainer">
+                        <tr th:if="${cardTransfersList.isEmpty()}" class="align-middle">
+                            <td colspan="5" class="text-center">No card transfers yet.</td>
+                        </tr>
+                        <tr class="align-middle" th:each="cardTrans : ${cardTransfersList}">
+                            <td th:text="${#temporals.format(cardTrans.getTime(), 'dd MMM yyyy HH:mm')}">13 Sep, 2021
+                                14:30
+                            </td>
                             <td>
                                 <div class="d-flex align-items-center justify-content-center"
                                      th:switch="${cardTrans.getTransactionType()}">
