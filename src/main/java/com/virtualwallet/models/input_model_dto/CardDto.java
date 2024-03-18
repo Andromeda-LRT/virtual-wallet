@@ -22,7 +22,7 @@ public class CardDto {
             message = "Card holder name must contain only letters and single spaces between words. Consecutive spaces are not permitted.")
     private String cardHolder;
     @NotEmpty(message = "Check number can't be empty.")
-    @Size(min = 3, max = 3, message = "Check number must contain only digits.")
+    @Size(min = 3, max = 3, message = "Check number must be 3 digits.")
     private String checkNumber;
 
     @Min(value = 1, message = "Card type cannot be empty.")
