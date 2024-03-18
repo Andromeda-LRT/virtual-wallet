@@ -5,7 +5,7 @@ VALUES ('user'),
 INSERT INTO statuses(status_name)
 VALUES ('Confirmed'),
        ('Pending'),
-       ('Cancelled');
+       ('Declined');
 
 INSERT INTO users (username, password, first_name, last_name, email, role_id, is_blocked, is_archived, phone_number)
 VALUES ('john_doe', 'pass123', 'John', 'Doe', 'john.doe@example.com', 2, false, false, '0875566248'),
