@@ -75,6 +75,7 @@ public class AuthenticationController {
         session.removeAttribute("currentUser");
         session.removeAttribute("fullUser");
         session.removeAttribute("isAdmin");
+        session.removeAttribute("userPicture");
         return "redirect:/home";
     }
 
