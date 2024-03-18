@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Make Transfer</title>
+
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet">
+    <link rel="stylesheet" href="../static/assets/css/templatemo-chain-app-dev.css"
+          th:href="@{/assets/css/templatemo-chain-app-dev.css}">
+    <link rel="stylesheet" href="../static/assets/css/animated.css" th:href="@{/assets/css/animated.css}">
+    <link rel="stylesheet" href="../static/assets/css/owl.css" th:href="@{/assets/css/owl.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
+
+    <style>
+
+        .form-heading {
+            margin-bottom: 20px;
+            color: #4b8ef1;
+        }
+
+        /* Стилове за формата и нейните елементи */
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 15px 26px rgba(0, 0, 0, 0.5);
+        }
+
+        .select-large {
+            font-size: 1.05rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .select-large option {
+            padding: 0.25rem 0.5rem;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+
+        .btn + .btn {
+            margin-top: 10px;
+        }
+
+        .form-group {
+            margin-top: 6px;
+        }
+
+        .form-group.second {
+            margin-top: 10px;
+        }
+
+        .services {
+            padding-top: 30px;
+        }
+        .custom-select-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .custom-select-wrapper:after {
+            content: "\25BC";
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #333;
+        }
+
+        .custom-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 30px;
+        }
+
+
+        /* Back Button Custom Styling */
+        .back-button {
+            width: auto;
+            font-weight: bold; /* Makes the text bold */
+            display: inline-flex; /* Aligns the icon and text */
+            align-items: center; /* Centers items vertically */
+            justify-content: center; /* Centers items horizontally */
+            background-color: #007bff; /* Primary button color */
+            color: white; /* Text color */
+            border: none; /* Removes the border */
+            padding: 10px 20px; /* Padding inside the button */
+            border-radius: 5px; /* Rounded corners */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+            transition: background-color 0.2s, transform 0.2s; /* Smooth transition for hover effects */
+        }
+
+        .back-button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
+            text-decoration: none; /* Removes underline from icons or text if any */
+            color: white; /* Keeps text color white on hover */
+        }
+
+        .back-button i {
+            margin-right: 5px; /* Space between icon and text */
+        }
+
+    </style>
+</head>
+<body>
+<!--header-->
+<div th:replace="~{fragments/VirtualWalletFragments :: header}"></div>
+<!--header-->
+<br>
+
+<div class="the-clients">
+    <div class="container">
+        <div class="section-heading  justify-content-between align-items-start" style="margin-bottom: 0;">
+            <!-- Left Placeholder for alignment -->
+            <div class="flex-grow-1 d-flex justify-content-start">
+                <a th:href="@{/wallets/{walletId}(walletId=${walletId})}" class="btn btn-primary back-button">
+                    <i class="bi bi-arrow-left"></i> Return To Wallet
+                </a>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<div id="services" class="services section">
+    <div th:if="${cardList.isEmpty()}">
+        <div class="container" style="margin-top: 110px; margin-bottom: 0; padding-bottom: 0; text-align: center;">
+            <a href="#" th:href="@{/cards/addition}" class="btn btn-primary"
+               style="display: inline-block; width: auto; padding: 10px 20px; margin: 0 auto; font-size: 3.5vh;">
+                <i class="fa fa-plus"></i> Add Card to Account
+            </a>
+        </div>
+    </div>
+    <div th:unless="${cardList.isEmpty()}">
+        <div class="the-clients">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6 offset-md-3">
+                        <div class="form-container">
+                            <h2 class="form-heading text-center">Create Card Transfer</h2>
+                             <form id="cardTransferForm" action="#"
+                                  th:action="@{/wallets/__${walletId}__/transfer}"
+                                   onsubmit="return confirm('You are about to make a transfer to your wallet.' +
+                                            ' Please click confirm to continue');"
+                                  th:object="${cardDto}" method="post">
+                                <div class="form-group">
+                                    <label for="transferAmount">Transfer Amount</label>
+                                    <input type="number" class="form-control"
+                                           id="transferAmount"
+                                           th:field="*{amount}">
+                                    <label class="error" th:errors="*{amount}" style="color: red">
+                                        Amount error placeholder</label>
+                                </div>
+                                <div class="form-group second">
+                                    <label for="cardsList">Select a Card</label>
+                                    <div class="custom-select-wrapper">
+                                        <select th:field="*{cardId}"
+                                                class="form-control select-large custom-select"
+                                                id="cardsList" required>
+                                            <option th:each="card : ${cardList}"
+                                                    th:value="${card.getId()}"
+                                                    th:text="${card.getNumber()}">
+                                                Available Cards
+                                            </option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                 <button type="submit" class="btn btn-primary btn-block"
+                                         style="background-color: #4b8ef1;border-color: #4b8ef1; font-weight: bold;">
+                                     Transfer
+                                 </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
+<div th:replace="~{fragments/VirtualWalletFragments :: scripts}"></div>
+</body>
+</html>

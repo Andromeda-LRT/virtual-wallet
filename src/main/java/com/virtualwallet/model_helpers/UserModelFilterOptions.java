@@ -30,6 +30,9 @@ public class UserModelFilterOptions {
         this.phoneNumber = Optional.ofNullable(firstName);
     }
 
+    public UserModelFilterOptions() {
+    }
+
     public Optional<String> getSortBy() {
         return sortBy;
     }

@@ -22,6 +22,7 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
@@ -31,7 +32,7 @@ public class WalletServiceImpl implements WalletService {
 
     private final WalletRepository walletRepository;
     private final CardService cardService;
-    private final WebClient webClient;
+    private final WebClient dummyApiWebClient;
     private final UserService userService;
     private final CardMapper cardMapper;
     private final WalletTransactionService walletTransactionService;
@@ -40,14 +41,14 @@ public class WalletServiceImpl implements WalletService {
     @Autowired
     public WalletServiceImpl(WalletRepository walletRepository,
                              CardService cardService,
-                             WebClient webClient,
+                             WebClient dummyApiWebClient,
                              UserService userService,
                              CardMapper cardMapper,
                              WalletTransactionService walletTransactionService,
                              CardTransactionService cardTransactionService) {
         this.walletRepository = walletRepository;
         this.cardService = cardService;
-        this.webClient = webClient;
+        this.dummyApiWebClient = dummyApiWebClient;
         this.userService = userService;
         this.cardMapper = cardMapper;
         this.walletTransactionService = walletTransactionService;
@@ -62,12 +63,20 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public List<Wallet> getAllPersonalWallets(User user) {
-        return getAllWallets(user).stream().filter(wallet -> wallet.getWalletTypeId() == 1).toList();
+//       return getAllWallets(user).stream().filter(wallet -> wallet.getWalletTypeId() == 1).toList();
+        return userService.get(user.getId(), user).getWallets()
+                .stream()
+                .filter(wallet -> wallet.getWalletTypeId() == WALLET_TYPE_ID_1)
+                .toList();
     }
 
     @Override
     public List<Wallet> getAllJoinWallets(User user) {
-        return getAllWallets(user).stream().filter(wallet -> wallet.getWalletTypeId() == 2).toList();
+//        return getAllWallets(user).stream().filter(wallet -> wallet.getWalletTypeId() == 2).toList();
+        return userService.get(user.getId(), user).getWallets()
+                .stream()
+                .filter(wallet -> wallet.getWalletTypeId() == WALLET_TYPE_ID_2)
+                .toList();
     }
 
 
@@ -78,12 +87,10 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public Wallet getWalletById(User user, int wallet_id) {
-        Wallet wallet = walletRepository.getById(wallet_id);
-        checkWalletOwnership(user, wallet);
+        //verifyIfUserIsPartOfWallet(user, wallet_id);
+        checkWalletOwnership(user, wallet_id);
 
-        // todo check if user is part of this wallet - RENI
-        //  checkUserPartOfWallet(user_id, wallet_id);
-        return wallet;
+        return walletRepository.getById(wallet_id);
     }
 
     @Override
@@ -125,7 +132,7 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public List<WalletToWalletTransaction> getUserWalletTransactions(WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id) {
-        Wallet wallet = verifyWallet(wallet_id, user);
+        checkWalletOwnership(user, wallet_id);
         return walletTransactionService.getUserWalletTransactions(user, transactionFilter, wallet_id);
     }
 
@@ -149,7 +156,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public WalletToWalletTransaction getTransactionById(User user, int wallet_id, int transaction_id) {
         // todo currently the method should be able to fetch the transaction by just having its id
-        verifyWallet(wallet_id, user);
+        checkWalletOwnership(user, wallet_id);
         return walletTransactionService.getWalletTransactionById(transaction_id);
     }
 
@@ -157,7 +164,7 @@ public class WalletServiceImpl implements WalletService {
     public void walletToWalletTransaction(User user, int senderWalletId, WalletToWalletTransaction transaction) {
         userService.isUserBlocked(user);
 
-        Wallet senderWallet = verifyWallet(senderWalletId, user);
+        Wallet senderWallet = getWalletById(user, senderWalletId);
         Wallet recipientWallet = walletRepository.getById(transaction.getRecipientWalletId());
         // if wallet balance is less than transaction amount, throw exception
         checkWalletBalance(senderWallet, transaction.getAmount());
@@ -233,33 +240,6 @@ public class WalletServiceImpl implements WalletService {
         return walletRepository.getByStringField(id, s);
     }
 
-    private void checkWalletOwnership(User user, Wallet wallet) {
-        if (!walletRepository.checkWalletOwnership(user.getId(), wallet.getWalletId()) && !userService.verifyAdminAccess(user)) {
-            throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);
-        }
-    }
-
-    private Wallet checkWalletExistence(int wallet_id) {
-        return walletRepository.getById(wallet_id);
-    }
-
-    private WebClient.ResponseSpec populateResponseSpec(WebClient.RequestHeadersSpec<?> headersSpec) {
-        return headersSpec.header(
-                        HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
-                .accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)
-                .acceptCharset(StandardCharsets.UTF_8)
-                .ifNoneMatch("*")
-                .ifModifiedSince(ZonedDateTime.now())
-                .retrieve();
-    }
-
-    private Wallet verifyWallet(int wallet_id, User user) {
-        Wallet wallet;
-        wallet = checkWalletExistence(wallet_id);
-        checkWalletOwnership(user, wallet);
-        return wallet;
-    }
-
     @Override
     public Wallet checkIbanExistence(String ibanTo) {
         return walletRepository.getByStringField("iban", ibanTo);
@@ -295,8 +275,13 @@ public class WalletServiceImpl implements WalletService {
         if (wallet.getWalletTypeId() == 1 || wallet.getCreatedBy() != user.getId()) {
             throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
         }
-        if (walletRepository.getWalletUsers(wallet_id).size() >= 5) {
+        List<User> walletUsers = walletRepository.getWalletUsers(wallet_id);
+        if (walletUsers.size() >= 5) {
             throw new LimitReachedException(ACCOUNTS_LIMIT_REACHED);
+        }
+        if (walletUsers.stream()
+                .anyMatch(addedUser -> addedUser.getId() == user_id)) {
+            throw new DuplicateEntityException("User", "id", String.valueOf(user_id));
         }
         UserWallets userWallets = new UserWallets(userService.verifyUserExistence(user_id), wallet);
         walletRepository.addUserToWallet(userWallets);
@@ -315,16 +300,83 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public List<User> getWalletUsers(User user, int wallet_id) {
-        getWalletById(user, wallet_id);
-        if (walletRepository.getWalletUsers(wallet_id)
-                .stream().anyMatch(user1 -> user1.getId() == user.getId())) {
-            return walletRepository.getWalletUsers(wallet_id);
+//        Wallet wallet = getWalletById(user, wallet_id);
+//        if (walletRepository.getWalletUsers(wallet_id)
+//                .stream().anyMatch(user1 -> user1.getId() == user.getId())) {
+//            return walletRepository.getWalletUsers(wallet_id);
+//        }
+        List<User> walletUsers = walletRepository.getWalletUsers(wallet_id);
+        if (!walletUsers.contains(user)) {
+            throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
         }
-        throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
+        return walletUsers;
+    }
+//        //todo remove and use checkWalletOwnership instead
+//    @Override
+//    public boolean verifyIfUserIsPartOfWallet(User user, int wallet_id) {
+//        if (walletRepository.getWalletUsers(wallet_id)
+//                .stream().noneMatch(user1 -> user1.getId() == user.getId())) {
+//            throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
+//        }
+//        return true;
+//    }
+
+    @Override
+    public boolean verifyIfUserIsWalletOwner(User user, Wallet wallet) {
+        return wallet.getCreatedBy() == user.getId();
+    }
+
+    /**
+     * @param wallet
+     * @param user
+     * @return returns a Boolean depending on whether the
+     * current Wallet obj is created by provided User
+     * @throws com.virtualwallet.exceptions.UnauthorizedOperationException if User is not owner of wallet
+     */
+
+    @Override
+    public boolean verifyIfUserIsWalletOwner(Wallet wallet, User user) {
+        if (wallet.getCreatedBy() != user.getId()) {
+            throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);
+        }
+        return true;
+    }
+
+    @Override
+    public void checkWalletOwnership(User user, int wallet_id) {
+        if (!walletRepository.checkWalletOwnership(user.getId(), wallet_id)) {
+            throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);
+        }
+    }
+
+    private Wallet checkWalletExistence(int wallet_id) {
+        return walletRepository.getById(wallet_id);
+    }
+
+    private WebClient.ResponseSpec populateResponseSpec(WebClient.RequestHeadersSpec<?> headersSpec) {
+        return headersSpec.header(
+                        HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                .accept(MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML)
+                .acceptCharset(StandardCharsets.UTF_8)
+                .ifNoneMatch("*")
+                .ifModifiedSince(ZonedDateTime.now())
+                .retrieve();
+    }
+
+    private Wallet verifyWallet(int wallet_id, User user) {
+        Wallet wallet;
+        wallet = checkWalletExistence(wallet_id);
+        verifyIfUserIsWalletOwner(wallet, user);
+        return wallet;
+    }
+
+    private void verifyCard(int cardId, User user) {
+//        cardService.verifyCardExistence(cardId);
+        cardService.authorizeCardAccess(cardId, user);
     }
 
     private String sendTransferRequest(Card card) {
-        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = webClient.method(HttpMethod.POST);
+        WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = dummyApiWebClient.method(HttpMethod.POST);
         WebClient.RequestBodySpec bodySpec = uriSpec.uri(URI.create(DUMMY_API_COMPLETE_URL));
         CardForAddingMoneyToWalletDto cardDto = cardMapper.toDummyApiDto(card);
         WebClient.RequestHeadersSpec<?> headersSpec = bodySpec.bodyValue(cardDto);
@@ -332,13 +384,13 @@ public class WalletServiceImpl implements WalletService {
         Mono<String> response = headersSpec.retrieve().bodyToMono(String.class);
         return response.block();
     }
-    
-    private void checkIfWalletNameExistsInUserList(String walletName, User user) {
-        if(user.getWallets().stream().anyMatch(wallet -> wallet.getName().equals(walletName))){
+
+    private void checkIfWalletNameExistsInUserList (String walletName, User user){
+        if (user.getWallets().stream().anyMatch(wallet -> wallet.getName().equals(walletName))) {
             throw new DuplicateEntityException("Wallet", "wallet name", walletName);
         }
     }
-    private void restrictUserPersonalWallets(User user, Wallet wallet) {
+    private void restrictUserPersonalWallets (User user, Wallet wallet){
         if (user.getWallets().size() == 4 && wallet.getWalletTypeId() == 1) {
             throw new LimitReachedException(ACCOUNTS_LIMIT_REACHED);
         }
