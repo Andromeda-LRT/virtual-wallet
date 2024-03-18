@@ -381,16 +381,12 @@ public class WalletServiceImpl implements WalletService {
         return response.block();
     }
 
-
-    private boolean checkIfWalletNameExistsInUserList(String walletName, User user) {
-        return user.getWallets().stream().anyMatch(wallet -> wallet.getName().equals(walletName));
-
-    private void checkIfWalletNameExistsInUserList(String walletName, User user) {
-        if(user.getWallets().stream().anyMatch(wallet -> wallet.getName().equals(walletName))){
+    private void checkIfWalletNameExistsInUserList (String walletName, User user){
+        if (user.getWallets().stream().anyMatch(wallet -> wallet.getName().equals(walletName))) {
             throw new DuplicateEntityException("Wallet", "wallet name", walletName);
         }
     }
-    private void restrictUserPersonalWallets(User user, Wallet wallet) {
+    private void restrictUserPersonalWallets (User user, Wallet wallet){
         if (user.getWallets().size() == 4 && wallet.getWalletTypeId() == 1) {
             throw new LimitReachedException(ACCOUNTS_LIMIT_REACHED);
         }
