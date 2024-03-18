@@ -25,7 +25,6 @@ public class CheckNumberServiceImpl implements CheckNumberService {
 
     @Override
     public CheckNumber createCheckNumber(String checkNumber) {
-//        checkIfAdmin(user);
         try{
             return checkNumberRepository.getByNumber(checkNumber);
         } catch (EntityNotFoundException e) {
