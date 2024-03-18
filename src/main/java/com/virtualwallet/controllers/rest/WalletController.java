@@ -1,9 +1,6 @@
 package com.virtualwallet.controllers.rest;
 
-import com.virtualwallet.exceptions.EntityNotFoundException;
-import com.virtualwallet.exceptions.InsufficientFundsException;
-import com.virtualwallet.exceptions.LimitReachedException;
-import com.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.virtualwallet.exceptions.*;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
@@ -368,7 +365,7 @@ public class WalletController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (LimitReachedException e) {
+        } catch (LimitReachedException | DuplicateEntityException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
