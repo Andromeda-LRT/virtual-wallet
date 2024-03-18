@@ -94,12 +94,13 @@
     </g>
 </svg>
 <div class="message-box">
-    <h1>400</h1>
-    <p>Bad Request</p>
+    <h1>405</h1>
+    <p>Not Acceptable</p>
+    <p th:text="${error}"></p>
     <div class="buttons-con">
         <div class="action-link-wrap">
             <a onclick="history.back(-1)" class="link-button link-back-button">Go Back</a>
-            <a href="@{/home}" class="link-button">Go to Home Page</a>
+            <a th:href="@{/home}" class="link-button">Go to Home Page</a>
         </div>
     </div>
 </div>

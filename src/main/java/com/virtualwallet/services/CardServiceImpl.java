@@ -76,7 +76,6 @@ public Card createCard(User createdBy, Card card) {
         Card card = cardRepository.getById(card_id);
         user.getCards().remove(card);
         card.setArchived(true);
-        userService.update(user, user);
         cardRepository.update(card);
     }
 
@@ -93,7 +92,11 @@ public Card createCard(User createdBy, Card card) {
     public Card getCard(int card_id, User loggedUser, int userId) {
         authorizeCardAccess(card_id, loggedUser);
         User user = userService.get(userId, loggedUser);
-        return cardRepository.getUserCard(user, card_id);
+        Card card = cardRepository.getUserCard(user, card_id);
+        if (card.isArchived()){
+            throw new EntityNotFoundException(NOT_FOUND_CARD_ERROR_MESSAGE);
+        }
+        return card;
     }
 
     @Override

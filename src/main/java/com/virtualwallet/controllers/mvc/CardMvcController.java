@@ -12,11 +12,11 @@ import com.virtualwallet.models.User;
 import com.virtualwallet.models.input_model_dto.CardDto;
 import com.virtualwallet.models.response_model_dto.CardResponseDto;
 import com.virtualwallet.services.contracts.CardService;
-import com.virtualwallet.services.contracts.UserService;
+import com.virtualwallet.utils.AESUtil;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -131,7 +131,10 @@ public class CardMvcController {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             Card card = cardService.getCard(cardId, loggedUser, loggedUser.getId());
-            model.addAttribute("card", card);
+            CardDto cardDto = cardMapper.toDto(card);
+            cardDto.setNumber(AESUtil.decrypt(cardDto.getNumber()));
+            model.addAttribute("card", cardDto);
+            model.addAttribute("cardFull", card);
             return "CardDetailsView";
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
@@ -143,16 +146,17 @@ public class CardMvcController {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "UnauthorizedView";
+        } catch (Exception e) {
+            return "BadRequestView";
         }
     }
 
     @PostMapping("/{cardId}")
-    public String updateCard(@PathVariable int id,
-                                        @PathVariable int cardId,
-                                        @ModelAttribute("card") CardDto cardDto,
-                                        BindingResult bindingResult,
-                                        Model model,
-                                        HttpSession session) {
+    public String updateCard(@PathVariable int cardId,
+                             @Valid @ModelAttribute("card") CardDto cardDto,
+                             BindingResult bindingResult,
+                             Model model,
+                             HttpSession session) {
         User loggedUser;
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
@@ -165,9 +169,13 @@ public class CardMvcController {
         }
 
         if (bindingResult.hasErrors()) {
+            Card card = cardService.getCard(cardId, loggedUser, loggedUser.getId());
+            model.addAttribute("card", cardDto);
+            model.addAttribute("cardFull", card);
             return "CardDetailsView";
         }
         try {
+            cardDto.setNumber(AESUtil.encrypt(cardDto.getNumber()));
             Card card = cardMapper.fromDto(cardDto, cardId, loggedUser);
             cardService.updateCard(card, loggedUser);
             return "redirect:/cards/" + cardId;
@@ -183,6 +191,8 @@ public class CardMvcController {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "UnauthorizedView";
+        }catch (Exception e) {
+            return "BadRequestView";
         }
     }
 
@@ -190,8 +200,10 @@ public class CardMvcController {
     public String deleteCard(@PathVariable int cardId, Model model, HttpSession session) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
+            Card card = cardService.getCard(cardId, loggedUser, loggedUser.getId());
+            model.addAttribute("cardFull", card);
             cardService.deleteCard(cardId, loggedUser);
-            return "/cards" + cardId;
+            return "redirect:/home";
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         } catch (EntityNotFoundException e) {

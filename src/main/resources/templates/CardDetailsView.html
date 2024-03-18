@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap"
+          rel="stylesheet">
+
+    <title>Card Page</title>
+
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/assets/css/templatemo-chain-app-dev.css">
+    <link rel="stylesheet" href="../static/assets/css/animated.css">
+    <link rel="stylesheet" href="../static/assets/css/owl.css">
+
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet">
+
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+          integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="../static/assets/css/templatemo-chain-app-dev.css"
+          th:href="@{/assets/css/templatemo-chain-app-dev.css}">
+    <link rel="stylesheet" href="../static/assets/css/animated.css" th:href="@{/assets/css/animated.css}">
+    <link rel="stylesheet" href="../static/assets/css/owl.css" th:href="@{/assets/css/owl.css}">
+
+    <style>
+        .container {
+            padding: 10px; /* Adds padding around the container */
+        }
+
+        .card-container {
+            width: auto; /* Or specify a width */
+            max-width: 800px; /* Match this with your card's max-width */
+            margin: 0 auto; /* Center align */
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px 40px; /* Adjust padding to make the form shorter and wider */
+            width: auto; /* Adjust width as needed, or use auto to fit content */
+            max-width: 800px; /* Maximum width */
+            box-shadow: 0 0 10px #ccc;
+            background-image: linear-gradient(to right, #2d69eb, #a1ede9); /* Dark blue to light blue gradient */
+            margin: 20px auto;
+            color: white; /* Adjust text color for better readability on dark background */
+        }
+
+        .form-control {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            width: calc(100% - 22px); /* Adjust width to fit inside .card padding */
+        }
+
+        .update-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+
+        .padded-container {
+            padding: 140px;
+        }
+    </style>
+
+</head>
+<body>
+<div th:replace="~{fragments/VirtualWalletFragments :: header}"></div>
+
+<div class="container padded-container">
+    <h2 class="mb-4 text-center" style="color: #13547a;">Card Details</h2>
+
+    <div class="container">
+        <div class="card-container">
+            <!--            <div class="card">-->
+            <form id="cardForm" th:action="@{/cards/{cardId}(cardId=${cardFull.id})}" th:object="${card}" method="post">
+                <!--                <div class="card-container">-->
+                <div class="card">
+                    <div>
+                        <label for="number">Card Number:</label>
+                        <input type="text" id="number" name="number" th:field="*{number}" class="form-control">
+                        <div class="error" th:errors="*{number}"></div>
+                    </div>
+                    <div>
+                        <label for="expirationMonth">Expiration Month:</label>
+                        <input type="text" id="expirationMonth" name="expirationDate" th:field="*{expirationMonth}"
+                               class="form-control">
+                        <div class="error" th:errors="*{expirationMonth}"></div>
+
+                    </div>
+                    <div>
+                        <label for="expirationYear">Expiration Year:</label>
+                        <input type="text" id="expirationYear" name="expirationDate" th:field="*{expirationYear}"
+                               class="form-control">
+                        <div class="error" th:errors="*{expirationYear}"></div>
+
+                    </div>
+                    <div>
+                        <label for="cvv">CVV:</label>
+                        <input type="text" id="cvv" name="cvv" th:field="*{checkNumber}" class="form-control">
+                        <div class="error" th:errors="*{checkNumber}"></div>
+
+                    </div>
+                    <div>
+                        <label for="cardType">Card Type:</label>
+                        <select id="cardType" name="cardType" th:field="*{cardType}" class="form-control">
+                            <option th:value="1" th:selected="${card.cardType == 1}">CREDIT</option>
+                            <option th:value="2" th:selected="${card.cardType == 2}">DEBIT</option>
+                            <div class="error" th:errors="*{cardType}"></div>
+
+                        </select>
+                    </div>
+                    <div>
+                        <label for="cardHolder">Card Holder:</label>
+                        <input type="text" id="cardHolder" name="cardHolder" th:field="*{cardHolder}"
+                               class="form-control"
+                               readonly>
+                    </div>
+                </div>
+                <!-- Update button -->
+                <button type="submit" form="cardForm" class="update-btn">Update</button>
+            </form>
+                <!-- Delete button, now with update-btn class for consistent styling -->
+                <form th:action="@{/cards/{cardId}/deletion(cardId=${cardFull.id})}" method="get"
+                      onsubmit="return confirm('Are you sure you want to delete your card?');">
+                    <button type="submit" class="update-btn" style="background-color: #dc3545;margin-top: 20px;">Delete</button>
+                </form>
+
+<!--            </form>-->
+
+<!--            <form th:action="@{/cards/{cardId}/deletion(cardId=${cardFull.id})}" method="get"-->
+<!--                  onsubmit="return confirm('Are you sure you want to delete your card?');">-->
+<!--                <button type="submit" class="btn" style="background-color: #dc3545; color: white;">Delete</button>-->
+<!--            </form>-->
+
+        </div>
+
+        <!--        </div>-->
+    </div>
+</div>
+
+
+<div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
+
+<!-- Scripts -->
+<div th:replace="~{fragments/VirtualWalletFragments :: scripts}"></div>
+
+</body>
+</html>
