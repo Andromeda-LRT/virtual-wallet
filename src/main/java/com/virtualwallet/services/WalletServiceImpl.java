@@ -164,7 +164,6 @@ public class WalletServiceImpl implements WalletService {
     public void walletToWalletTransaction(User user, int senderWalletId, WalletToWalletTransaction transaction) {
         userService.isUserBlocked(user);
 
-        Wallet senderWallet = verifyWallet(senderWalletId, user);
         Wallet senderWallet = getWalletById(user, senderWalletId);
         Wallet recipientWallet = walletRepository.getById(transaction.getRecipientWalletId());
         // if wallet balance is less than transaction amount, throw exception
@@ -276,8 +275,13 @@ public class WalletServiceImpl implements WalletService {
         if (wallet.getWalletTypeId() == 1 || wallet.getCreatedBy() != user.getId()) {
             throw new UnauthorizedOperationException(PERMISSIONS_ERROR_GENERAL);
         }
-        if (walletRepository.getWalletUsers(wallet_id).size() >= 5) {
+        List<User> walletUsers = walletRepository.getWalletUsers(wallet_id);
+        if (walletUsers.size() >= 5) {
             throw new LimitReachedException(ACCOUNTS_LIMIT_REACHED);
+        }
+        if (walletUsers.stream()
+                .anyMatch(addedUser -> addedUser.getId() == user_id)) {
+            throw new DuplicateEntityException("User", "id", String.valueOf(user_id));
         }
         UserWallets userWallets = new UserWallets(userService.verifyUserExistence(user_id), wallet);
         walletRepository.addUserToWallet(userWallets);
@@ -367,7 +371,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     private void verifyCard(int cardId, User user) {
-        cardService.verifyCardExistence(cardId);
+//        cardService.verifyCardExistence(cardId);
         cardService.authorizeCardAccess(cardId, user);
     }
 
