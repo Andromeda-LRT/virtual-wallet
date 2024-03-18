@@ -17,7 +17,7 @@ CREATE TABLE users
     user_id         int auto_increment
         primary key,
     username        varchar(50)          not null,
-    password        varchar(65)          not null,
+    password        varchar(70)          not null,
     first_name      varchar(50)          not null,
     last_name       varchar(50)          not null,
     email           varchar(50)          not null,
@@ -84,7 +84,7 @@ CREATE TABLE cards
 (
     card_id               int auto_increment
         primary key,
-    number                varchar(50)          not null,
+    number                varchar(100)          not null,
     expiration_date       datetime             not null,
     card_type_id          int                  not null,
     card_holder_full_name varchar(50)          not null,
