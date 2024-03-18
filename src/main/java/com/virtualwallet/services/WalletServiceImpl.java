@@ -137,18 +137,6 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public List<WalletToWalletTransaction> getAllWalletTransactionsWithFilter
-            (WalletTransactionModelFilterOptions transactionFilter, User user, int wallet_id) {
-        verifyWallet(wallet_id, user);
-        return walletTransactionService.getAllWalletTransactionsWithFilter(user, transactionFilter);
-    }
-
-    @Override
-    public List<CardToWalletTransaction> getAllCardTransactionsWithFilter(User user, CardTransactionModelFilterOptions transactionFilter) {
-        return new ArrayList<>(cardTransactionService.getAllCardTransactionsWithFilter(user, transactionFilter));
-    }
-
-    @Override
     public List<CardToWalletTransaction> getUserCardTransactions(int walletId, User user, CardTransactionModelFilterOptions transactionFilter) {
         return new ArrayList<>(cardTransactionService.getUserCardTransactions(walletId, user, transactionFilter));
     }
@@ -370,10 +358,6 @@ public class WalletServiceImpl implements WalletService {
         return wallet;
     }
 
-    private void verifyCard(int cardId, User user) {
-//        cardService.verifyCardExistence(cardId);
-        cardService.authorizeCardAccess(cardId, user);
-    }
 
     private String sendTransferRequest(Card card) {
         WebClient.UriSpec<WebClient.RequestBodySpec> uriSpec = dummyApiWebClient.method(HttpMethod.POST);
