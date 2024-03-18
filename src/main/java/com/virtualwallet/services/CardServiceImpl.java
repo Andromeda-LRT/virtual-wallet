@@ -51,8 +51,8 @@ public Card createCard(User createdBy, Card card) {
         card.setNumber(encryptCardNumber(card.getNumber()));
         card.setCardHolderId(createdBy);
         cardRepository.create(card);
-        card.setNumber(decryptCardNumber(card.getNumber()));
         addCardToUser(createdBy, card);
+        card.setNumber(decryptCardNumber(card.getNumber()));
         return card;
     }
 
@@ -112,7 +112,7 @@ public Card createCard(User createdBy, Card card) {
     public void authorizeCardAccess(int card_id, User user) {
         StringBuilder cardHolderFullName = new StringBuilder();
         cardHolderFullName.append(user.getFirstName()).append(" ").append(user.getLastName());
-        //TODO WHY this do not work - LYUBIMA
+
         if (!cardRepository.getById(card_id).getCardHolder().equals(cardHolderFullName.toString())
                 && !user.getRole().getName().equals("admin")) {
             throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);

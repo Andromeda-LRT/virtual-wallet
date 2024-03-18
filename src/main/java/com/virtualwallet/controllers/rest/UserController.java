@@ -141,8 +141,6 @@ public class UserController {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             Card cardToBeCreated = cardMapper.fromDto(cardDto, loggedUser);
-            // TODO Think about the card holder - Logged user or the one from the dto - LYUBIMA
-//            cardService.createCard(loggedUser, cardToBeCreated, cardDto.getCardHolder());
             cardService.createCard(loggedUser, cardToBeCreated);
             return ResponseEntity.status(HttpStatus.CREATED).body(cardToBeCreated);
         } catch (UnauthorizedOperationException e) {

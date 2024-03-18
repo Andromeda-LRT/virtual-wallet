@@ -83,8 +83,7 @@ public class AuthenticationHelper {
         try {
             User user = service.getByUsername(username);
             BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-            String encodedPassword = PasswordEncoderUtil.encodePassword(password);
-            boolean isPasswordMatch = encoder.matches(encodedPassword, user.getPassword());
+            boolean isPasswordMatch = encoder.matches(password, user.getPassword());
             if (!isPasswordMatch) {
                 throw new AuthenticationFailureException(WRONG_USERNAME_OR_PASSWORD);
             }
