@@ -4,7 +4,7 @@ import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.mvc_input_model_dto.RegisterDto;
 import com.virtualwallet.models.input_model_dto.UserDto;
-import com.virtualwallet.models.mvc_input_model_dto.WalletUserDto;
+import com.virtualwallet.models.response_model_dto.WalletUserDto;
 import com.virtualwallet.models.response_model_dto.RecipientResponseDto;
 import com.virtualwallet.models.response_model_dto.WalletIbanResponseDto;
 import com.virtualwallet.services.contracts.RoleService;
@@ -62,24 +62,15 @@ public class UserMapper {
     }
 
     private void toDtoObj(User user, UserDto userDto) {
-        user.setUsername(userDto.getUsername());
-        user.setPassword(userDto.getPassword());
-        user.setFirstName(userDto.getFirstName());
-        user.setLastName(userDto.getLastName());
-        user.setPhoneNumber(userDto.getPhoneNumber());
-        user.setEmail(userDto.getEmail());
-        user.setRole(roleService.getRole(USER_ROLE_ID));
+        PopulateUserObj(user, userDto.getUsername(), userDto.getPassword(),
+                userDto.getFirstName(), userDto.getLastName(),
+                userDto.getPhoneNumber(), userDto.getEmail());
     }
 
     private void toDtoObj(User user, RegisterDto registerDto) {
-        user.setUsername(registerDto.getUsername());
-        user.setPassword(registerDto.getPassword());
-        user.setFirstName(registerDto.getFirstName());
-        user.setLastName(registerDto.getLastName());
-        user.setPhoneNumber(registerDto.getPhoneNumber());
-        user.setEmail(registerDto.getEmail());
-        user.setRole(roleService.getRole(USER_ROLE_ID));
-        user.setProfilePicture(DEFAULT_PROFILE_IMAGE);
+        PopulateUserObj(user, registerDto.getUsername(), registerDto.getPassword(),
+                registerDto.getFirstName(), registerDto.getLastName(),
+                registerDto.getPhoneNumber(), registerDto.getEmail());
     }
 
     public List<UserDto> toDto(List<User> users) {
@@ -97,6 +88,7 @@ public class UserMapper {
             List<WalletIbanResponseDto> walletIbanList = new ArrayList<>();
             recipient.setWalletIban(walletIbanList);
             recipient.setUsername(user.getUsername());
+            recipient.setProfilePicture(user.getProfilePicture());
             if (user.getWallets().isEmpty()){
                 continue;
             }
@@ -113,9 +105,22 @@ public class UserMapper {
     public List<WalletUserDto> toWalletUserDto(List<User> users) {
         List<WalletUserDto> walletUserList = new ArrayList<>();
         for (User user : users) {
-            WalletUserDto walletUser = new WalletUserDto(user.getUsername());
+            WalletUserDto walletUser = new WalletUserDto(
+                    user.getUsername(), user.getProfilePicture());
             walletUserList.add(walletUser);
         }
         return walletUserList;
+    }
+
+    private void PopulateUserObj(User user, String username,
+                                 String password, String firstName,
+                                 String lastName, String phoneNumber, String email) {
+        user.setUsername(username);
+        user.setPassword(password);
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setPhoneNumber(phoneNumber);
+        user.setEmail(email);
+        user.setRole(roleService.getRole(USER_ROLE_ID));
     }
 }
