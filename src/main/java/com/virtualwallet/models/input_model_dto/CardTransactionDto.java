@@ -1,10 +1,13 @@
 package com.virtualwallet.models.input_model_dto;
 
-import jakarta.validation.constraints.NotEmpty;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import org.checkerframework.checker.index.qual.Positive;
+import org.springframework.beans.factory.annotation.Value;
 
 public class CardTransactionDto {
-    @NotEmpty(message = "Transaction amount can't be empty.")
+    @Min(value = 5, message = "Amount must be at least 5.0 in order to make a transaction.")
     @Positive()
     private double amount;
 
