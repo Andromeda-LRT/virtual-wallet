@@ -5,17 +5,13 @@ import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
-import com.virtualwallet.model_mappers.TransactionMapper;
-import com.virtualwallet.model_mappers.TransactionResponseMapper;
-import com.virtualwallet.model_mappers.UserMapper;
-import com.virtualwallet.model_mappers.WalletMapper;
+import com.virtualwallet.model_mappers.*;
 import com.virtualwallet.models.*;
-import com.virtualwallet.models.input_model_dto.CardTransactionDto;
 import com.virtualwallet.models.input_model_dto.TransactionDto;
+import com.virtualwallet.models.mvc_input_model_dto.CardMvcTransactionDto;
 import com.virtualwallet.models.mvc_input_model_dto.TransactionModelFilterDto;
 import com.virtualwallet.models.mvc_input_model_dto.UserModelFilterDto;
-import com.virtualwallet.models.response_model_dto.RecipientResponseDto;
-import com.virtualwallet.models.response_model_dto.TransactionResponseDto;
+import com.virtualwallet.models.response_model_dto.*;
 import com.virtualwallet.models.input_model_dto.WalletDto;
 import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.UserService;
@@ -34,7 +30,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.virtualwallet.model_helpers.ModelConstantHelper.DUPLICATE_WALLETUSER_ERROR_MESSAGE;
 import static com.virtualwallet.model_helpers.ModelConstantHelper.UNAUTHORIZED_OPERATION_ERROR_MESSAGE;
+import static java.lang.String.format;
 
 @Controller
 @RequestMapping("/wallets")
@@ -46,6 +44,7 @@ public class WalletMvcController {
     private final CardService cardService;
     private final WalletTypeService walletTypeService;
     private final WalletMapper walletMapper;
+    private final CardResponseMapper cardMapper;
     private final TransactionResponseMapper transactionResponseMapper;
     private final TransactionMapper transactionMapper;
 
@@ -54,7 +53,7 @@ public class WalletMvcController {
                                UserService userService,
                                UserMapper userMapper,
                                CardService cardService, WalletTypeService walletTypeService,
-                               WalletMapper walletMapper,
+                               WalletMapper walletMapper, CardResponseMapper cardMapper,
                                TransactionResponseMapper transactionResponseMapper,
                                TransactionMapper transactionMapper) {
         this.authHelper = authHelper;
@@ -64,6 +63,7 @@ public class WalletMvcController {
         this.cardService = cardService;
         this.walletTypeService = walletTypeService;
         this.walletMapper = walletMapper;
+        this.cardMapper = cardMapper;
         this.transactionResponseMapper = transactionResponseMapper;
         this.transactionMapper = transactionMapper;
     }
@@ -108,9 +108,12 @@ public class WalletMvcController {
         }
         try {
             Wallet wallet = walletService.getWalletById(user, id);
-
+            List<User> walletUsers = walletService.getWalletUsers(user, id);
+            WalletResponseDto outputWallet = walletMapper.toDto(wallet, walletUsers);
             model.addAttribute("walletId", id);
-            model.addAttribute("wallet", wallet);
+            model.addAttribute("wallet", outputWallet);
+            model.addAttribute("isWalletAdmin", walletService.verifyIfUserIsWalletOwner(user, wallet));
+            model.addAttribute("walletAdminId", walletUsers.get(0).getId());
             return "WalletView";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
@@ -163,11 +166,11 @@ public class WalletMvcController {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "UnauthorizedView";
-        }   catch (LimitReachedException e){
+        } catch (LimitReachedException e) {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "BadRequestView";
-        } catch (DuplicateEntityException e){
+        } catch (DuplicateEntityException e) {
             model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             model.addAttribute("walletTypes", walletTypeService.getAllWalletTypes());
@@ -245,6 +248,7 @@ public class WalletMvcController {
             return "UnauthorizedView";
         }
     }
+
     @GetMapping("/{wallet_id}/transactions")
     public String showWalletTransactionPage(@PathVariable int wallet_id,
                                             Model model,
@@ -307,7 +311,7 @@ public class WalletMvcController {
             model.addAttribute("walletId", wallet_id);
             model.addAttribute("cardTransactions", outputTransactions);
             model.addAttribute("cardFilterOptions", transactionFilterDto);
-            return "CardTransactionsview";
+            return "CardTransactionsView";
         } catch (UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -323,7 +327,7 @@ public class WalletMvcController {
     @GetMapping("/{wallet_id}/transactions/new")
     public String showCreateTransactionPage(Model model,
                                             @PathVariable int wallet_id,
-                                            @ModelAttribute("transactionFilter")
+                                            @ModelAttribute("recipientFilter")
                                             UserModelFilterDto userFilterDto,
                                             HttpSession session) {
         User user;
@@ -334,17 +338,16 @@ public class WalletMvcController {
         }
 
         try {
-           userService.isUserBlocked(user);
-
+            userService.isUserBlocked(user);
             UserModelFilterOptions userFilter = populateUserFilterOptions(userFilterDto);
             List<User> userList = walletService.getRecipient(userFilter);
             List<RecipientResponseDto> recipientList = userMapper.toRecipientDto(userList);
             walletService.getWalletById(user, wallet_id);
-            TransactionDto transactionDto = new TransactionDto();
             //transactionDto.setWalletId(wallet_id);
-            model.addAttribute("recipient", recipientList);
-            model.addAttribute("newTransaction", transactionDto);
+            model.addAttribute("recipientList", recipientList);
+            model.addAttribute("newTransaction", new TransactionDto());
             model.addAttribute("walletId", wallet_id);
+            model.addAttribute("recipientFilter", userFilterDto);
             return "CreateNewTransactionVIew";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
@@ -359,19 +362,29 @@ public class WalletMvcController {
 
     @PostMapping("/{wallet_id}/transactions/new")
     public String createTransaction(@ModelAttribute("newTransaction") @Valid TransactionDto transactionDto,
-                                    @PathVariable int wallet_id,
                                     BindingResult errors,
+                                    @PathVariable int wallet_id,
                                     HttpSession session,
                                     Model model) {
-        if (errors.hasErrors()) {
-            return "CreateNewTransactionVIew";
-        }
+
 
         User user;
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
+        }
+
+        if (errors.hasErrors()) {
+            UserModelFilterDto userFilterDto = new UserModelFilterDto();
+            UserModelFilterOptions userFilter = populateUserFilterOptions(userFilterDto);
+            List<User> userList = walletService.getRecipient(userFilter);
+            List<RecipientResponseDto> recipientList = userMapper.toRecipientDto(userList);
+            model.addAttribute("recipientList", recipientList);
+            model.addAttribute("newTransaction", transactionDto);
+            model.addAttribute("walletId", wallet_id);
+            model.addAttribute("recipientFilter", new UserModelFilterDto());
+            return "CreateNewTransactionVIew";
         }
 
         try {
@@ -405,9 +418,10 @@ public class WalletMvcController {
         try {
             Wallet wallet = walletService.getWalletById(user, wallet_id);
             List<Card> cardList = cardService.getAllUserCards(user);
+            List<CardResponseDto> cardDtoList = cardMapper.toResponseDtoList(cardList);
             model.addAttribute("walletId", wallet.getWalletId());
-            model.addAttribute("cardList", cardList);
-            model.addAttribute("cardDto", new CardTransactionDto());
+            model.addAttribute("cardList", cardDtoList);
+            model.addAttribute("cardDto", new CardMvcTransactionDto());
             return "CardTransferView";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
@@ -420,16 +434,95 @@ public class WalletMvcController {
         }
     }
 
-    @PostMapping("/{wallet_id}/transfer/{card_id}")
+    @PostMapping("/{wallet_id}/transfer")
     public String createTransactionWithCard(HttpSession session,
                                             @PathVariable int wallet_id,
-                                            @PathVariable int card_id,
-                                            @ModelAttribute("cardDto") @Valid CardTransactionDto cardDto,
+                                            @ModelAttribute("cardDto") @Valid CardMvcTransactionDto cardDto,
                                             BindingResult errors,
                                             Model model) {
+        User user;
+        try {
+            user = authHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
 
         if (errors.hasErrors()) {
+            List<Card> cardList = cardService.getAllUserCards(user);
+            List<CardResponseDto> cardDtoList = cardMapper.toResponseDtoList(cardList);
+            model.addAttribute("walletId", wallet_id);
+            model.addAttribute("cardList", cardDtoList);
+            model.addAttribute("cardDto", cardDto);
             return "CardTransferView";
+        }
+
+        try {
+            cardService.authorizeCardAccess(cardDto.getCardId(), user);
+            CardToWalletTransaction cardTransaction = transactionMapper.fromDto(cardDto);
+            walletService.transactionWithCard(user, cardDto.getCardId(), wallet_id, cardTransaction);
+            return "redirect:/wallets/" + wallet_id + "/transfers";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "NotFoundView";
+        } catch (UnauthorizedOperationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "UnauthorizedView";
+        }
+
+    }
+
+    @GetMapping("/{wallet_id}/users")
+    public String showAddUserToWalletPage(@PathVariable int wallet_id,
+                                          @ModelAttribute("walletUser") WalletUserDto walletUserDto,
+                                          @ModelAttribute("userWalletFilter") UserModelFilterDto userFilterDto,
+                                          HttpSession session,
+                                          Model model) {
+        User user;
+        try {
+            user = authHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            UserModelFilterOptions userFilter = populateUserFilterOptions(userFilterDto);
+            List<User> userList = walletService.getRecipient(userFilter);
+            List<WalletUserDto> walletUserList = userMapper.toWalletUserDto(userList);
+            Wallet wallet = walletService.getWalletById(user, wallet_id);
+            walletService.checkWalletOwnership(user, wallet_id);
+            model.addAttribute("userWalletFilter", userFilterDto);
+            model.addAttribute("walletUserList", walletUserList);
+            model.addAttribute("userToAddToWallet", new WalletUserDto());
+            model.addAttribute("currentUserWalletList",
+                    userMapper.toWalletUserDto(walletService.getWalletUsers(user, wallet_id)));
+            return "AddUserToWalletView";
+        } catch (UnauthorizedOperationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "UnauthorizedView";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "NotFoundView";
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "BadRequestView";
+        }
+    }
+
+    @PostMapping("/{wallet_id}/users")
+    public String addUserToWallet(@PathVariable int wallet_id,
+                                  @ModelAttribute("walletUser") @Valid WalletUserDto walletUserDto,
+                                  BindingResult errors,
+                                  HttpSession session,
+                                  Model model) {
+
+        if (errors.hasErrors()) {
+            return "AddUserToWalletView";
         }
 
         User user;
@@ -439,10 +532,44 @@ public class WalletMvcController {
             return "redirect:/auth/login";
         }
         try {
-            cardService.authorizeCardAccess(card_id, user);
-            CardToWalletTransaction cardTransaction = transactionMapper.fromDto(cardDto);
-            walletService.transactionWithCard(user, card_id, wallet_id, cardTransaction);
-            return "CardTransactionsView";
+            walletService.getWalletById(user, wallet_id);
+            User userToAddToWallet = userService.getByUsername(walletUserDto.getUsername());
+            walletService.addUserToWallet(user, wallet_id, userToAddToWallet.getId());
+            return "redirect:/wallets/" + wallet_id + "/users";
+        } catch (UnauthorizedOperationException e) {
+            model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "UnauthorizedView";
+        } catch (EntityNotFoundException e) {
+            model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "NotFoundView";
+        } catch (DuplicateEntityException e) {
+            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
+            model.addAttribute("error", format(DUPLICATE_WALLETUSER_ERROR_MESSAGE, user.getUsername()));
+            return "ConflictView";
+        } catch (LimitReachedException e) {
+            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            return "ConflictView";
+        }
+    }
+
+    @GetMapping("/{wallet_id}/users/{user_id}")
+    public String removeUserFromWallet(@PathVariable int wallet_id,
+                                       @PathVariable int user_id,
+                                       Model model, HttpSession session) {
+
+        User user;
+        try {
+            user = authHelper.tryGetUser(session);
+        } catch (AuthenticationFailureException e) {
+            return "redirect:/auth/login";
+        }
+
+        try {
+            walletService.removeUserFromWallet(user, wallet_id, user_id);
+            return "redirect:/wallets/" + wallet_id;
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -475,6 +602,7 @@ public class WalletMvcController {
                 dto.getSortOrder()
         );
     }
+
     private CardTransactionModelFilterOptions populateCardTransactionFilterOptions
             (TransactionModelFilterDto dto) {
         return new CardTransactionModelFilterOptions(
