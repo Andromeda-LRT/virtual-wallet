@@ -32,6 +32,9 @@
           th:href="@{/assets/css/templatemo-chain-app-dev.css}">
     <link rel="stylesheet" href="../static/assets/css/animated.css" th:href="@{/assets/css/animated.css}">
     <link rel="stylesheet" href="../static/assets/css/owl.css" th:href="@{/assets/css/owl.css}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
+
     <style>
 
         .black-button a {
@@ -97,13 +100,39 @@
             padding-top: 30px;
         }
 
+        /* Back Button Custom Styling */
+        .back-button {
+            width: auto;
+            font-weight: bold; /* Makes the text bold */
+            display: inline-flex; /* Aligns the icon and text */
+            align-items: center; /* Centers items vertically */
+            justify-content: center; /* Centers items horizontally */
+            background-color: #007bff; /* Primary button color */
+            color: white; /* Text color */
+            border: none; /* Removes the border */
+            padding: 10px 20px; /* Padding inside the button */
+            border-radius: 5px; /* Rounded corners */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+            transition: background-color 0.2s, transform 0.2s; /* Smooth transition for hover effects */
+        }
+
+        .back-button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
+            text-decoration: none; /* Removes underline from icons or text if any */
+            color: white; /* Keeps text color white on hover */
+        }
+
+        .back-button i {
+            margin-right: 5px; /* Space between icon and text */
+        }
+
 
     </style>
 </head>
 <body>
 <div th:replace="~{fragments/VirtualWalletFragments :: header}"></div>
 <br/>
-
 
 <div class="the-clients">
     <div class="container">
@@ -168,34 +197,55 @@
     <br/>
     <div class="container">
         <div class="row">
-            <!--            <div class="col-lg-12 text-center">-->
-            <!--            </div>-->
-            <div class="col-lg-12 d-flex justify-content-center">
-                <div class="black-button" style="">
-                    <a href="#" th:href="@{__${requestURI}__/delete}">Delete</a>
+            <div th:if="${isWalletAdmin}">
+                <!--            <div class="col-lg-12 text-center">-->
+                <!--            </div>-->
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <div class="black-button">
+                        <a href="#" th:href="@{__${requestURI}__/delete}">Delete</a>
+                    </div>
+                    <div class="black-button">
+                        <a href="#" th:href="@{__${requestURI}__/update}">Update</a>
+                    </div>
+                    <div class="black-button">
+                        <a href="#" th:href="@{__${requestURI}__/transactions}">View
+                            Transactions</a>
+                    </div>
                 </div>
-                <div class="black-button">
-                    <a href="#" th:href="@{__${requestURI}__/update}">Update</a>
-                </div>
-                <div class="black-button">
-                    <a href="#" th:href="@{__${requestURI}__/transactions}">View
-                        Transactions</a>
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <div class="black-button">
+                        <a href="#" th:href="@{__${requestURI}__/transfers}">View Transfers</a>
+                    </div>
+                    <div class="black-button">
+                        <a href="#" th:href="@{__${requestURI}__/transactions/new}">Create
+                            Transaction</a>
+                    </div>
+                    <div class="black-button">
+                        <a href="#" th:href="@{__${requestURI}__/transfer}">Transfer Money to
+                            Wallet</a>
+                    </div>
+                    <div class="black-button" th:if="${wallet.getType().equals('Joined')}">
+                        <a href="#" th:href="@{__${requestURI}__/users}">Add User To Wallet</a>
+                    </div>
                 </div>
             </div>
-            <div class="col-lg-12 d-flex justify-content-center">
-                <div class="black-button">
-                    <a href="#" th:href="@{__${requestURI}__/transfers}">View Transfers</a>
-                </div>
-                <div class="black-button">
-                    <a href="#" th:href="@{__${requestURI}__/transactions/new}">Create
-                        Transaction</a>
-                </div>
-                <div class="black-button">
-                    <a href="#" th:href="@{__${requestURI}__/transfer}">Transfer Money to
-                        Wallet</a>
-                </div>
-                <div class="black-button" th:if="${wallet.getType().equals('Joined')}">
-                    <a href="#" th:href="@{__${requestURI}__/users}">Add User To Wallet</a>
+            <div th:unless="${isWalletAdmin}">
+                <div class="col-lg-12 d-flex justify-content-center">
+                    <div class="black-button">
+                        <a href="#" th:href="@{__${requestURI}__/transactions}">View
+                            Transactions</a>
+                    </div>
+                    <div class="black-button">
+                        <a href="#" th:href="@{__${requestURI}__/transfers}">View Transfers</a>
+                    </div>
+                    <div class="black-button">
+                        <a href="#" th:href="@{__${requestURI}__/transactions/new}">Create
+                            Transaction</a>
+                    </div>
+                    <div class="black-button">
+                        <a href="#" th:href="@{__${requestURI}__/transfer}">Transfer Money to
+                            Wallet</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -204,5 +254,6 @@
 
 
 <div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
+<div th:replace="~{fragments/VirtualWalletFragments :: scripts}"></div>
 </body>
 </html>
