@@ -141,6 +141,16 @@
                                             </div>
                                             <div class="col-12">
                                                 <div class="form-floating mb-3">
+                                                    <input type="text" th:field="*{phoneNumber}" class="form-control"
+                                                           name="lastName" id="phoneNumber"
+                                                           placeholder="PhoneNumber">
+                                                    <label for="lastName" class="form-label">Phone number</label>
+                                                </div>
+                                                <label class="error" th:errors="*{lastName}">Last name error
+                                                    placeholder</label>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="form-floating mb-3">
                                                     <input type="password" th:field="*{password}" class="form-control"
                                                            name="password" id="password"
                                                            value="" placeholder="Password">

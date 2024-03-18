@@ -143,6 +143,7 @@ public class WalletMvcController {
                                HttpSession session,
                                Model model) {
         if (errors.hasErrors()) {
+            model.addAttribute("walletTypes", walletTypeService.getAllWalletTypes());
             return "CreateNewWalletView";
         }
 
@@ -166,6 +167,11 @@ public class WalletMvcController {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "BadRequestView";
+        } catch (DuplicateEntityException e){
+            model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("walletTypes", walletTypeService.getAllWalletTypes());
+            return "CreateNewWalletView";
         }
     }
 
