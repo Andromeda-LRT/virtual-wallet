@@ -50,7 +50,7 @@ public class IntermediateTransactionServiceImpl implements IntermediateTransacti
         return cardTransactionService.getAllCardTransactionsWithFilter(user, cardTransactionFilter);
     }
 
-
+    //todo debug approveTransaction
     @Override
     public void approveTransaction(User user, int transactionId) {
         WalletToWalletTransaction transaction =
@@ -62,9 +62,15 @@ public class IntermediateTransactionServiceImpl implements IntermediateTransacti
             senderWallet = walletService.getWalletById(user, transaction.getWalletId());
             recipientWallet = walletService.getWalletById(user, transaction.getRecipientWalletId());
             walletService.checkWalletBalance(senderWallet, transaction.getAmount());
-            walletTransactionService.approveTransaction(transaction, recipientWallet);
-            walletService.chargeWallet(senderWallet, transaction.getAmount());
-            walletService.transferMoneyToRecipientWallet(recipientWallet, transaction.getAmount());
+            if (senderWallet.equals(recipientWallet)) {
+                walletTransactionService.approveTransaction(transaction, recipientWallet);
+                walletService.transferMoneyToRecipientWallet(senderWallet, transaction.getAmount());
+                walletService.chargeWallet(senderWallet, transaction.getAmount());
+            } else {
+                walletTransactionService.approveTransaction(transaction, recipientWallet);
+                walletService.transferMoneyToRecipientWallet(recipientWallet, transaction.getAmount());
+                walletService.chargeWallet(senderWallet, transaction.getAmount());
+            }
         } catch (InsufficientFundsException e) {
             walletTransactionService.cancelTransaction(transaction);
         }

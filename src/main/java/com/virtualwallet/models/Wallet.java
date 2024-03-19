@@ -137,13 +137,10 @@ public class Wallet {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Wallet wallet)) return false;
-        return walletId == wallet.walletId && Double.compare(balance, wallet.balance) == 0
-                && isArchived == wallet.isArchived
+        return walletId == wallet.walletId
                 && createdBy == wallet.createdBy
                 && Objects.equals(name, wallet.name)
-                && Objects.equals(iban, wallet.iban)
-                && Objects.equals(walletTransactions, wallet.walletTransactions)
-                && Objects.equals(cardTransactions, wallet.cardTransactions);
+                && Objects.equals(iban, wallet.iban);
     }
 
     @Override
