@@ -70,6 +70,7 @@ public class ModelConstantHelper {
     public static final int RESPONSE_STATUS_OK = 200;
 
     public static final String ACCOUNTS_LIMIT_REACHED = "The limits for users in a Joined account is 5.";
+    public static final String PERSONAL_ACCOUNTS_LIMIT_REACHED = "The limits for personal wallets is 5.";
 
     public static final String DEFAULT_PROFILE_IMAGE =
             "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png";
