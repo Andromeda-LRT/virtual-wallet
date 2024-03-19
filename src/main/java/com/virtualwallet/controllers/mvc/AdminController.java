@@ -254,8 +254,9 @@ public class AdminController {
                     cardFilterDto);
 //            List<CardToWalletTransaction> cardTransactionList =
 //                    middleTransactionService.getAllCardTransactionsWithFilter(user, cardFilter);
-            List<TransactionResponseDto> cardTransactionResponseList = transactionResponseMapper.convertCardTransactionsToDto(
-                    middleTransactionService.getAllCardTransactionsWithFilter(user, cardFilter)
+            List<TransactionResponseDto> cardTransactionResponseList =
+                    transactionResponseMapper.convertCardTransactionsToDto(middleTransactionService
+                            .getAllCardTransactionsWithFilter(user, cardFilter)
             );
             model.addAttribute("cardTransfersList", cardTransactionResponseList);
             model.addAttribute("cardTransactionFilter", cardFilterDto);
@@ -267,6 +268,9 @@ public class AdminController {
         } catch (IllegalArgumentException e) {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
+            return "BadRequestView";
+        } catch (Exception e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             return "BadRequestView";
         }
     }
