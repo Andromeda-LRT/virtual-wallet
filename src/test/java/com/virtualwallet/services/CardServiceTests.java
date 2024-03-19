@@ -65,15 +65,18 @@ public class CardServiceTests {
         card.setArchived(true);
         user.getCards().add(card);
         card.setCardHolderId(user);
+        Card anotherCard = createMockCard();
         String encryptedCardNumber = AESUtil.encrypt(card.getNumber());
+        anotherCard.setNumber(encryptedCardNumber);
+        anotherCard.setCardHolderId(user);
         Mockito.when(cardRepository.getByStringField("number", encryptedCardNumber))
-                .thenReturn(card);
+                .thenReturn(anotherCard);
 
         //Act
         Card result = cardService.createCard(user, card);
 
         //Assert
-        Mockito.verify(cardRepository, Mockito.times(1)).update(card);
+        Mockito.verify(cardRepository, Mockito.times(1)).update(anotherCard);
         Assertions.assertFalse(result.isArchived());
     }
 
