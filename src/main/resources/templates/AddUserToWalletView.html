@@ -157,6 +157,48 @@
         .back-button i {
             margin-right: 5px; /* Space between icon and text */
         }
+
+        #pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #pagination a {
+            margin: 0 8px; /* Increased margin */
+            padding: 8px 15px; /* Increased padding */
+            background-color: #f0f0f0;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            border: 1px solid #dcdcdc;
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 18px; /* Increased font size */
+        }
+
+        #pagination a:hover, #pagination a.current-page {
+            background-color: #007bff;
+            color: #ffffff;
+            border-color: #007bff;
+        }
+
+
+        #pagination a.prev, #pagination a.next {
+            font-weight: bold;
+        }
+
+        .services:before {
+            content: '';
+            background-image: url(../images/services-right-dec.png);
+            background-repeat: no-repeat;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 1136px;
+            height: 100px!important;
+            z-index: 0;
+        }
     </style>
 
 </head>
@@ -225,28 +267,29 @@
     </div>
 </section>
 <!--the below div is used for background-->
-<div id="services" class="services section">
-<div class="container" th:unless="${walletUserList.isEmpty()}">
-    <div class="row">
-        <div class="col-xl-3 col-sm-6" th:each="user : ${walletUserList}">
+<div id="services" class="services section" style="margin-top: 10px!important; padding-top: 0!important;">
+    <div class="container" th:unless="${walletUserList.isEmpty()}">
+        <div class="row">
+            <div class="col-xl-3 col-sm-6" id="userAddList" th:each="user : ${walletUserList}">
 
-            <div class="card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div>
-                            <img th:if="${user.profilePicture != null}" th:src="${user.profilePicture}"
-                                 alt="User Profile Picture" class="avatar-md rounded-circle img-thumbnail">
-                            <img th:unless="${user.profilePicture != null}"
-                                 src="https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
-                                 alt="Default Profile Picture" class="avatar-md rounded-circle img-thumbnail">
-                        </div>
-                        <div class="flex-1 ms-3">
-                            <h5 class="font-size-16 mb-1" th:text="${user.getUsername()}"></h5>
-                            <div th:unless="${currentUserWalletList.contains(user)}">
-                                <span class="badge badge-soft-success mb-0">Can add to Wallet</span>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <img th:if="${user.profilePicture != null}" th:src="${user.profilePicture}"
+                                     alt="User Profile Picture" class="avatar-md rounded-circle img-thumbnail">
+                                <img th:unless="${user.profilePicture != null}"
+                                     src="https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
+                                     alt="Default Profile Picture" class="avatar-md rounded-circle img-thumbnail">
                             </div>
-                            <div th:if="${currentUserWalletList.contains(user)}">
-                                <span class="badge badge-soft-danger mb-0">Already added to Wallet</span>
+                            <div class="flex-1 ms-3">
+                                <h5 class="font-size-16 mb-1" th:text="${user.getUsername()}"></h5>
+                                <div th:unless="${currentUserWalletList.contains(user)}">
+                                    <span class="badge badge-soft-success mb-0">Can add to Wallet</span>
+                                </div>
+                                <div th:if="${currentUserWalletList.contains(user)}">
+                                    <span class="badge badge-soft-danger mb-0">Already added to Wallet</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -254,7 +297,7 @@
             </div>
         </div>
     </div>
-</div>
+    <div id="pagination"></div>
 
 <div class="the-clients">
     <div class="container">
@@ -291,6 +334,69 @@
 <!--<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>-->
 <div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
 <div th:replace="~{fragments/VirtualWalletFragments :: scripts}"></div>
+
+<script>
+    const usersPerPage = 8;
+    let currentPage = 1;
+
+    function paginateUsers(pageNumber) {
+        const users = document.querySelectorAll('.services #userAddList');
+        const totalPages = Math.ceil(users.length / usersPerPage);
+
+        // Hide all users
+        users.forEach(user => {
+            user.style.display = 'none';
+        });
+
+        // Calculate and show users for the current page
+        const start = (pageNumber - 1) * usersPerPage;
+        const end = start + usersPerPage;
+        for (let i = start; i < end && i < users.length; i++) {
+            users[i].style.display = '';
+        }
+
+        // Update the pagination
+        updatePagination(totalPages, pageNumber);
+    }
+
+
+    function updatePagination(totalPages, currentPage) {
+        const paginationContainer = document.getElementById('pagination');
+        let paginationHTML = '';
+
+        // Previous button
+        if (currentPage > 1) {
+            paginationHTML += `<a href="#" onclick="paginateUsers(${currentPage - 1}); return false;">Previous</a> `;
+        }
+
+        let startPage = 1;
+        let endPage = totalPages;
+
+        if (totalPages > 10) {
+            if (currentPage <= 6) {
+                endPage = 10;
+            } else if (currentPage + 4 >= totalPages) {
+                startPage = totalPages - 9;
+            } else {
+                startPage = currentPage - 5;
+                endPage = currentPage + 4;
+            }
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+            paginationHTML += `<a href="#" ${currentPage === i ? 'class="current-page"' : ''} onclick="paginateUsers(${i}); return false;">${i}</a> `;
+        }
+
+        // Next button
+        if (currentPage < totalPages) {
+            paginationHTML += `<a href="#" onclick="paginateUsers(${currentPage + 1}); return false;">Next</a>`;
+        }
+
+        paginationContainer.innerHTML = paginationHTML;
+    }
+
+    window.onload = () => paginateUsers(currentPage);
+</script>
 
 </body>
 </html>
