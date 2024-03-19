@@ -113,7 +113,7 @@ public class WalletMvcController {
             model.addAttribute("walletId", id);
             model.addAttribute("wallet", outputWallet);
             model.addAttribute("isWalletAdmin", walletService.verifyIfUserIsWalletOwner(user, wallet));
-            model.addAttribute("walletAdminId", walletUsers.get(0).getId());
+            model.addAttribute("walletAdminId", wallet.getCreatedBy());
             return "WalletView";
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
@@ -320,8 +320,10 @@ public class WalletMvcController {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "BadRequestView";
+        } catch (Exception e) {
+            model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
+            return "BadRequestView";
         }
-
     }
 
     @GetMapping("/{wallet_id}/transactions/new")
