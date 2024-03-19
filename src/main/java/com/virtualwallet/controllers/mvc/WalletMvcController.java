@@ -284,7 +284,6 @@ public class WalletMvcController {
         }
     }
 
-    // TODO -> Card to wallet - LYUBIMA
     @GetMapping("/{wallet_id}/transfers")
     public String showCardToWalletTransactionsPage(@PathVariable int wallet_id,
                                                    Model model,
