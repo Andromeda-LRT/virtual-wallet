@@ -4,14 +4,19 @@ import com.virtualwallet.exceptions.EntityNotFoundException;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
 import com.virtualwallet.models.input_model_dto.WalletDto;
+import com.virtualwallet.models.response_model_dto.WalletResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.virtualwallet.services.contracts.WalletService;
 
+import java.util.List;
+
+import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 import static com.virtualwallet.utils.IBANGenerator.generateRandomIBAN;
 
 @Component
 public class WalletMapper {
+
     private final WalletService walletService;
 
     @Autowired
@@ -45,5 +50,15 @@ public class WalletMapper {
         }
     }
 
-
+    public WalletResponseDto toDto(Wallet wallet, List<User> walletUsers) {
+        WalletResponseDto dto = new WalletResponseDto();
+        dto.setWalletId(wallet.getWalletId());
+        dto.setBalance(wallet.getBalance());
+        dto.setIban(wallet.getIban());
+        dto.setName(wallet.getName());
+        dto.setType(WALLET_TYPE_ID_1 == wallet.getWalletTypeId() ? WALLET_TYPE_1
+                : (WALLET_TYPE_ID_2 == wallet.getWalletTypeId() ? WALLET_TYPE_2 : EMPTY));
+        dto.setWalletUsers(walletUsers);
+        return dto;
+    }
 }

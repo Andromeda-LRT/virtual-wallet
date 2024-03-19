@@ -2,13 +2,15 @@ package com.virtualwallet.models.mvc_input_model_dto;
 
 import jakarta.validation.constraints.NotEmpty;
 
-public class LoginDto {
+public class WalletUserDto {
     @NotEmpty(message = "Username can't be empty.")
     private String username;
-    @NotEmpty(message = "Password can't be empty.")
-    private String password;
 
-    public LoginDto() {
+    public WalletUserDto() {
+    }
+
+    public WalletUserDto(String username) {
+        this.username = username;
     }
 
     public String getUsername() {
@@ -17,13 +19,5 @@ public class LoginDto {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 }

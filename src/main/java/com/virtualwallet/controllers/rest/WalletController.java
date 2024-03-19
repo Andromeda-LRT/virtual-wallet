@@ -1,9 +1,6 @@
 package com.virtualwallet.controllers.rest;
 
-import com.virtualwallet.exceptions.EntityNotFoundException;
-import com.virtualwallet.exceptions.InsufficientFundsException;
-import com.virtualwallet.exceptions.LimitReachedException;
-import com.virtualwallet.exceptions.UnauthorizedOperationException;
+import com.virtualwallet.exceptions.*;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
@@ -359,7 +356,7 @@ public class WalletController {
     @PostMapping("/{wallet_id}/addUserToWallet/{user_id}")
     public ResponseEntity<?> addUserToWallet(@RequestHeader HttpHeaders headers,
                                              @PathVariable int wallet_id,
-                                             @PathVariable int user_id){
+                                             @PathVariable int user_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.addUserToWallet(user, wallet_id, user_id);
@@ -368,7 +365,7 @@ public class WalletController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }catch (LimitReachedException e) {
+        } catch (LimitReachedException | DuplicateEntityException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
         }
     }
@@ -376,8 +373,8 @@ public class WalletController {
     @SecurityRequirement(name = AUTHORIZATION)
     @DeleteMapping("/{wallet_id}/removeUserFromWallet/{user_id}")
     public ResponseEntity<?> removeUserFromWallet(@RequestHeader HttpHeaders headers,
-                                             @PathVariable int wallet_id,
-                                             @PathVariable int user_id){
+                                                  @PathVariable int wallet_id,
+                                                  @PathVariable int user_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             walletService.removeUserFromWallet(user, wallet_id, user_id);
@@ -392,7 +389,7 @@ public class WalletController {
     @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{wallet_id}/users")
     public List<User> getWalletUsers(@RequestHeader HttpHeaders headers,
-                                                  @PathVariable int wallet_id){
+                                     @PathVariable int wallet_id) {
         try {
             User user = authHelper.tryGetUser(headers);
             return walletService.getWalletUsers(user, wallet_id);

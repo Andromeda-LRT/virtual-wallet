@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Transaction</title>
+
+    <link href="../static/vendor/bootstrap/css/bootstrap.min.css" th:href="@{/vendor/bootstrap/css/bootstrap.min.css}"
+          rel="stylesheet">
+    <link rel="stylesheet" href="../static/assets/css/templatemo-chain-app-dev.css"
+          th:href="@{/assets/css/templatemo-chain-app-dev.css}">
+    <link rel="stylesheet" href="../static/assets/css/animated.css" th:href="@{/assets/css/animated.css}">
+    <link rel="stylesheet" href="../static/assets/css/owl.css" th:href="@{/assets/css/owl.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/boxicons/2.1.0/css/boxicons.min.css"
+          integrity="sha512-pVCM5+SN2+qwj36KonHToF2p1oIvoU3bsqxphdOIWMYmgr4ZqD3t5DjKvvetKhXGc/ZG5REYTT6ltKfExEei/Q=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
+          integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous"/>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Optional Bootstrap JavaScript and Popper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
+
+    <style>
+
+        .card {
+            margin-bottom: 24px;
+            box-shadow: 0 2px 3px #1a1e21;
+        }
+
+        .card {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            word-wrap: break-word;
+            background-color: #fff;
+            background-clip: border-box;
+            border: 1px solid #eff0f2;
+            border-radius: 1rem;
+        }
+
+        .avatar-md {
+            height: 4rem;
+            width: 4rem;
+        }
+
+        .rounded-circle {
+            border-radius: 50% !important;
+        }
+
+        .img-thumbnail {
+            padding: 0.25rem;
+            background-color: #f1f3f7;
+            border: 1px solid #eff0f2;
+            border-radius: 0.75rem;
+        }
+
+        .avatar-title {
+            align-items: center;
+            background-color: #3b76e1;
+            color: #fff;
+            display: flex;
+            font-weight: 500;
+            height: 100%;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .bg-soft-primary {
+            background-color: rgba(59, 118, 225, .25) !important;
+        }
+
+        a {
+            text-decoration: none !important;
+        }
+
+        .badge-soft-danger {
+            color: #f56e6e !important;
+            background-color: rgba(245, 110, 110, .1);
+        }
+
+        .badge-soft-success {
+            color: #63ad6f !important;
+            background-color: rgba(99, 173, 111, .1);
+        }
+
+        .mb-0 {
+            margin-bottom: 0 !important;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25em 0.6em;
+            font-size: 75%;
+            font-weight: 500;
+            line-height: 1;
+            color: #fff;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.75rem;
+        }
+
+        .avatar-md {
+            width: 64px;
+            height: 64px;
+            /* Add this to ensure the images are fully displayed */
+            /*object-fit: cover;*/
+        }
+
+        .form-heading {
+            margin-bottom: 20px;
+            color: #4b8ef1;
+        }
+
+        /* Стилове за формата и нейните елементи */
+        .form-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 15px 26px rgba(0, 0, 0, 0.5);
+        }
+
+        .select-large {
+            font-size: 1.05rem;
+            padding: 0.5rem 1rem;
+        }
+
+        .select-large option {
+            padding: 0.25rem 0.5rem;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+
+        .btn + .btn {
+            margin-top: 10px;
+        }
+
+        .form-group {
+            margin-top: 6px;
+        }
+
+        .form-group.second {
+            margin-top: 10px;
+        }
+
+        .services {
+            padding-top: 30px;
+        }
+
+        /* Back Button Custom Styling */
+        .back-button {
+            width: auto;
+            font-weight: bold; /* Makes the text bold */
+            display: inline-flex; /* Aligns the icon and text */
+            align-items: center; /* Centers items vertically */
+            justify-content: center; /* Centers items horizontally */
+            background-color: #007bff; /* Primary button color */
+            color: white; /* Text color */
+            border: none; /* Removes the border */
+            padding: 10px 20px; /* Padding inside the button */
+            border-radius: 5px; /* Rounded corners */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow */
+            transition: background-color 0.2s, transform 0.2s; /* Smooth transition for hover effects */
+        }
+
+        .back-button:hover {
+            background-color: #0056b3; /* Darker shade on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
+            text-decoration: none; /* Removes underline from icons or text if any */
+            color: white; /* Keeps text color white on hover */
+        }
+
+        .back-button i {
+            margin-right: 5px; /* Space between icon and text */
+        }
+
+        .error {
+            color: red;
+        }
+
+    </style>
+</head>
+<body>
+
+<!--header-->
+<div th:replace="~{fragments/VirtualWalletFragments :: header}"></div>
+<!--header-->
+<br>
+
+<div class="the-clients">
+    <div class="container">
+        <div class="section-heading  justify-content-between align-items-start" style="margin-bottom: 0;">
+            <!-- Left Placeholder for alignment -->
+            <div class="flex-grow-1 d-flex justify-content-start">
+                <a th:href="@{/wallets/{walletId}(walletId=${wallet_id})}" class="btn btn-primary back-button">
+                    <i class="bi bi-arrow-left"></i> Return To Wallet
+                </a>
+            </div>
+        </div>
+        <hr>
+    </div>
+</div>
+
+<!-- Filter Options -->
+<section class="section-padding">
+    <div class="container">
+        <div class="row" style="padding-bottom: 0; margin-bottom: 0;">
+            <div class="col-12">
+                <div style="margin-left: 10px;">
+                    <!--                    <label class="form-label">Filter Options:</label>-->
+                </div>
+                <form action="#" th:action="@{/wallets/{walletId}/transactions/new(walletId=${wallet_id})}" method="get"
+                      th:object="${recipientFilter}" class="d-flex flex-row align-items-center gap-2">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
+                        <input class="form-control" type="text" placeholder="Username" th:field="*{username}"/>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
+                        <input class="form-control" type="text" placeholder="Email" th:field="*{email}"/>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
+                        <input class="form-control" type="text" placeholder="First Name" th:field="*{phoneNumber}"/>
+                    </div>
+
+                    <select class="form-select" th:field="*{sortBy}">
+                        <option value="">Sort By</option>
+                        <option value="username">Username</option>
+                        <option value="email">Email</option>
+                        <option value="phoneNumber">PhoneNumber</option>
+                    </select>
+                    <select class="form-select" th:field="*{sortOrder}">
+                        <option value="">Sort Order</option>
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                    <button type="submit" value="Search" style="background-color: #4b8ef1; border-color: #4b8ef1;"
+                            class="btn btn-primary search">Search
+                    </button>
+                </form>
+            </div>
+            <br/>
+        </div>
+    </div>
+</section>
+
+<div id="services" class="services section">
+    <div class="container" th:unless="${recipientList.isEmpty()}">
+        <div class="row">
+            <div class="col-xl-3 col-sm-6" th:each="recipient : ${recipientList}">
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div>
+                                <img th:if="${recipient.profilePicture != null}" th:src="${recipient.profilePicture}"
+                                     alt="User Profile Picture" class="avatar-md rounded-circle img-thumbnail">
+                                <img th:unless="${recipient.profilePicture != null}"
+                                     src="https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png"
+                                     alt="Default Profile Picture" class="avatar-md rounded-circle img-thumbnail">
+                            </div>
+                            <div class="flex-1 ms-3">
+                                <h5 class="font-size-16 mb-1" th:text="${recipient.getUsername()}"></h5>
+                                <div class="icon-alignment" th:each="walletIban : ${recipient.getWalletIban()}">
+                                    <i class="mdi mdi-wallet font-size-15 align-middle pe-2 text-primary">Wallet
+                                        Iban</i>
+                                    <div th:text="${walletIban.getIban()}">Iban Number</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="the-clients">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div class="form-container">
+                        <h2 class="form-heading text-center">Create Transaction</h2>
+                        <form id="addWalletForm" action="#"
+                              th:action="@{/wallets/{walletId}/transactions/new(walletId=${wallet_id})}"
+                              onsubmit="return confirm(`You are about to make a transfer to the selected user.` +
+                                            ' Please click confirm to continue');"
+                              th:object="${newTransaction}" method="post">
+                            <div class="form-group">
+                                <label for="transactionAmount">Transaction Amount</label>
+                                <input type="number" class="form-control"
+                                       id="transactionAmount"
+                                       th:field="*{amount}">
+                                <label class="error" th:errors="*{amount}">
+                                    Amount error placeholder</label>
+                                <div>
+                                    <label for="walletIban">Wallet Iban</label>
+                                    <input type="text" class="form-control"
+                                           id="walletIban"
+                                           th:field="*{iban}">
+                                    <label class="error" th:errors="*{iban}">
+                                        Iban error placeholder</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block"
+                                    style="background-color: #4b8ef1;border-color: #4b8ef1; font-weight: bold;">Transfer</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div th:replace="~{fragments/VirtualWalletFragments :: footer}"></div>
+<div th:replace="~{fragments/VirtualWalletFragments :: scripts}"></div>
+
+</body>
+</html>

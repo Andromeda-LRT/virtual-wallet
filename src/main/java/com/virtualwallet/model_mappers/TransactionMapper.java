@@ -5,6 +5,7 @@ import com.virtualwallet.models.User;
 import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.models.input_model_dto.CardTransactionDto;
 import com.virtualwallet.models.input_model_dto.TransactionDto;
+import com.virtualwallet.models.mvc_input_model_dto.CardMvcTransactionDto;
 import com.virtualwallet.services.contracts.StatusService;
 import com.virtualwallet.services.contracts.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,14 @@ public class TransactionMapper {
     public CardToWalletTransaction fromDto(CardTransactionDto transactionDto) {
         CardToWalletTransaction cardToWalletTransaction = new CardToWalletTransaction();
         cardToWalletTransaction.setAmount(transactionDto.getAmount());
+        cardToWalletTransaction.setStatus(statusService.getStatus(PENDING_TRANSACTION_ID));
+        cardToWalletTransaction.setTime(LocalDateTime.now());
+        return cardToWalletTransaction;
+    }
+
+    public CardToWalletTransaction fromDto(CardMvcTransactionDto mvcTransactionDto) {
+        CardToWalletTransaction cardToWalletTransaction = new CardToWalletTransaction();
+        cardToWalletTransaction.setAmount(mvcTransactionDto.getAmount());
         cardToWalletTransaction.setStatus(statusService.getStatus(PENDING_TRANSACTION_ID));
         cardToWalletTransaction.setTime(LocalDateTime.now());
         return cardToWalletTransaction;
