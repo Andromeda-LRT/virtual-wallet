@@ -422,11 +422,6 @@
             <td class="action-buttons">
                 <div class="button-container">
                     <div class="button-section">
-                        <form action="#" th:action="@{/users/__${user.getId()}__}" method="get">
-                            <button class="btn btn-edit btn-sm"><i class="fa fa-edit"></i></button>
-                        </form>
-                    </div>
-                    <div class="button-section">
                         <form action="#" th:action="@{/admin/users/__${user.getId()}__/block}" method="post">
                             <button class="btn btn-block btn-sm" th:unless="${user.isBlocked()}"><i class="fas fa-lock"></i></button>
                         </form>
