@@ -163,11 +163,13 @@ public class CardServiceTests {
     }
 
     @Test
-    void updateCard_Should_UpdateCard_When_Arguments_Valid() {
+    void updateCard_Should_UpdateCard_When_Arguments_Valid() throws Exception {
         //Arrange
         User user = createAnotherMockUser();
         Card card = createMockCard();
+        Card cardToVerify = createMockCard();
         user.getCards().add(card);
+        card.setNumber(AESUtil.encrypt(card.getNumber()));
 
         Mockito.when(cardRepository.getById(card.getId())).thenReturn(card);
 
@@ -175,7 +177,7 @@ public class CardServiceTests {
         Card result = cardService.updateCard(card, user);
 
         //Assert
-        Assertions.assertEquals(result, card);
+        Assertions.assertEquals(result, cardToVerify);
         Mockito.verify(cardRepository, Mockito.times(1)).update(card);
     }
 
