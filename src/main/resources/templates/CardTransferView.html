@@ -131,16 +131,16 @@
         <hr>
     </div>
 </div>
+<div th:if="${cardList.isEmpty()}">
+    <div class="container" style="margin-top: 110px; margin-bottom: 0; padding-bottom: 0; text-align: center;">
+        <a href="#" th:href="@{/cards/addition}" class="btn btn-primary"
+           style="display: inline-block; width: auto; padding: 10px 20px; margin: 0 auto; font-size: 3.5vh;">
+            <i class="fa fa-plus"></i> Add Card to Account
+        </a>
+    </div>
+</div>
 
 <div id="services" class="services section">
-    <div th:if="${cardList.isEmpty()}">
-        <div class="container" style="margin-top: 110px; margin-bottom: 0; padding-bottom: 0; text-align: center;">
-            <a href="#" th:href="@{/cards/addition}" class="btn btn-primary"
-               style="display: inline-block; width: auto; padding: 10px 20px; margin: 0 auto; font-size: 3.5vh;">
-                <i class="fa fa-plus"></i> Add Card to Account
-            </a>
-        </div>
-    </div>
     <div th:unless="${cardList.isEmpty()}">
         <div class="the-clients">
             <div class="container">
