@@ -49,6 +49,24 @@ public class User {
     public User() {
     }
 
+    public User(int id, String username, String password, String firstName, String lastName, String email, Role role,
+                boolean isBlocked, boolean isArchived, String phoneNumber, String profilePicture, Set<Wallet> wallets,
+                Set<Card> cards) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.role = role;
+        this.isBlocked = isBlocked;
+        this.isArchived = isArchived;
+        this.phoneNumber = phoneNumber;
+        this.profilePicture = profilePicture;
+        this.wallets = wallets;
+        this.cards = cards;
+    }
+
     public Set<Wallet> getWallets() {
         return wallets;
     }
