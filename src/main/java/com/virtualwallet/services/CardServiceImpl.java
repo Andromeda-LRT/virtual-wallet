@@ -43,6 +43,7 @@ public Card createCard(User createdBy, Card card) {
         checkCardHolder(createdBy, cardToBeCreated);
 
         cardToBeCreated.setExpirationDate(card.getExpirationDate());
+        unarchiveCardIfNeeded(cardToBeCreated);
         // Ensure the card number is stored encrypted in the repository
         cardRepository.update(cardToBeCreated);
     } catch (EntityNotFoundException e) {
@@ -155,4 +156,11 @@ public Card createCard(User createdBy, Card card) {
             throw new ExpiredCardException(EXPIRED_CARD_ERROR_MESSAGE);
         }
     }
+
+    private void unarchiveCardIfNeeded(Card cardToBeCreated) {
+        if (cardToBeCreated.isArchived()) {
+            cardToBeCreated.setArchived(false);
+        }
+    }
+
 }
