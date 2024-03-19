@@ -2,6 +2,7 @@ package com.virtualwallet.controllers.rest;
 
 import com.virtualwallet.exceptions.DuplicateEntityException;
 import com.virtualwallet.exceptions.EntityNotFoundException;
+import com.virtualwallet.exceptions.ExpiredCardException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
@@ -147,6 +148,8 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (DuplicateEntityException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (ExpiredCardException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
