@@ -443,7 +443,7 @@ public class WalletServiceTests {
         when(walletRepository.getWalletUsers(1)).thenReturn(Collections.nCopies(5, new User()));
 
         Exception exception = assertThrows(LimitReachedException.class, () -> walletService.addUserToWallet(user, 1, 2));
-        assertEquals(PERSONAL_ACCOUNTS_LIMIT_REACHED, exception.getMessage());
+        assertEquals(ACCOUNTS_LIMIT_REACHED, exception.getMessage());
     }
 
     @Test
