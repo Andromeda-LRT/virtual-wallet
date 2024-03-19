@@ -49,10 +49,6 @@ Virtual Wallet is a web application that enables users to conveniently manage th
 - Search and Filter Functionality
 - Swagger Documentation
 
-## Teamwork Guidelines
-
-Refer to the Teamwork Guidelines document for collaboration standards.
-
 ## Getting Started
 ### Setting Up the Project
 1. Clone the repository: `git clone <repository_url>`
