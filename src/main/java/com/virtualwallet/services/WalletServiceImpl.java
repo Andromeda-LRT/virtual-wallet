@@ -376,7 +376,7 @@ public class WalletServiceImpl implements WalletService {
     }
     private void restrictUserPersonalWallets (User user, Wallet wallet){
         if (user.getWallets().size() == 4 && wallet.getWalletTypeId() == 1) {
-            throw new LimitReachedException(ACCOUNTS_LIMIT_REACHED);
+            throw new LimitReachedException(PERSONAL_ACCOUNTS_LIMIT_REACHED);
         }
     }
 }

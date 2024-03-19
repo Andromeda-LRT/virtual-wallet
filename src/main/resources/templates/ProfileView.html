@@ -101,14 +101,14 @@
                         <!-- First Name -->
                         <div class="col-12">
                             <label class="form-label">First Name</label>
-                            <input type="text" class="form-control" th:field="*{firstName}">
+                            <input type="text" class="form-control" th:field="*{firstName}" readonly>
                             <div class="error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
                         </div>
 
                         <!-- Last Name -->
                         <div class="col-12">
                             <label class="form-label">Last Name</label>
-                            <input type="text" class="form-control" th:field="*{lastName}">
+                            <input type="text" class="form-control" th:field="*{lastName}" readonly>
                             <div class="error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
                         </div>
 

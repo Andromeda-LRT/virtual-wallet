@@ -4,6 +4,7 @@ import com.virtualwallet.models.User;
 import com.virtualwallet.models.input_model_dto.UpdateUserDto;
 import com.virtualwallet.models.mvc_input_model_dto.UpdateUserPasswordDto;
 import com.virtualwallet.services.contracts.UserService;
+import com.virtualwallet.utils.PasswordEncoderUtil;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -24,7 +25,7 @@ public class UpdateUserMapper {
     public User fromDto (int id, UpdateUserPasswordDto userDto, User loggedUser) {
         User user = userService.get(id,loggedUser);
 //        if (userDto.getNewPassword().equals(userDto.getConfirmNewPassword())){
-            user.setPassword(userDto.getNewPassword());
+            user.setPassword(PasswordEncoderUtil.encodePassword(userDto.getNewPassword()));
 //        }else {
 //
 //        }
