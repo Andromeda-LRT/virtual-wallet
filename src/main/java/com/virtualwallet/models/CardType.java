@@ -40,8 +40,8 @@ public class CardType {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof CardType type)) return false;
-        return getId() == type.getId() && Objects.equals(getType(), type.getType());
+        if (!(o instanceof CardType cardType)) return false;
+        return getId() == cardType.getId() && Objects.equals(getType(), cardType.getType());
     }
 
     @Override
