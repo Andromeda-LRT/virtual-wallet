@@ -6,11 +6,14 @@ import com.virtualwallet.models.response_model_dto.TransactionResponseDto;
 import com.virtualwallet.repositories.contracts.CardRepository;
 import com.virtualwallet.repositories.contracts.UserRepository;
 import com.virtualwallet.repositories.contracts.WalletRepository;
+import com.virtualwallet.utils.AESUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.virtualwallet.model_helpers.ModelConstantHelper.HIDDEN_CARD_DIGITS;
 
 @Component
 public class TransactionResponseMapper {
@@ -39,12 +42,14 @@ public class TransactionResponseMapper {
         return dto;
     }
 
-    public TransactionResponseDto convertToDto(CardToWalletTransaction cardToWalletTransaction) {
+    public TransactionResponseDto convertToDto(CardToWalletTransaction cardToWalletTransaction) throws Exception{
         TransactionResponseDto dto = new TransactionResponseDto();
         dto.setTransactionType(cardToWalletTransaction.getTransactionTypeId() == 1 ? "Incoming" : "Outgoing");
         dto.setTransactionId(cardToWalletTransaction.getTransactionId());
         dto.setAmount(cardToWalletTransaction.getAmount());
-        dto.setSender("**".concat(cardRepository.getById(cardToWalletTransaction.getCardId()).getNumber().substring(12, 16)));
+        dto.setSender(HIDDEN_CARD_DIGITS.concat
+                (AESUtil.decrypt(cardRepository.getById(cardToWalletTransaction.getCardId()).getNumber())
+                        .substring(12, 16)));
         dto.setRecipient(walletRepository.getById(cardToWalletTransaction.getWalletId()).getIban());
         dto.setTime(cardToWalletTransaction.getTime());
         dto.setStatus(cardToWalletTransaction.getStatus().getName());
@@ -71,7 +76,7 @@ public class TransactionResponseMapper {
         return transactionResponseDtos;
     }
 
-    public List<TransactionResponseDto> convertCardTransactionsToDto(List<CardToWalletTransaction> cardToWalletTransactions) {
+    public List<TransactionResponseDto> convertCardTransactionsToDto(List<CardToWalletTransaction> cardToWalletTransactions) throws Exception{
         List<TransactionResponseDto> transactionResponseDtos = new ArrayList<>();
         for (CardToWalletTransaction cardToWalletTransaction : cardToWalletTransactions) {
             transactionResponseDtos.add(convertToDto(cardToWalletTransaction));

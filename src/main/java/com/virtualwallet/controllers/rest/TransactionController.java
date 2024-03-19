@@ -85,10 +85,14 @@ public class TransactionController {
             List<CardToWalletTransaction> cardToWalletTransactionList =
                     middleTransactionService.getAllCardTransactionsWithFilter(user, cardTransactionModelFilterOptions);
 //            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
-            return ResponseEntity.status(HttpStatus.OK).body(transactionResponseMapper.convertCardTransactionsToDto(cardToWalletTransactionList));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(transactionResponseMapper
+                            .convertCardTransactionsToDto(cardToWalletTransactionList));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e ) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

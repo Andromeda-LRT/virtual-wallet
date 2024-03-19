@@ -141,8 +141,8 @@ public class UserController {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             Card cardToBeCreated = cardMapper.fromDto(cardDto, loggedUser);
-            cardService.createCard(loggedUser, cardToBeCreated);
-            return ResponseEntity.status(HttpStatus.CREATED).body(cardToBeCreated);
+            Card outputCard =  cardService.createCard(loggedUser, cardToBeCreated);
+            return ResponseEntity.status(HttpStatus.CREATED).body(outputCard);
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (DuplicateEntityException e) {
