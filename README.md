@@ -2,7 +2,7 @@
 
 ## Project Description
 
-Virtual Wallet is a web application that enables users to conveniently manage their budget. Users can send and receive money, add funds to their Virtual Wallet, manage their profile, and more. The project includes a set of core requirements and optional features to enhance the user experience.
+Virtual Wallet is a web application that enables users to conveniently manage their budget. Users can send and receive money, add funds to their Virtual Wallet, manage their profile, and more. The project includes a set of core requirements and additional features to enhance the user experience.
 
 ## Features
 
