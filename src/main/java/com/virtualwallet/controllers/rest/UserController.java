@@ -15,6 +15,7 @@ import com.virtualwallet.models.input_model_dto.UpdateUserDto;
 import com.virtualwallet.models.input_model_dto.UserDto;
 import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 import static com.virtualwallet.model_helpers.ModelConstantHelper.AUTHORIZATION;
+import static com.virtualwallet.model_helpers.SwaggerConstantHelper.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -56,7 +58,7 @@ public class UserController {
         this.userResponseMapper = userResponseMapper;
     }
 
-
+    @Operation(summary = GET_ALL_USERS_SUMMARY, description = GET_ALL_USERS_DESCRIPTION)
     @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping
     public ResponseEntity<?> getAllUsers(@RequestHeader HttpHeaders headers,
@@ -75,6 +77,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = GET_USER_BY_ID_SUMMARY, description = GET_USER_BY_ID_DESCRIPTION)
     @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@RequestHeader HttpHeaders headers, @PathVariable int id) {
@@ -89,6 +92,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = GET_ALL_USER_CARDS_SUMMARY, description = GET_ALL_USER_CARDS_DESCRIPTION)
     @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{id}/cards")
     public ResponseEntity<?> getAllUserCards(@RequestHeader HttpHeaders headers, @PathVariable int id) {
@@ -106,6 +110,7 @@ public class UserController {
 
     }
 
+    @Operation(summary = GET_USER_CARD_SUMMARY, description = GET_USER_CARD_DESCRIPTION)
     @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{user_id}/cards/{card_id}")
     public ResponseEntity<?> getUserCard(@RequestHeader HttpHeaders headers,
@@ -124,6 +129,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = CREATE_USER_SUMMARY, description = CREATE_USER_DESCRIPTION)
     @PostMapping
     public ResponseEntity<?> createUser(@Valid @RequestBody UserDto userDto) {
         try {
@@ -135,6 +141,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = CREATE_USER_CARD_SUMMARY, description = CREATE_USER_CARD_DESCRIPTION)
     @SecurityRequirement(name = AUTHORIZATION)
     @PostMapping("/cards")
     public ResponseEntity<?> createUserCard(@RequestHeader HttpHeaders headers,
@@ -153,6 +160,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = UPDATE_USER_SUMMARY, description = UPDATE_USER_DESCRIPTION)
     @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@RequestHeader HttpHeaders headers,
@@ -172,6 +180,8 @@ public class UserController {
         }
     }
 
+    @Operation(summary = BLOCK_USER_SUMMARY, description = BLOCK_USER_DESCRIPTION +
+            ONLY_BY_ADMINS)
     @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{id}/block")
     public ResponseEntity<?> blockUser(@RequestHeader HttpHeaders headers,
@@ -187,6 +197,8 @@ public class UserController {
         }
     }
 
+    @Operation(summary = UNBLOCK_USER_SUMMARY, description = UNBLOCK_USER_DESCRIPTION +
+    ONLY_BY_ADMINS)
     @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{id}/unblock")
     public ResponseEntity<Void> unblockUser(@RequestHeader HttpHeaders headers,
@@ -202,6 +214,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = UPDATE_USER_CARD_SUMMARY, description = UPDATE_USER_CARD_DESCRIPTION)
     @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{user_id}/cards/{card_id}")
     public ResponseEntity<?> updateUserCard(@RequestHeader HttpHeaders headers,
@@ -223,6 +236,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = DELETE_USER_SUMMARY, description = DELETE_USER_DESCRIPTION)
     @SecurityRequirement(name = AUTHORIZATION)
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUser(@RequestHeader HttpHeaders headers, @PathVariable int id) {
@@ -237,6 +251,7 @@ public class UserController {
         }
     }
 
+    @Operation(summary = DELETE_USER_CARD_SUMMARY, description = DELETE_USER_CARD_DESCRIPTION)
     @SecurityRequirement(name = AUTHORIZATION)
     @DeleteMapping("/{user_id}/cards/{card_id}")
     public ResponseEntity<?> deleteUserCard(@RequestHeader HttpHeaders headers,
@@ -253,6 +268,8 @@ public class UserController {
         }
     }
 
+    @Operation(summary = GIVE_ADMIN_RIGHTS_SUMMARY, description = GIVE_ADMIN_RIGHTS_DESCRIPTION +
+            ONLY_BY_ADMINS)
     @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{user_id}/admin-approval")
     public ResponseEntity<?> giveUserAdminRights(@RequestHeader HttpHeaders headers,
@@ -268,6 +285,8 @@ public class UserController {
         }
     }
 
+    @Operation(summary = REMOVE_ADMIN_RIGHTS_SUMMARY, description = REMOVE_ADMIN_RIGHTS_DESCRIPTION +
+            ONLY_BY_ADMINS)
     @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{user_id}/admin-cancellation")
     public ResponseEntity<?> removeUserAdminRights(@RequestHeader HttpHeaders headers,

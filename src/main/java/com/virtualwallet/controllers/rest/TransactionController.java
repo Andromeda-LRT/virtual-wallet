@@ -11,6 +11,8 @@ import com.virtualwallet.models.CardToWalletTransaction;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.WalletToWalletTransaction;
 import com.virtualwallet.services.contracts.IntermediateTransactionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.virtualwallet.model_helpers.ModelConstantHelper.AUTHORIZATION;
+import static com.virtualwallet.model_helpers.SwaggerConstantHelper.*;
 
 @RestController
 @RequestMapping("/api/transactions")
@@ -35,6 +40,8 @@ public class TransactionController {
         this.transactionResponseMapper = transactionResponseMapper;
     }
 
+    @Operation(summary = GET_ALL_TRANSACTION_SUMMARY, description = GET_ALL_TRANSACTION_DESCRIPTION)
+    @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/wallets")
     public ResponseEntity<?> getAllTransactions(@RequestHeader HttpHeaders headers,
                                                 @RequestParam(required = false)
@@ -64,6 +71,8 @@ public class TransactionController {
         }
     }
 
+    @Operation(summary = GET_ALL_CARD_TRANSACTIONS_SUMMARY, description = GET_ALL_CARD_TRANSACTIONS_DESCRIPTION)
+    @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/cards")
     public ResponseEntity<?> getAllCardTransfers(@RequestHeader HttpHeaders headers,
                                                  @RequestParam(required = false)
@@ -97,6 +106,8 @@ public class TransactionController {
         }
     }
 
+    @Operation(summary = APPROVE_TRANSACTION_SUMMARY, description = APPROVE_TRANSACTION_DESCRIPTION)
+    @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{transaction_id}/approval")
     public ResponseEntity<Void> approveTransaction(@RequestHeader HttpHeaders headers,
                                                    @PathVariable int transaction_id) {
@@ -113,6 +124,8 @@ public class TransactionController {
         }
     }
 
+    @Operation(summary = CANCEL_TRANSACTION_SUMMARY, description = CANCEL_TRANSACTION_DESCRIPTION)
+    @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{transaction_id}/cancellation")
     public ResponseEntity<Void> cancelTransaction(@RequestHeader HttpHeaders headers,
                                                   @PathVariable int transaction_id) {
