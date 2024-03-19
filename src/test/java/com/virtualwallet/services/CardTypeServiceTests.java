@@ -1,4 +1,4 @@
-package com.virtualwallet;
+package com.virtualwallet.services;
 
 import com.virtualwallet.exceptions.DuplicateEntityException;
 import com.virtualwallet.exceptions.UnauthorizedOperationException;
