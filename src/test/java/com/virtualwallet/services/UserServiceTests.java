@@ -2,24 +2,31 @@ package com.virtualwallet.services;
 
 import com.virtualwallet.exceptions.DuplicateEntityException;
 import com.virtualwallet.exceptions.EntityNotFoundException;
+import com.virtualwallet.exceptions.UnauthorizedOperationException;
 import com.virtualwallet.exceptions.UnusedWalletBalanceException;
 import com.virtualwallet.model_helpers.UserModelFilterOptions;
 import com.virtualwallet.models.Role;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.Wallet;
+import com.virtualwallet.models.mvc_input_model_dto.UpdateUserPasswordDto;
 import com.virtualwallet.repositories.contracts.UserRepository;
+import com.virtualwallet.utils.PasswordEncoderUtil;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static com.virtualwallet.Helpers.*;
 import static com.virtualwallet.model_helpers.ModelConstantHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -244,6 +251,205 @@ public class UserServiceTests {
 
         // Act & Assert
         assertThrows(UnusedWalletBalanceException.class, () -> userService.delete(user.getId(), user));
+    }
+
+    @Test
+    void blockUser_Should_CallRepository_When_ArgumentsValid() {
+        //Arrange
+        User userAdmin = createMockAdminUser();
+        User normalUser = createAnotherMockUser();
+
+        Mockito.when(userRepository.getById(userAdmin.getId())).thenReturn(userAdmin);
+
+        //Act
+        userService.blockUser(normalUser.getId(), userAdmin);
+
+        // Assert
+        Mockito.verify(userRepository, Mockito.times(1)).blockUser(normalUser.getId());
+    }
+
+    @Test
+    void blockUser_Should_Throw_UnauthorizedOperationException_When_UserIsNotAdmin() {
+        //Arrange
+        User normalUser = createAnotherMockUser();
+        User anotherUser = createAnotherMockUser();
+        anotherUser.setId(4);
+
+        //Act & Assert
+        Assertions.assertThrows(UnauthorizedOperationException.class,
+                () -> userService.blockUser(anotherUser.getId(), normalUser));
+    }
+
+
+    @Test
+    void unblockUser_Should_CallRepository_When_ArgumentsValid() {
+        //Arrange
+        User userAdmin = createMockAdminUser();
+        User normalUser = createAnotherMockUser();
+
+        Mockito.when(userRepository.getById(userAdmin.getId())).thenReturn(userAdmin);
+
+        //Act
+        userService.unblockUser(normalUser.getId(), userAdmin);
+
+        // Assert
+        Mockito.verify(userRepository, Mockito.times(1)).unblockUser(normalUser.getId());
+    }
+
+    @Test
+    void unblockUser_Should_Throw_UnauthorizedOperationException_When_UserIsNotAdmin() {
+        //Arrange
+        User normalUser = createAnotherMockUser();
+        User anotherUser = createAnotherMockUser();
+        anotherUser.setId(4);
+
+        //Act & Assert
+        Assertions.assertThrows(UnauthorizedOperationException.class,
+                () -> userService.unblockUser(anotherUser.getId(), normalUser));
+    }
+
+    @Test
+    void giveUserAdminRights_Should_CallRepository_When_ArgumentsValid() {
+        //Arrange
+        User userAdmin = createMockAdminUser();
+        User normalUser = createAnotherMockUser();
+
+        //Act
+        userService.giveUserAdminRights(normalUser, userAdmin);
+
+        //Assert
+        Mockito.verify(userRepository, Mockito.times(1)).giveUserAdminRights(normalUser);
+    }
+
+    @Test
+    void giveUserAdminRights_Should_CallRepository_When_UserIsBlocked() {
+        //Arrange
+        User userAdmin = createMockAdminUser();
+        User normalUser = createAnotherMockUser();
+        normalUser.setBlocked(true);
+
+        //Act
+        userService.giveUserAdminRights(normalUser, userAdmin);
+
+        //Assert
+        Mockito.verify(userRepository, Mockito.times(1)).unblockUser(normalUser.getId());
+
+    }
+
+    @Test
+    void giveUserAdminRights_Should_ThrowUnauthorizedOperationException_When_UserIsNotAdmin() {
+        //Arrange
+        User userAdmin = createMockAdminUser();
+        User normalUser = createAnotherMockUser();
+
+        //Act & Assert
+        Assertions.assertThrows(UnauthorizedOperationException.class,
+                () -> userService.giveUserAdminRights(userAdmin, normalUser));
+    }
+
+    @Test
+    void removeUserAdminRights_Should_CallRepository_When_ArgumentsValid() {
+        //Arrange
+        User userAdmin = createMockAdminUser();
+        User normalUser = createAnotherMockUser();
+
+        //Act
+        userService.removeUserAdminRights(normalUser, userAdmin);
+
+        //Assert
+        Mockito.verify(userRepository, Mockito.times(1)).removeUserAdminRights(normalUser);
+    }
+
+    @Test
+    void removeUserAdminRights_Should_ThrowUnauthorizedOperationException_When_UserIsNotAdmin() {
+        //Arrange
+        User userAdmin = createMockAdminUser();
+        User normalUser = createAnotherMockUser();
+
+        //Act & Assert
+        Assertions.assertThrows(UnauthorizedOperationException.class,
+                () -> userService.removeUserAdminRights(userAdmin, normalUser));
+    }
+
+    @Test
+    void verifyUserAccess_Should_ThrowUnauthorizedOperationException_When_UserIsNotAdmin() {
+        //Arrange
+        User userAdmin = createMockAdminUser();
+        User normalUser = createAnotherMockUser();
+
+        //Act & Assert
+        Assertions.assertThrows(UnauthorizedOperationException.class,
+                () -> userService.verifyUserAccess(normalUser, userAdmin.getId()));
+    }
+
+    @Test
+    void verifyUserAccess_Should_ThrowUnauthorizedOperationException_When_UserIdIsDifferentFromLoggedUser() {
+        //Arrange
+        User userAdmin = createMockAdminUser();
+        userAdmin.setRole(createAnotherMockRole());
+        User normalUser = createAnotherMockUser();
+
+        //Act & Assert
+        Assertions.assertThrows(UnauthorizedOperationException.class,
+                () -> userService.verifyUserAccess(normalUser, userAdmin.getId()));
+    }
+
+    @Test
+    void verifyUserExistence_Should_ReturnUserIfUserExists() {
+        //Arrange
+        User userAdmin = createMockAdminUser();
+
+        Mockito.when(userRepository.getById(userAdmin.getId())).thenReturn(userAdmin);
+
+        //Act
+        User resultUser = userService.verifyUserExistence(userAdmin.getId());
+
+        //Assert
+        Assertions.assertEquals(resultUser, userAdmin);
+    }
+
+    @Test
+    void confirmIfPasswordsMatch_Should_ReturnTrue_When_BothPasswordsMatch() {
+        //Arrange
+        User normalUser = createAnotherMockUser();
+        UpdateUserPasswordDto dto = createMockPasswordDto();
+        dto.setCurrentPassword(normalUser.getPassword());
+        normalUser.setPassword(PasswordEncoderUtil.encodePassword(normalUser.getPassword()));
+
+        Mockito.when(userRepository.getById(normalUser.getId())).thenReturn(normalUser);
+
+        //Act
+        boolean result = userService.confirmIfPasswordsMatch(normalUser.getId(), dto);
+
+        //Assert
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    void confirmIfPasswordsMatch_Should_ReturnFalse_When_PasswordsMismatch() {
+        //Arrange
+        User normalUser = createAnotherMockUser();
+        UpdateUserPasswordDto dto = createMockPasswordDto();
+        normalUser.setPassword(PasswordEncoderUtil.encodePassword(normalUser.getPassword()));
+
+        Mockito.when(userRepository.getById(normalUser.getId())).thenReturn(normalUser);
+
+        //Act
+        boolean result = userService.confirmIfPasswordsMatch(normalUser.getId(), dto);
+
+        //Assert
+        Assertions.assertFalse(result);
+    }
+
+    @Test
+    void isUserBlocked_Should_ThrowUnauthorizedOperationException_When_UserIsBlocked() {
+        //Arrange
+        User normalUser = createAnotherMockUser();
+        normalUser.setBlocked(true);
+
+        //Act & Assert
+        Assertions.assertThrows(UnauthorizedOperationException.class,
+                () -> userService.isUserBlocked(normalUser));
     }
 
 }

@@ -169,7 +169,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User verifyUserExistence(int id){
+    public User verifyUserExistence(int id) {
         return repository.getById(id);
     }
 
@@ -235,12 +235,12 @@ public class UserServiceImpl implements UserService {
 
 //        passwordDto.setCurrentPassword(encoder.encode(passwordDto.getCurrentPassword()));
 
-        return  encoder.matches(passwordDto.getCurrentPassword(), userWhosePasswordMayBeChanged.getPassword());
+        return encoder.matches(passwordDto.getCurrentPassword(), userWhosePasswordMayBeChanged.getPassword());
     }
 
     @Override
     public void isUserBlocked(User user) {
-        if(user.isBlocked()){
+        if (user.isBlocked()) {
             throw new UnauthorizedOperationException(UNAUTHORIZED_OPERATION_ERROR_MESSAGE);
         }
     }

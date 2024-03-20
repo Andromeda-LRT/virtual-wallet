@@ -1,6 +1,7 @@
 package com.virtualwallet;
 
 import com.virtualwallet.models.*;
+import com.virtualwallet.models.mvc_input_model_dto.UpdateUserPasswordDto;
 
 import java.time.LocalDateTime;
 import java.time.Month;
@@ -19,7 +20,6 @@ public class Helpers {
         card.setCheckNumber(createMockCheckNumber());
         card.setCardType(createMockCardType());
         card.setArchived(false);
-//        card.setCardHolderId(createAnotherMockUser());
         return card;
     }
 
@@ -54,10 +54,41 @@ public class Helpers {
         return user;
     }
 
+    public static User createMockAdminUser() {
+        User user = new User();
+        user.setId(5);
+        user.setUsername("AnotherMockAdminUser");
+        user.setPassword("Pass4321!");
+        user.setFirstName("Mock");
+        user.setLastName("AdminUser");
+        user.setEmail("mockadminuser@example.com");
+        user.setRole(createAdminMockRole());
+        user.setBlocked(false);
+        user.setIsArchived(false);
+        user.setPhoneNumber("0798443322");
+        user.setProfilePicture(null);
+        user.setCards(new HashSet<>());
+        return user;
+    }
+
     public static Role createAnotherMockRole () {
         Role role = new Role();
         role.setId(1);
         role.setName("User");
         return role;
+    }
+    public static Role createAdminMockRole() {
+        Role role = new Role();
+        role.setId(2);
+        role.setName("admin");
+        return role;
+    }
+
+    public static UpdateUserPasswordDto createMockPasswordDto() {
+        UpdateUserPasswordDto passwordDto = new UpdateUserPasswordDto();
+        passwordDto.setCurrentPassword("Pass1234!");
+        passwordDto.setNewPassword("Pass12345!");
+        passwordDto.setConfirmNewPassword("Pass12345!");
+        return passwordDto;
     }
 }

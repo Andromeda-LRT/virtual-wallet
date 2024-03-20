@@ -242,7 +242,7 @@ public class WalletMvcController {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "NotFoundView";
-        } catch (UnauthorizedOperationException e) {
+        } catch (UnauthorizedOperationException | UnusedWalletBalanceException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "UnauthorizedView";
@@ -527,6 +527,7 @@ public class WalletMvcController {
         }
 
         User user;
+        User userToAddToWallet = new User();
         try {
             user = authHelper.tryGetUser(session);
         } catch (AuthenticationFailureException e) {
@@ -534,7 +535,7 @@ public class WalletMvcController {
         }
         try {
             walletService.getWalletById(user, wallet_id);
-            User userToAddToWallet = userService.getByUsername(walletUserDto.getUsername());
+            userToAddToWallet = userService.getByUsername(walletUserDto.getUsername());
             walletService.addUserToWallet(user, wallet_id, userToAddToWallet.getId());
             return "redirect:/wallets/" + wallet_id + "/users";
         } catch (UnauthorizedOperationException e) {
@@ -547,7 +548,8 @@ public class WalletMvcController {
             return "NotFoundView";
         } catch (DuplicateEntityException e) {
             model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());
-            model.addAttribute("error", format(DUPLICATE_WALLETUSER_ERROR_MESSAGE, user.getUsername()));
+            model.addAttribute("error",
+                    format(DUPLICATE_WALLETUSER_ERROR_MESSAGE, userToAddToWallet.getUsername()));
             return "ConflictView";
         } catch (LimitReachedException e) {
             model.addAttribute("statusCode", HttpStatus.CONFLICT.getReasonPhrase());

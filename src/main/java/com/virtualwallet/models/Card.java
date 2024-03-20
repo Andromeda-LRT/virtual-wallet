@@ -124,7 +124,7 @@ public class Card {
         if (!(o instanceof Card card)) return false;
         return getId() == card.getId()
                 && isArchived() == card.isArchived()
-                && Objects.equals(getNumber(), card.getNumber())
+                && (getNumber().equals(card.getNumber()))
                 && Objects.equals(getExpirationDate(), card.getExpirationDate())
                 && Objects.equals(getCardHolder(), card.getCardHolder())
                 && Objects.equals(getCheckNumber(), card.getCheckNumber())

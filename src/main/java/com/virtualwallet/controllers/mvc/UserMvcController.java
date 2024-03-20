@@ -92,16 +92,10 @@ public class UserMvcController {
             return "NotFoundView";
         }
 
-//        if (bindingResult.hasErrors()) {
-//            setModel(new UpdateUserPasswordDto(), model, loggedUser);
-//            return "ProfileView";
-//        }
-
         try {
             User user = updateUserMapper.fromDto(id, userDto, loggedUser);
 
             if (bindingResult.hasErrors()) {
-//                setModel(new UpdateUserPasswordDto(), model, loggedUser);
                 UserResponseDto userResponseDto = userResponseMapper.convertToDto(loggedUser);
                 model.addAttribute("passwordForm", new UpdateUserPasswordDto());
                 model.addAttribute("userFull", loggedUser);
