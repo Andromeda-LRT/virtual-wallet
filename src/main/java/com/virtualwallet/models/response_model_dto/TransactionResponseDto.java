@@ -1,7 +1,5 @@
 package com.virtualwallet.models.response_model_dto;
 
-import com.virtualwallet.models.Status;
-
 import java.time.LocalDateTime;
 
 public class TransactionResponseDto {
