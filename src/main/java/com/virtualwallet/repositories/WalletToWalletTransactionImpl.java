@@ -18,10 +18,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.virtualwallet.model_helpers.ModelConstantHelper.VALID_NUMBER;
+import static com.virtualwallet.model_helpers.ModelConstantHelper.INCOMING_TRANSACTION;
+import static com.virtualwallet.model_helpers.ModelConstantHelper.OUTGOING_TRANSACTION;
 
 @Repository
-public class WalletToWalletTransactionImpl extends AbstractCrudRepository<WalletToWalletTransaction> implements WalletToWalletTransactionRepository {
+public class WalletToWalletTransactionImpl extends AbstractCrudRepository<WalletToWalletTransaction>
+        implements WalletToWalletTransactionRepository {
 
     private final WalletRepository walletRepository;
 
@@ -75,7 +77,8 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
             transactionFilter.getDirection().ifPresent(value -> {
                 if (!value.isBlank()) {
 
-                    int transactionTypeId = "Outgoing".equalsIgnoreCase(value) ? 2 : ("Incoming".equalsIgnoreCase(value) ? 1 : 0);
+                    int transactionTypeId = OUTGOING_TRANSACTION.equalsIgnoreCase(value)
+                            ? 2 : (INCOMING_TRANSACTION.equalsIgnoreCase(value) ? 1 : 0);
                     filters.add("transactionTypeId = :direction");
                     params.put("direction", transactionTypeId);
 
@@ -92,14 +95,16 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
             }
             queryString.append(generateOrderBy(transactionFilter));
 
-            Query<WalletToWalletTransaction> query = session.createQuery(queryString.toString(), WalletToWalletTransaction.class);
+            Query<WalletToWalletTransaction> query = session.createQuery(queryString.toString(),
+                    WalletToWalletTransaction.class);
             query.setProperties(params);
             return query.list();
         }
     }
 
     @Override
-    public List<WalletToWalletTransaction> getUserWalletTransactions(User user, WalletTransactionModelFilterOptions transactionFilter,int wallet_id) {
+    public List<WalletToWalletTransaction> getUserWalletTransactions
+            (User user, WalletTransactionModelFilterOptions transactionFilter,int wallet_id) {
         try (Session session = sessionFactory.openSession()) {
 
             List<String> filters = new ArrayList<>();
@@ -142,7 +147,8 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
             transactionFilter.getDirection().ifPresent(value -> {
                 if (!value.isBlank()) {
 
-                    int transactionTypeId = "Outgoing".equalsIgnoreCase(value) ? 2 : ("Incoming".equalsIgnoreCase(value) ? 1 : 0);
+                    int transactionTypeId = OUTGOING_TRANSACTION.equalsIgnoreCase(value)
+                            ? 2 : (INCOMING_TRANSACTION.equalsIgnoreCase(value) ? 1 : 0);
                     filters.add("transactionTypeId = :direction");
                     params.put("direction", transactionTypeId);
 
@@ -159,7 +165,8 @@ public class WalletToWalletTransactionImpl extends AbstractCrudRepository<Wallet
             }
             queryString.append(generateOrderBy(transactionFilter));
 
-            Query<WalletToWalletTransaction> query = session.createQuery(queryString.toString(), WalletToWalletTransaction.class);
+            Query<WalletToWalletTransaction> query = session.createQuery(queryString.toString(),
+                    WalletToWalletTransaction.class);
             query.setProperties(params);
             return query.list();
         }

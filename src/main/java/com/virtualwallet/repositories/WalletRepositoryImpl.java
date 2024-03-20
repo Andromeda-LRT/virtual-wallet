@@ -23,7 +23,8 @@ public class WalletRepositoryImpl extends AbstractCrudRepository<Wallet> impleme
     @Override
     public List<Wallet> getAllWallets(User user) {
         try (Session session = sessionFactory.openSession()) {
-            Query<Wallet> query = session.createQuery("from Wallet where createdBy = :user_id AND isArchived = false", Wallet.class);
+            Query<Wallet> query = session.createQuery
+                    ("from Wallet where createdBy = :user_id AND isArchived = false", Wallet.class);
             query.setParameter("user_id", user.getId());
             return query.list();
         }
