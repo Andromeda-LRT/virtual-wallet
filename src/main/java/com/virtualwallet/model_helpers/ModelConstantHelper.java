@@ -87,6 +87,8 @@ public class ModelConstantHelper {
 
     public static final int CARD_LAST_4_DIGIT_START_INDEX = 12;
 
+    public static final int CARD_LAST_4_DIGIT_LAST_INDEX = 16;
+
     public static final String WALLET_TYPE_1 = "Personal";
 
     public static final String WALLET_TYPE_2 = "Joined";
@@ -99,5 +101,9 @@ public class ModelConstantHelper {
 
     public static final String DUPLICATE_WALLETUSER_ERROR_MESSAGE =
             "User with username %s is a member of the current Joined Wallet";
+
+    public static final String INCOMING_TRANSACTION = "Incoming";
+
+    public static final String OUTGOING_TRANSACTION = "Outgoing";
 
 }
