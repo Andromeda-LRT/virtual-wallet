@@ -2,8 +2,6 @@ package com.virtualwallet.model_mappers;
 
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.response_model_dto.UserResponseDto;
-import com.virtualwallet.repositories.contracts.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -11,11 +9,8 @@ import java.util.List;
 
 @Component
 public class UserResponseMapper {
-    private final UserRepository userRepository;
 
-    @Autowired
-    public UserResponseMapper(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserResponseMapper() {
     }
 
     public UserResponseDto convertToDto(User user){
