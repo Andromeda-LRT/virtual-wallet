@@ -13,7 +13,6 @@ public class RegisterDto {
             message = USERNAME_ERROR_MESSAGE)
     private String username;
     @NotEmpty(message = "Password can't be empty.")
-   // @Size(min = 8, max = 65, message = "Password must be at least 8 characters long.")
     @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{4,20}$",
             message = PASSWORD_ERROR_MESSAGE)
     private String password;

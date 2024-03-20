@@ -7,10 +7,15 @@ import java.util.List;
 
 public interface WalletRepository {
     List<Wallet> getAll();
+
     Wallet getByStringField(String fieldName, String fieldValue);
+
     Wallet getById(int id);
+
     void create(Wallet wallet);
+
     void update(Wallet wallet);
+
     void delete(int id);
 
     List<Wallet> getAllWallets(User user);

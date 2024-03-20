@@ -34,7 +34,8 @@ public class TransactionMapper {
         walletToWalletTransaction.setAmount(transactionDto.getAmount());
         walletToWalletTransaction.setSender(user);
         walletToWalletTransaction.setStatus(statusService.getStatus(PENDING_TRANSACTION_ID));
-        walletToWalletTransaction.setRecipientWalletId(walletService.checkIbanExistence(transactionDto.getIban()).getWalletId());
+        walletToWalletTransaction.setRecipientWalletId
+                (walletService.checkIbanExistence(transactionDto.getIban()).getWalletId());
         walletToWalletTransaction.setTime(LocalDateTime.now());
         walletToWalletTransaction.setWalletId(walletId);
 
@@ -46,7 +47,8 @@ public class TransactionMapper {
         walletToWalletTransaction.setTransactionId(id);
         walletToWalletTransaction.setAmount(transactionDto.getAmount());
         walletToWalletTransaction.setSender(user);
-        walletToWalletTransaction.setRecipientWalletId(walletService.checkIbanExistence(transactionDto.getIban()).getWalletId());
+        walletToWalletTransaction.setRecipientWalletId
+                (walletService.checkIbanExistence(transactionDto.getIban()).getWalletId());
         return walletToWalletTransaction;
     }
 

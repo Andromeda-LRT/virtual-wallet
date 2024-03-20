@@ -30,6 +30,7 @@ import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
+    public static final int POSITIVE_WALLET_BALANCE = 0;
     private final UserRepository repository;
     private final WebClient dummyApiWebClient;
     @Value("${api.key}")
@@ -101,20 +102,12 @@ public class UserServiceImpl implements UserService {
         verifyUserAccess(loggedUser, id);
         User user = repository.getById(id);
         for (Wallet wallet : user.getWallets()) {
-            if (wallet.getBalance() > 0) {
+            if (wallet.getBalance() > POSITIVE_WALLET_BALANCE) {
                 throw new UnusedWalletBalanceException(wallet.getIban(), String.valueOf(wallet.getBalance()));
             }
         }
-
         user.setIsArchived(true);
         repository.update(user);
-        /*
-        "message": "could not execute statement [(conn=404)
-        Cannot delete or update a parent row: a foreign key constraint fails
-        (`virtual_wallet`.`wallets`, CONSTRAINT `wallets_users_user_id_fk` FOREIGN KEY (`created_by`)
-        REFERENCES `users` (`user_id`))] [delete from users where user_id=?];
-        SQL [delete from users where user_id=?]; constraint [null]",
-        */
     }
 
     @Override
@@ -233,8 +226,6 @@ public class UserServiceImpl implements UserService {
         User userWhosePasswordMayBeChanged = repository.getById(id);
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-//        passwordDto.setCurrentPassword(encoder.encode(passwordDto.getCurrentPassword()));
-
         return encoder.matches(passwordDto.getCurrentPassword(), userWhosePasswordMayBeChanged.getPassword());
     }
 
@@ -247,7 +238,6 @@ public class UserServiceImpl implements UserService {
 
     private void populateFormData(MultiValueMap<String, String> formData, String encodedFile) {
         formData.add(UPLOAD_IMG_API_REQUEST_KEY, key);
-        // formData.add(EXPIRATION_QUERY_PARAM_REQUEST_KEY, "600");
         formData.add(REQUEST_KEY_IMAGE, encodedFile);
     }
 

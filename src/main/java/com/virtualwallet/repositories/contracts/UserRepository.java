@@ -8,16 +8,24 @@ import java.util.List;
 public interface UserRepository {
 
     List<User> getAll();
+
     List<User> getAllWithFilter(UserModelFilterOptions userFilter);
-    //List<User> getRecipient(UserModelFilterOptions userFilter);
+
     User getByStringField(String fieldName, String fieldValue);
+
     User getById(int id);
+
     void create(User user);
+
     void update(User user);
+
     void delete(int id);
+
     void blockUser(int id);
+
     void unblockUser(int id);
+
     void giveUserAdminRights(User user);
+
     void removeUserAdminRights(User user);
-//    boolean checkIfAdmin(User user);
 }

@@ -11,7 +11,12 @@ public class UserResponseDto {
     public UserResponseDto() {
     }
 
-    public UserResponseDto(String username, String firstName, String lastName, String email, String phoneNumber, String profilePicture) {
+    public UserResponseDto(String username,
+                           String firstName,
+                           String lastName,
+                           String email,
+                           String phoneNumber,
+                           String profilePicture) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;

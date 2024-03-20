@@ -8,30 +8,26 @@ import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.model_mappers.*;
 import com.virtualwallet.models.*;
 import com.virtualwallet.models.input_model_dto.TransactionDto;
+import com.virtualwallet.models.input_model_dto.WalletDto;
 import com.virtualwallet.models.mvc_input_model_dto.CardMvcTransactionDto;
 import com.virtualwallet.models.mvc_input_model_dto.TransactionModelFilterDto;
 import com.virtualwallet.models.mvc_input_model_dto.UserModelFilterDto;
 import com.virtualwallet.models.response_model_dto.*;
-import com.virtualwallet.models.input_model_dto.WalletDto;
 import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.services.contracts.WalletService;
 import com.virtualwallet.services.contracts.WalletTypeService;
-import com.virtualwallet.utils.UtilHelpers;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Limit;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 import static com.virtualwallet.model_helpers.ModelConstantHelper.DUPLICATE_WALLETUSER_ERROR_MESSAGE;
-import static com.virtualwallet.model_helpers.ModelConstantHelper.UNAUTHORIZED_OPERATION_ERROR_MESSAGE;
+import static com.virtualwallet.utils.UtilHelpers.*;
 import static java.lang.String.format;
 
 @Controller
@@ -87,7 +83,6 @@ public class WalletMvcController {
         } catch (AuthenticationFailureException e) {
             return "redirect:/auth/login";
         }
-        //todo do we want walletResponseDto?
         List<Wallet> personalWallets = walletService.getAllPersonalWallets(user);
         List<Wallet> joinWallets = walletService.getAllJoinWallets(user);
         model.addAttribute("personalWallets", personalWallets);
@@ -344,7 +339,6 @@ public class WalletMvcController {
             List<User> userList = walletService.getRecipient(userFilter);
             List<RecipientResponseDto> recipientList = userMapper.toRecipientDto(userList);
             walletService.getWalletById(user, wallet_id);
-            //transactionDto.setWalletId(wallet_id);
             model.addAttribute("recipientList", recipientList);
             model.addAttribute("newTransaction", new TransactionDto());
             model.addAttribute("walletId", wallet_id);
@@ -582,40 +576,5 @@ public class WalletMvcController {
             model.addAttribute("error", e.getMessage());
             return "UnauthorizedView";
         }
-    }
-
-    private UserModelFilterOptions populateUserFilterOptions(UserModelFilterDto dto) {
-        return new UserModelFilterOptions(
-                dto.getUsername(),
-                dto.getEmail(),
-                dto.getPhoneNumber(),
-                dto.getSortBy(),
-                dto.getSortOrder());
-    }
-
-    private WalletTransactionModelFilterOptions populateWalletTransactionFilterOptions
-            (TransactionModelFilterDto dto) {
-        return new WalletTransactionModelFilterOptions(
-                dto.getStartDate(),
-                dto.getEndDate(),
-                dto.getSender(),
-                dto.getRecipient(),
-                dto.getDirection(),
-                dto.getSortBy(),
-                dto.getSortOrder()
-        );
-    }
-
-    private CardTransactionModelFilterOptions populateCardTransactionFilterOptions
-            (TransactionModelFilterDto dto) {
-        return new CardTransactionModelFilterOptions(
-                dto.getStartDate(),
-                dto.getEndDate(),
-                dto.getSender(),
-                dto.getRecipient(),
-                dto.getDirection(),
-                dto.getSortBy(),
-                dto.getSortOrder()
-        );
     }
 }

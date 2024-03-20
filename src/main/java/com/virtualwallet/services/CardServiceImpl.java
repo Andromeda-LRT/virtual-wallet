@@ -8,10 +8,8 @@ import com.virtualwallet.models.Card;
 import com.virtualwallet.models.User;
 import com.virtualwallet.repositories.contracts.CardRepository;
 import com.virtualwallet.services.contracts.CardService;
-import com.virtualwallet.services.contracts.CheckNumberService;
 import com.virtualwallet.services.contracts.UserService;
 import com.virtualwallet.utils.AESUtil;
-import com.virtualwallet.utils.UtilHelpers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,17 +35,14 @@ public class CardServiceImpl implements CardService {
         verifyCardExpirationDate(card);
         Card cardToBeCreated;
         try {
-            // Encrypt the card number before checking/using it in the repository
             String encryptedCardNumber = encryptCardNumber(card.getNumber());
             cardToBeCreated = cardRepository.getByStringField("number", encryptedCardNumber);
             checkCardHolder(createdBy, cardToBeCreated);
 
             cardToBeCreated.setExpirationDate(card.getExpirationDate());
             unarchiveCardIfNeeded(cardToBeCreated);
-            // Ensure the card number is stored encrypted in the repository
             cardRepository.update(cardToBeCreated);
         } catch (EntityNotFoundException e) {
-            // Encrypt the card number before saving the new card
             checkCardHolder(createdBy, card);
             card.setNumber(encryptCardNumber(card.getNumber()));
             card.setCardHolderId(createdBy);

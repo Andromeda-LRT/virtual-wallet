@@ -18,11 +18,11 @@ public class CardMapper {
     private final CardTypeService cardTypeService;
     private final CheckNumberService checkNumberService;
 
-@Autowired
+    @Autowired
     public CardMapper(CardTypeService cardTypeService, CheckNumberService checkNumberService) {
         this.cardTypeService = cardTypeService;
-    this.checkNumberService = checkNumberService;
-}
+        this.checkNumberService = checkNumberService;
+    }
 
     public Card fromDto(CardDto cardDto, User user) {
         Card card = new Card();
@@ -36,7 +36,7 @@ public class CardMapper {
         return card;
     }
 
-    public Card fromDto(CardDto cardDto, int id,  User createdBy) {
+    public Card fromDto(CardDto cardDto, int id, User createdBy) {
         Card card = new Card();
         card.setId(id);
         card.setNumber(cardDto.getNumber());

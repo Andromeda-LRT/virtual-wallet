@@ -27,12 +27,6 @@ public class UpdateUserDto {
     @NotNull(message = EMPTY_ERROR_MESSAGE)
     String email;
 
-//    @Schema(name = "password", example = "Pass1234!", required = true)
-//    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,20}$",
-//            message = PASSWORD_ERROR_MESSAGE)
-//    @NotNull(message = EMPTY_ERROR_MESSAGE)
-//    String password;
-
     @Pattern(regexp = "^[0-9]+$",
             message = "Phone number must include only digits")
     @NotNull(message = EMPTY_ERROR_MESSAGE)
@@ -42,11 +36,13 @@ public class UpdateUserDto {
     public UpdateUserDto() {
     }
 
-    public UpdateUserDto(String firstName, String lastName, String email, String password, String phoneNumber) {
+    public UpdateUserDto(String firstName,
+                         String lastName,
+                         String email,
+                         String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-//        this.password = password;
         this.phoneNumber = phoneNumber;
     }
 
@@ -65,14 +61,6 @@ public class UpdateUserDto {
     public void setLastName(String lastName) {
         this.lastName = lastName;
     }
-
-//    public String getPassword() {
-//        return password;
-//    }
-//
-//    public void setPassword(String password) {
-//        this.password = password;
-//    }
 
     public String getEmail() {
         return email;

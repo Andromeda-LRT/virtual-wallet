@@ -1,7 +1,6 @@
 package com.virtualwallet.repositories.contracts;
 
 import com.virtualwallet.models.CardType;
-import com.virtualwallet.models.Status;
 
 import java.util.List;
 

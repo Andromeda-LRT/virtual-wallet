@@ -16,24 +16,19 @@ public class UpdateUserMapper {
         this.userService = userService;
     }
 
-    public User fromDto (int id, UpdateUserDto userDto, User loggedUser) {
-        User user = userService.get(id,loggedUser);
+    public User fromDto(int id, UpdateUserDto userDto, User loggedUser) {
+        User user = userService.get(id, loggedUser);
         toDtoObj(user, userDto);
         return user;
     }
 
-    public User fromDto (int id, UpdateUserPasswordDto userDto, User loggedUser) {
-        User user = userService.get(id,loggedUser);
-//        if (userDto.getNewPassword().equals(userDto.getConfirmNewPassword())){
-            user.setPassword(PasswordEncoderUtil.encodePassword(userDto.getNewPassword()));
-//        }else {
-//
-//        }
+    public User fromDto(int id, UpdateUserPasswordDto userDto, User loggedUser) {
+        User user = userService.get(id, loggedUser);
+        user.setPassword(PasswordEncoderUtil.encodePassword(userDto.getNewPassword()));
         return user;
     }
 
     private void toDtoObj(User user, UpdateUserDto updateUserDto) {
-//        user.setPassword(updateUserDto.getPassword());
         user.setFirstName(updateUserDto.getFirstName());
         user.setLastName(updateUserDto.getLastName());
         user.setPhoneNumber(updateUserDto.getPhoneNumber());

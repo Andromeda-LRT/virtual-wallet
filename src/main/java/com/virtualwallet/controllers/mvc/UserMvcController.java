@@ -3,13 +3,11 @@ package com.virtualwallet.controllers.mvc;
 import com.virtualwallet.exceptions.*;
 import com.virtualwallet.model_helpers.AuthenticationHelper;
 import com.virtualwallet.model_mappers.UpdateUserMapper;
-import com.virtualwallet.model_mappers.UserMapper;
 import com.virtualwallet.model_mappers.UserResponseMapper;
 import com.virtualwallet.models.User;
 import com.virtualwallet.models.input_model_dto.UpdateUserDto;
 import com.virtualwallet.models.mvc_input_model_dto.UpdateUserPasswordDto;
 import com.virtualwallet.models.response_model_dto.UserResponseDto;
-import com.virtualwallet.services.contracts.CardService;
 import com.virtualwallet.services.contracts.UserService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -27,25 +25,23 @@ import java.io.IOException;
 @Controller
 @RequestMapping("/users")
 public class UserMvcController {
+    public static final String WILL_NOT_THROW_ERROR_MESSAGE = "This should never happen," +
+            " since file being uploaded is taken from file system";
     private final UserService userService;
-    private final CardService cardService;
     private final AuthenticationHelper authenticationHelper;
     private final UserResponseMapper userResponseMapper;
     private final UpdateUserMapper updateUserMapper;
-    private final UserMapper userMapper;
 
 
     @Autowired
     public UserMvcController(UserService userService,
-                             CardService cardService,
-                             AuthenticationHelper authenticationHelper, UserResponseMapper userResponseMapper, UpdateUserMapper updateUserMapper,
-                             UserMapper userMapper) {
+                             AuthenticationHelper authenticationHelper,
+                             UserResponseMapper userResponseMapper,
+                             UpdateUserMapper updateUserMapper) {
         this.userService = userService;
-        this.cardService = cardService;
         this.authenticationHelper = authenticationHelper;
         this.userResponseMapper = userResponseMapper;
         this.updateUserMapper = updateUserMapper;
-        this.userMapper = userMapper;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -54,11 +50,10 @@ public class UserMvcController {
     }
 
     @GetMapping("/userProfile")
-    public String showCurrentUserProfile( Model model, HttpSession session) {
+    public String showCurrentUserProfile(Model model, HttpSession session) {
         try {
             User loggedUser = authenticationHelper.tryGetUser(session);
             User user = userService.get(loggedUser.getId(), loggedUser);
-//            UserDto userDto = userMapper.toDto(user);
             setModel(new UpdateUserPasswordDto(), model, loggedUser);
             return "ProfileView";
         } catch (AuthenticationFailureException e) {
@@ -132,8 +127,7 @@ public class UserMvcController {
 
             return "redirect:/users/userProfile";
         } catch (FileNotFoundException e) {
-            throw new RuntimeException("This should never happen," +
-                    " since file being uploaded is taken from file system");
+            throw new RuntimeException(WILL_NOT_THROW_ERROR_MESSAGE);
         } catch (InvalidOperationException e) {
             model.addAttribute("statusCode", HttpStatus.BAD_REQUEST.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
@@ -163,12 +157,10 @@ public class UserMvcController {
     @GetMapping("/{id}/password")
     public String showChangePasswordForm(@PathVariable int id, Model model) {
         System.out.println("Adding passwordForm to model");
-//        UpdateUserPasswordDto passwordForm = new UpdateUserPasswordDto();
         model.addAttribute("passwordForm", new UpdateUserPasswordDto());
 
-        return "ProfileView"; // The name of the Thymeleaf template that contains the form
+        return "ProfileView";
     }
-
 
     @PostMapping("/{id}/password")
     public String updateUserPassword(@PathVariable int id,
@@ -177,51 +169,46 @@ public class UserMvcController {
                                      HttpSession session,
                                      Model model) {
 
-        // Check if the logged-in user is present
         User loggedUser;
-//        model.addAttribute("passwordForm", passwordDto);
 
         try {
             loggedUser = authenticationHelper.tryGetUser(session);
             session.setAttribute("userFull", loggedUser);
         } catch (AuthenticationFailureException e) {
-            return "redirect:/auth/login"; // Redirect to login if not authenticated
+            return "redirect:/auth/login";
         }
         model.addAttribute("userFull", loggedUser);
         try {
-//             Verify if the current password is correct
             if (!userService.confirmIfPasswordsMatch(id, passwordDto)) {
                 setModel(passwordDto, model, loggedUser);
-                bindingResult.rejectValue("currentPassword", "password_error", "Wrong Password");
-                return "ProfileView"; // Show error on the profile page
+                bindingResult.rejectValue
+                        ("currentPassword", "password_error", "Wrong Password");
+                return "ProfileView";
             }
 
-            // Check if the new password and confirmation match
             if (!passwordDto.getNewPassword().equals(passwordDto.getConfirmNewPassword())) {
                 setModel(passwordDto, model, loggedUser);
-                bindingResult.rejectValue("confirmNewPassword", "password_error", "Passwords mismatch.");
-                return "ProfileView"; // Show error on the profile page
+                bindingResult.rejectValue
+                        ("confirmNewPassword", "password_error", "Passwords mismatch.");
+                return "ProfileView";
             }
 
             if (bindingResult.hasErrors()) {
                 setModel(passwordDto, model, loggedUser);
-                return "ProfileView"; // Stay on the profile page to show errors
+                return "ProfileView";
             }
 
-            // Proceed to update the password
             User userWhosePasswordWillBeUpdated = updateUserMapper.fromDto(id, passwordDto, loggedUser);
             userService.update(userWhosePasswordWillBeUpdated, loggedUser);
-
-            model.addAttribute("passwordUpdateSuccess", true); // Optionally, indicate password update success
-
+            model.addAttribute("passwordUpdateSuccess", true);
         } catch (EntityNotFoundException e) {
             model.addAttribute("statusCode", HttpStatus.NOT_FOUND.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "NotFoundView"; // Show not found view if user doesn't exist
+            return "NotFoundView";
         } catch (UnauthorizedOperationException e) {
             model.addAttribute("statusCode", HttpStatus.UNAUTHORIZED.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
-            return "UnauthorizedView"; // Access denied
+            return "UnauthorizedView";
         }
         return "redirect:/users/userProfile";
     }

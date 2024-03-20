@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.virtualwallet.model_helpers.ModelConstantHelper.DEFAULT_PROFILE_IMAGE;
 import static com.virtualwallet.model_helpers.ModelConstantHelper.USER_ROLE_ID;
 
 @Component
@@ -89,7 +88,7 @@ public class UserMapper {
             recipient.setWalletIban(walletIbanList);
             recipient.setUsername(user.getUsername());
             recipient.setProfilePicture(user.getProfilePicture());
-            if (user.getWallets().isEmpty()){
+            if (user.getWallets().isEmpty()) {
                 continue;
             }
             for (Wallet wallet : user.getWallets()) {

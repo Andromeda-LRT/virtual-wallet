@@ -1,6 +1,5 @@
 package com.virtualwallet.models.response_model_dto;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class RecipientResponseDto {

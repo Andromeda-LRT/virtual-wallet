@@ -36,25 +36,19 @@ import static com.virtualwallet.utils.UtilHelpers.populateWalletTransactionFilte
 @RequestMapping("/admin")
 public class AdminController {
     private final UserService userService;
-    private final CardService cardService;
-    private final WalletService walletService;
     private final IntermediateTransactionService middleTransactionService;
     private final AuthenticationHelper authenticationHelper;
     private final TransactionResponseMapper transactionResponseMapper;
-    private final UserMapper userMapper;
 
     @Autowired
-    public AdminController(UserService userService, CardService cardService,
-                           WalletService walletService, IntermediateTransactionService middleTransactionService,
-                           AuthenticationHelper authenticationHelper, TransactionResponseMapper transactionResponseMapper,
-                           UserMapper userMapper) {
+    public AdminController(UserService userService,
+                           IntermediateTransactionService middleTransactionService,
+                           AuthenticationHelper authenticationHelper,
+                           TransactionResponseMapper transactionResponseMapper) {
         this.userService = userService;
-        this.cardService = cardService;
-        this.walletService = walletService;
         this.middleTransactionService = middleTransactionService;
         this.authenticationHelper = authenticationHelper;
         this.transactionResponseMapper = transactionResponseMapper;
-        this.userMapper = userMapper;
     }
 
     @ModelAttribute("isAuthenticated")
@@ -112,8 +106,6 @@ public class AdminController {
 
         try {
             List<User> users = userService.getAllWithFilter(loggedUser, userFilter);
-            //TODO: Implement UserMapper FOR USER RESPONSE DTO - LYUBIMA
-//            List<UserDto> userDtos = userMapper.toDto(users);
             model.addAttribute("users", users);
             model.addAttribute("userFilterOptions", userModelFilterDto);
             return "AllUsersView";
@@ -252,12 +244,10 @@ public class AdminController {
         try {
             CardTransactionModelFilterOptions cardFilter = populateCardTransactionFilterOptions(
                     cardFilterDto);
-//            List<CardToWalletTransaction> cardTransactionList =
-//                    middleTransactionService.getAllCardTransactionsWithFilter(user, cardFilter);
             List<TransactionResponseDto> cardTransactionResponseList =
                     transactionResponseMapper.convertCardTransactionsToDto(middleTransactionService
                             .getAllCardTransactionsWithFilter(user, cardFilter)
-            );
+                    );
             model.addAttribute("cardTransfersList", cardTransactionResponseList);
             model.addAttribute("cardTransactionFilter", cardFilterDto);
             return "AllCardTransfersView";
@@ -288,9 +278,6 @@ public class AdminController {
         }
         try {
             WalletTransactionModelFilterOptions walletFilter = populateWalletTransactionFilterOptions(walletFilterDto);
-//            List<WalletToWalletTransaction> walletTransactions =
-//                    middleTransactionService.getAllWithFilter(user, walletFilter);
-
             List<TransactionResponseDto> walletTransactionList = transactionResponseMapper.convertWalletTransactionsToDto(
                     middleTransactionService.getAllWithFilter(user, walletFilter)
             );
@@ -330,9 +317,6 @@ public class AdminController {
             model.addAttribute("error", e.getMessage());
             return "UnauthorizedView";
         } catch (InvalidOperationException e) {
-            //todo InvalidOperation is meant to be thrown when transactionId belongs to
-            // either a declined or approved in other words already processed transaction
-            // in such cases we do not want to do anything to it.
             model.addAttribute("statusCode", HttpStatus.NOT_ACCEPTABLE.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "NotAcceptableView";
@@ -362,9 +346,6 @@ public class AdminController {
             model.addAttribute("error", e.getMessage());
             return "UnauthorizedView";
         } catch (InvalidOperationException e) {
-            //todo InvalidOperation is meant to be thrown when transactionId belongs to
-            // either a declined or approved in other words already processed transaction
-            // in such cases we do not want to do anything to it.
             model.addAttribute("statusCode", HttpStatus.NOT_ACCEPTABLE.getReasonPhrase());
             model.addAttribute("error", e.getMessage());
             return "NotAcceptableView";

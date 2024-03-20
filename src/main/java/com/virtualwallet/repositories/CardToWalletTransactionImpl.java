@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class CardToWalletTransactionImpl extends AbstractCrudRepository<CardToWalletTransaction> implements CardToWalletTransactionRepository {
+public class CardToWalletTransactionImpl extends AbstractCrudRepository<CardToWalletTransaction>
+        implements CardToWalletTransactionRepository {
 
     private final UserRepository userRepository;
 
@@ -67,13 +68,6 @@ public class CardToWalletTransactionImpl extends AbstractCrudRepository<CardToWa
                     params.put("recipient", id);
                 }
             });
-
-//            transactionFilter.getSender().ifPresent(value -> {
-//                if (!value.isBlank()) {
-//                    filters.add("sender like :sender");
-//                    params.put("sender", String.format("%%%s%%", value));
-//                }
-//            });
 
             transactionFilter.getDirection().ifPresent(value -> {
                 if (!value.isBlank()) {

@@ -67,11 +67,9 @@ public class WalletToWalletTransactionServiceImpl implements WalletTransactionSe
                                            Wallet senderWallet,
                                            Wallet recipientWallet) {
         senderWallet.getWalletTransactions().add(transaction);
-        //set outgoing transaction type
         transaction.setTransactionTypeId(OUTGOING_TRANSACTION_TYPE_ID);
         if (!doesTransactionRequireAdminAction(transaction)) {
             walletTransactionRepository.create(transaction);
-            //create incoming transaction
             WalletToWalletTransaction incomingWalletTransaction = new WalletToWalletTransaction();
             doIncomingTransaction(incomingWalletTransaction, transaction, recipientWallet);
             walletTransactionRepository.create(incomingWalletTransaction);
@@ -86,7 +84,6 @@ public class WalletToWalletTransactionServiceImpl implements WalletTransactionSe
     public void approveTransaction(WalletToWalletTransaction transaction, Wallet recipientWallet) {
         transaction.setStatus(statusService.getStatus(CONFIRMED_TRANSACTION_ID));
         walletTransactionRepository.update(transaction);
-        //create incoming transaction
         WalletToWalletTransaction incomingWalletTransaction = new WalletToWalletTransaction();
         doIncomingTransaction(incomingWalletTransaction, transaction, recipientWallet);
         walletTransactionRepository.create(incomingWalletTransaction);
