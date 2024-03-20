@@ -45,9 +45,12 @@ public class UserController {
     @Autowired
     public UserController(UserService userService,
                           CardService cardService,
-                          UserMapper userMapper, UpdateUserMapper updateUserMapper, CardResponseMapper cardResponseMapper,
+                          UserMapper userMapper,
+                          UpdateUserMapper updateUserMapper,
+                          CardResponseMapper cardResponseMapper,
                           CardMapper cardMapper,
-                          AuthenticationHelper authHelper, UserResponseMapper userResponseMapper) {
+                          AuthenticationHelper authHelper,
+                          UserResponseMapper userResponseMapper) {
         this.userService = userService;
         this.cardService = cardService;
         this.userMapper = userMapper;
@@ -71,7 +74,10 @@ public class UserController {
                 username, email, phoneNumber, sortBy, sortOrder);
         try {
             User loggedUser = authHelper.tryGetUser(headers);
-            return ResponseEntity.status(HttpStatus.OK).body(userResponseMapper.convertToDtoList(userService.getAllWithFilter(loggedUser, userFilter)));
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(userResponseMapper
+                            .convertToDtoList(userService.getAllWithFilter(loggedUser, userFilter)));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
@@ -149,13 +155,13 @@ public class UserController {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             Card cardToBeCreated = cardMapper.fromDto(cardDto, loggedUser);
-            Card outputCard =  cardService.createCard(loggedUser, cardToBeCreated);
+            Card outputCard = cardService.createCard(loggedUser, cardToBeCreated);
             return ResponseEntity.status(HttpStatus.CREATED).body(outputCard);
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (DuplicateEntityException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
-        } catch (ExpiredCardException e){
+        } catch (ExpiredCardException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
@@ -185,7 +191,7 @@ public class UserController {
     @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{id}/block")
     public ResponseEntity<?> blockUser(@RequestHeader HttpHeaders headers,
-                                          @PathVariable int id) {
+                                       @PathVariable int id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.blockUser(id, loggedUser);
@@ -198,7 +204,7 @@ public class UserController {
     }
 
     @Operation(summary = UNBLOCK_USER_SUMMARY, description = UNBLOCK_USER_DESCRIPTION +
-    ONLY_BY_ADMINS)
+            ONLY_BY_ADMINS)
     @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{id}/unblock")
     public ResponseEntity<Void> unblockUser(@RequestHeader HttpHeaders headers,
@@ -255,8 +261,8 @@ public class UserController {
     @SecurityRequirement(name = AUTHORIZATION)
     @DeleteMapping("/{user_id}/cards/{card_id}")
     public ResponseEntity<?> deleteUserCard(@RequestHeader HttpHeaders headers,
-                                               @PathVariable int user_id,
-                                               @PathVariable int card_id) {
+                                            @PathVariable int user_id,
+                                            @PathVariable int card_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             cardService.deleteCard(card_id, userService.get(user_id, loggedUser));
@@ -273,7 +279,7 @@ public class UserController {
     @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{user_id}/admin-approval")
     public ResponseEntity<?> giveUserAdminRights(@RequestHeader HttpHeaders headers,
-                                                    @PathVariable int user_id) {
+                                                 @PathVariable int user_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.giveUserAdminRights(userService.get(user_id, loggedUser), loggedUser);
@@ -290,7 +296,7 @@ public class UserController {
     @SecurityRequirement(name = AUTHORIZATION)
     @PutMapping("/{user_id}/admin-cancellation")
     public ResponseEntity<?> removeUserAdminRights(@RequestHeader HttpHeaders headers,
-                                                      @PathVariable int user_id) {
+                                                   @PathVariable int user_id) {
         try {
             User loggedUser = authHelper.tryGetUser(headers);
             userService.removeUserAdminRights(userService.get(user_id, loggedUser), loggedUser);

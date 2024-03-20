@@ -166,8 +166,9 @@ public class WalletController {
             User user = authHelper.tryGetUser(headers);
             List<WalletToWalletTransaction> walletToWalletTransactionList =
                     walletService.getUserWalletTransactions(transactionModelFilterOptions, user, wallet_id);
-//            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
-            return ResponseEntity.status(HttpStatus.OK).body(transactionResponseMapper.convertWalletTransactionsToDto(walletToWalletTransactionList));
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(transactionResponseMapper.convertWalletTransactionsToDto(walletToWalletTransactionList));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -181,17 +182,17 @@ public class WalletController {
     @GetMapping("/card_transactions/{wallet_id}")
     public ResponseEntity<?> getUserCardsTransactionHistory(@RequestHeader HttpHeaders headers,
                                                             @PathVariable int wallet_id,
-                                                         @RequestParam(required = false)
-                                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                         LocalDateTime startDate,
-                                                         @RequestParam(required = false)
-                                                         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                         LocalDateTime endDate,
-                                                         @RequestParam(required = false) String cardLastFourDigits,
-                                                         @RequestParam(required = false) String recipient,
-                                                         @RequestParam(required = false) String direction,
-                                                         @RequestParam(required = false) String sortBy,
-                                                         @RequestParam(required = false) String sortOrder) {
+                                                            @RequestParam(required = false)
+                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                            LocalDateTime startDate,
+                                                            @RequestParam(required = false)
+                                                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+                                                            LocalDateTime endDate,
+                                                            @RequestParam(required = false) String cardLastFourDigits,
+                                                            @RequestParam(required = false) String recipient,
+                                                            @RequestParam(required = false) String direction,
+                                                            @RequestParam(required = false) String sortBy,
+                                                            @RequestParam(required = false) String sortOrder) {
         try {
             CardTransactionModelFilterOptions transactionModelFilterOptions = new CardTransactionModelFilterOptions(
                     startDate, endDate, cardLastFourDigits, recipient, direction, sortBy, sortOrder);
@@ -199,7 +200,9 @@ public class WalletController {
             User user = authHelper.tryGetUser(headers);
             List<CardToWalletTransaction> cardToWalletTransactionList =
                     walletService.getUserCardTransactions(wallet_id, user, transactionModelFilterOptions);
-            return ResponseEntity.status(HttpStatus.OK).body(transactionResponseMapper.convertCardTransactionsToDto(cardToWalletTransactionList));
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(transactionResponseMapper.convertCardTransactionsToDto(cardToWalletTransactionList));
         } catch (UnauthorizedOperationException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         } catch (IllegalArgumentException e) {
@@ -209,17 +212,6 @@ public class WalletController {
         }
     }
 
-//    @GetMapping("/transactions")
-//    public List<TransactionResponseDto> getTransactionHistory(@RequestHeader HttpHeaders headers) {
-//        try {
-//            User user = authHelper.tryGetUser(headers);
-//            List<WalletToWalletTransaction> walletToWalletTransactionList = walletService.getAllWalletTransactions(user);
-//            return transactionResponseMapper.convertToDto(walletToWalletTransactionList, wallet_id);
-//        } catch (UnauthorizedOperationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        }
-//    }
-
     @Operation(summary = GET_TRANSACTION_BY_ID_SUMMARY, description = GET_TRANSACTION_BY_ID_DESCRIPTION)
     @SecurityRequirement(name = AUTHORIZATION)
     @GetMapping("/{wallet_id}/transactions/{transaction_id}")
@@ -228,7 +220,8 @@ public class WalletController {
                                                 @PathVariable int transaction_id) {
         try {
             User user = authHelper.tryGetUser(headers);
-            WalletToWalletTransaction walletToWalletTransaction = walletService.getTransactionById(user, wallet_id, transaction_id);
+            WalletToWalletTransaction walletToWalletTransaction
+                    = walletService.getTransactionById(user, wallet_id, transaction_id);
             TransactionResponseDto transaction = transactionResponseMapper.convertToDto(walletToWalletTransaction);
             return ResponseEntity.status(HttpStatus.OK).body(transaction);
         } catch (UnauthorizedOperationException e) {
@@ -247,7 +240,8 @@ public class WalletController {
         try {
             User user = authHelper.tryGetUser(headers);
             userService.isUserBlocked(user);
-            WalletToWalletTransaction walletToWalletTransaction = transactionMapper.fromDto(transactionDto, user, wallet_id);
+            WalletToWalletTransaction walletToWalletTransaction
+                    = transactionMapper.fromDto(transactionDto, user, wallet_id);
             walletService.walletToWalletTransaction(user, wallet_id, walletToWalletTransaction);
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(transactionResponseMapper.convertToDto(walletToWalletTransaction));
@@ -259,60 +253,6 @@ public class WalletController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
         }
     }
-
-//    @PutMapping("/{wallet_id}/transactions/{transaction_id}/update")
-//    public TransactionResponseDto updateTransaction(@RequestHeader HttpHeaders headers,
-//                                            @PathVariable int wallet_id,
-//                                            @RequestBody @Valid TransactionDto transactionDto,
-//                                            @PathVariable int transaction_id) {
-//        try {
-//            User user = authHelper.tryGetUser(headers);
-//            Transaction transaction = transactionMapper.fromDto(transactionDto, transaction_id);
-//            walletService.updateTransaction(user, transaction, wallet_id);
-//            return transactionResponseMapper.convertToDto(transaction);
-//        } catch (UnauthorizedOperationException e) {
-//            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//        } catch (EntityNotFoundException e) {
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-//        } catch(InsufficientFundsException e) {
-    //throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
-//}
-//        //Only a transaction that has not been approved can be updated
-//    }
-
-    //TODO remove at the end
-
-//    @PutMapping("/{wallet_id}/transactions/{transaction_id}/approve")
-//    public ResponseEntity<?> approveTransaction(@RequestHeader HttpHeaders headers,
-//                                                @PathVariable int wallet_id,
-//                                                @PathVariable int transaction_id) {
-//        try {
-//            User user = authHelper.tryGetUser(headers);
-//            walletService.approveTransaction(user, transaction_id, wallet_id);
-//            return ResponseEntity.status(HttpStatus.OK).build();
-//        } catch (UnauthorizedOperationException e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        } catch (EntityNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//    }
-//
-//
-//    @PutMapping("/{wallet_id}/transactions/{transaction_id}/cancel")
-//    public ResponseEntity<?> cancelTransaction(@RequestHeader HttpHeaders headers,
-//                                               @PathVariable int wallet_id,
-//                                               @PathVariable int transaction_id) {
-//        try {
-//            User user = authHelper.tryGetUser(headers);
-//            walletService.cancelTransaction(user, transaction_id, wallet_id);
-//            return ResponseEntity.status(HttpStatus.OK).build();
-//        } catch (UnauthorizedOperationException e) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        } catch (EntityNotFoundException e) {
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-//        }
-//        //Only a transaction that has NOT been approved can be canceled
-//    }
 
     @Operation(summary = CREATE_TRANSACTION_WITH_CARD_SUMMARY, description = CREATE_TRANSACTION_WITH_CARD_DESCRIPTION)
     @SecurityRequirement(name = AUTHORIZATION)
@@ -355,7 +295,7 @@ public class WalletController {
         UserModelFilterOptions userFilter = new UserModelFilterOptions(
                 username, email, phoneNumber, sortBy, orderBy);
         try {
-            User loggedUser = authHelper.tryGetUser(headers);
+            authHelper.tryGetUser(headers);
             List<User> recipient = walletService.getRecipient(userFilter);
             return userMapper.toRecipientDto(recipient);
         } catch (UnauthorizedOperationException e) {
@@ -363,7 +303,6 @@ public class WalletController {
         } catch (EntityNotFoundException e) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
         }
-        //todo consider if badRequest would need to be added, due to userFilter
     }
 
     @Operation(summary = ADD_USER_TO_WALLET_SUMMARY, description = ADD_USER_TO_WALLET_DESCRIPTION)
