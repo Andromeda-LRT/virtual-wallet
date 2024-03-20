@@ -97,7 +97,7 @@ public class AuthenticationHelper {
         String currentUsername = (String) session.getAttribute("currentUser");
 
         if (currentUsername == null) {
-            throw new AuthenticationFailureException("Invalid authentication.");
+            throw new AuthenticationFailureException(INVALID_AUTHENTICATION);
         }
 
         return service.getByUsername(currentUsername);
