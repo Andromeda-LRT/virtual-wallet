@@ -1,7 +1,6 @@
 package com.virtualwallet.services;
 
 import com.virtualwallet.model_helpers.CardTransactionModelFilterOptions;
-import com.virtualwallet.model_helpers.WalletTransactionModelFilterOptions;
 import com.virtualwallet.models.*;
 import com.virtualwallet.repositories.contracts.CardToWalletTransactionRepository;
 import com.virtualwallet.services.contracts.CardTransactionService;
@@ -38,7 +37,9 @@ public class CardToWalletTransactionServiceImpl implements CardTransactionServic
     }
 
     @Override
-    public List<CardToWalletTransaction> getUserCardTransactions(int walletId, User user, CardTransactionModelFilterOptions transactionFilter) {
+    public List<CardToWalletTransaction> getUserCardTransactions(int walletId,
+                                                                 User user,
+                                                                 CardTransactionModelFilterOptions transactionFilter) {
         return cardTransactionRepository.getAllUserCardTransactions(walletId, user, transactionFilter);
     }
 
