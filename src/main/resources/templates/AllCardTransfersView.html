@@ -326,11 +326,13 @@
                       class="d-flex flex-row align-items-center gap-2">
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="Start Date" th:field="*{startDate}"/>
+                        <input class="form-control" type="datetime-local" min="1990-01-01T00:00"
+                               max="2030-12-31T23:59" id="startDateTimeInput" th:field="*{startDate}"/>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
-                        <input class="form-control" type="text" placeholder="End Date" th:field="*{endDate}"/>
+                        <input class="form-control" type="datetime-local" placeholder="MM/dd/YYYY, hh:mm"
+                               min="1990-01-01T00:00" max="2030-12-31T23:59" id="endDateTimeInput" th:field="*{endDate}"/>
                     </div>
                     <div class="input-group">
                         <span class="input-group-text"><i class="material-icons-outlined">person_search</i></span>
@@ -383,8 +385,8 @@
                             <td colspan="5" class="text-center">No card transfers yet.</td>
                         </tr>
                         <tr class="align-middle" th:each="cardTrans : ${cardTransfersList}">
-                            <td th:text="${#temporals.format(cardTrans.getTime(), 'dd MMM yyyy HH:mm')}">13 Sep, 2021
-                                14:30
+                            <td th:text="${#temporals.format(cardTrans.getTime(), 'MMM dd yyyy hh:mm a')}">Sep 13, 2021
+                                2:30 PM
                             </td>
                             <td>
                                 <div class="d-flex align-items-center justify-content-center"
